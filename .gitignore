@@ -1,0 +1,23 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# Local configuration with real credentials
+app/config/config.php
+.env
+
+# Runtime data — never version uploaded documents or logs
+storage/uploads/*
+!storage/uploads/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# Dependencies (none expected, but keep safe)
+vendor/
+node_modules/
