@@ -6,6 +6,12 @@ Six milestones from empty repo to final presentation. Each milestone ends with a
 state of `main` — never a half-broken branch. Timeline is relative (Week 1…Week 6); anchor real dates
 as soon as the professor announces the presentation schedule.
 
+> **In plain words:** this is the project calendar and chore list. A **milestone** is a checkpoint where
+> something actually works end-to-end (login works, uploads work, …). **W1–W6** are our weeks, and each
+> module has one **owner** — the person who drives it while a teammate reviews the code. Wondering what
+> to do next? Find the current milestone, pick an unstarted requirement ID from
+> `docs/01-REQUIREMENTS.md`, and build it.
+
 ---
 
 ## 1. Milestones

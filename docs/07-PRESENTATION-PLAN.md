@@ -5,6 +5,10 @@
 Target: ~15–20 minutes of slides + demo, then Q&A. The through-line for the professor: **every feature
 exists to satisfy the manual's 10 security requirements — and we can prove it live.**
 
+> **In plain words:** this is our script for demo day — what goes on the slides, the exact order of the
+> live demonstration, and answers to the questions the professor is most likely to ask. Read it before
+> the rehearsal; bring it printed.
+
 ---
 
 ## 1. Slide Outline

@@ -5,6 +5,13 @@
 Database: `sdms` — MySQL/MariaDB (XAMPP), InnoDB engine, `utf8mb4` so Filipino names like
 *Peñaflor* store and display correctly.
 
+> **In plain words:** a database is a set of "smart spreadsheets" (tables) — one for users, one for
+> documents, one for categories, one for logs — that refer to each other by ID. This page has three
+> parts: (1) a **map** of the tables (the ERD), (2) the **columns** of each table, (3) the
+> **ready-made script** that builds everything. You do not type any of this by hand: create an empty
+> database named `sdms` in phpMyAdmin, click **Import**, and load `database/schema.sql` then
+> `database/seed.sql` — done.
+
 ---
 
 ## 1. ERD

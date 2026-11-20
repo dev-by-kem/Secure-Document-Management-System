@@ -79,3 +79,17 @@ A feature is done when:
 - Short sync meeting at least twice a week (see `docs/06-TEAM.md`).
 - Update the group chat when a PR is open or a blocker appears — blockers older than 24 h go to the team lead.
 - Keep `docs/05-DEVELOPMENT-PLAN.md` checkboxes current so progress is visible to everyone.
+
+## 7. New to Git? The five commands you need
+
+```bash
+git switch -c feature/your-task   # 1. make a branch for your task
+git add .                         # 2. stage your changes
+git commit -m "feat(upload): add file validation"  # 3. save a version with a message
+git push -u origin feature/your-task               # 4. upload your branch to GitHub
+git pull                          # 5. get teammates' latest work (run often)
+```
+
+After step 4, open a **Pull Request** on GitHub; a teammate reviews it and merges into `main`.
+If something goes wrong, ask in the group chat *before* forcing anything (`--force` is a last resort
+and needs the team lead's OK).

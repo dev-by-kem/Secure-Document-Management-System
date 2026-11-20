@@ -6,6 +6,22 @@ This is the heart of the project: how the 10 security requirements of the manual
 implemented, what threats we considered, and how we prove the protections work. Requirement IDs SR-1…
 SR-10 follow `docs/01-REQUIREMENTS.md`.
 
+> **In plain words — what the 10 security rules actually mean:**
+> 1. **Hash passwords** — never store real passwords, only unreadable scrambles of them.
+> 2. **Authentication** — nobody sees any page without logging in first.
+> 3. **RBAC** — admin, staff, and viewer each see different things; the wrong role gets blocked.
+> 4. **Confidentiality** — uploaded files sit where no web address can reach them; every download goes
+>    through a checkpoint that decides "yes" or "no".
+> 5. **SQL injection prevention** — queries are built the safe way, so typed tricks like `' OR 1=1` do nothing.
+> 6. **Input validation** — check everything the user sends; reject weird files and scripts.
+> 7. **Session management** — the "logged in" memory is hardened against being stolen or faked.
+> 8. **Activity logs** — every important action is written down permanently.
+> 9. **Account management** — admins can switch an account off, and it stops working instantly.
+> 10. **Data integrity** — records can't be quietly changed or truly lost; deletions are undoable.
+>
+> The rest of this page is *how* we do each rule in PHP, and §5 is the list of attacks we will try
+> ourselves to prove the protections work (great material for the presentation).
+
 ---
 
 ## 1. Threat Model (STRIDE)

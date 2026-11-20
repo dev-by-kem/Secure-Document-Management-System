@@ -8,6 +8,10 @@ College of Engineering and Information Technology
 > digital documents in a **secure environment** — where only **authorized users** can access, download,
 > modify, or delete specific files.
 
+> 🧭 **New here? Everything feels too technical?** Read the plain-English guide first:
+> [docs/00-START-HERE.md](docs/00-START-HERE.md) — what the site is for, where it runs, a glossary,
+> and FAQ (Supabase? React? Do we build the database ourselves?).
+
 ## 📌 Project Summary
 
 - **Problem:** Ordinary file storage exposes academic files (assignments, research papers, project
@@ -101,6 +105,7 @@ SDMS/
 
 | Doc | Contents |
 |-----|----------|
+| [00 – Start Here](docs/00-START-HERE.md) | Plain-English guide: purpose, local vs online, glossary, FAQ |
 | [01 – Requirements](docs/01-REQUIREMENTS.md) | Functional + security requirements, traced to the project manual |
 | [02 – Architecture](docs/02-ARCHITECTURE.md) | Stack rationale, modules, folder structure, request & approval flows |
 | [03 – Database Design](docs/03-DATABASE-DESIGN.md) | ERD, table specifications, DDL, seed data |

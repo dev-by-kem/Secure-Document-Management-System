@@ -5,6 +5,12 @@
 A pragmatic, security-first architecture that builds directly on what the team already knows from the
 ITEC labs: **PHP 8 + MySQL on XAMPP**, no framework, organized with shared libraries instead.
 
+> **In plain words:** "architecture" is the floor plan of the app. The browser can only ever see the
+> `public/` folder; `app/` holds the brain (login checks, database access, logging); uploaded files sit
+> in `storage/uploads/` where no web address can reach them; and everything about users and documents
+> is written down in the MySQL database called `sdms`. Reading this page once will save you hours of
+> "which file is what?"
+
 ---
 
 ## 1. Technology Stack & Rationale

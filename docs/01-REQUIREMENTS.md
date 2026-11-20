@@ -6,6 +6,13 @@ This document distills the professor's project manual ([source PDF](Secure-Docum
 into numbered, testable requirements. The IDs (FR-n, SR-n, NFR-n) are referenced by every other doc,
 task, and test case, so we can always trace a feature back to the manual.
 
+> **In plain words:** this page is the *master checklist* of everything the website must do. Every item
+> has an ID (FR-7, SR-5, …) so we can point at it in code, tests, and the presentation. **FR = Functional
+> Requirement** — something the site must *do*. **SR = Security Requirement** — a rule that keeps it
+> *safe* (all ten come straight from the professor's manual). **NFR** = how well it should behave
+> (speed, usability, file limits). You don't need to memorize the numbers: find your module, build what
+> it says, and check it off.
+
 Priority legend: **M** = must have (explicitly in the manual) · **S** = should have (recommended) ·
 **E** = enhancement (if time allows).
 
