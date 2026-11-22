@@ -37,6 +37,17 @@ function user_agent(): string
     return mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255);
 }
 
+/**
+ * True when the app runs on a developer's own machine (XAMPP localhost).
+ * Uses SERVER_ADDR — the server's own IP, which the browser cannot fake —
+ * so demo-account hints can stay on localhost but never appear on the
+ * public staging server (docs/09 §4 security rules).
+ */
+function is_localhost(): bool
+{
+    return in_array($_SERVER['SERVER_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+}
+
 function bytes_for_humans(int $bytes): string
 {
     if ($bytes >= 1048576) { return round($bytes / 1048576, 1) . ' MB'; }

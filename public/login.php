@@ -96,6 +96,8 @@ try {
             <div><div class="t">Administrator</div><div class="d">Creates accounts, approves or rejects submissions, monitors activity.</div></div>
           </div>
         </div>
+        <?php /* Demo-account hints are for local XAMPP testing only — never shown on the public staging site (docs/09 §4). */ ?>
+        <?php if (is_localhost()): ?>
         <details class="mt-3 small">
           <summary class="text-muted">Demo accounts (for team testing)</summary>
           <ul class="mt-2 mb-2">
@@ -105,6 +107,7 @@ try {
           </ul>
           <p class="text-muted mb-0">Change these passwords after signing in (Profile page).</p>
         </details>
+        <?php endif; ?>
       </div>
     </div>
 
