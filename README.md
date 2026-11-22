@@ -119,19 +119,6 @@ SDMS/
 | [Contributing](CONTRIBUTING.md) | Branching, commit style, code conventions, review rules |
 | Project manual (source) | `docs/Secure-Document-Management-System.pdf` |
 
-## 👥 Team — ITEC 85 Group
-
-| Member | Suggested role |
-|--------|----------------|
-| Kim Jerald Sialana | Team lead · backend (auth & RBAC) · integration |
-| Dyna Lunas | Database design & schema owner |
-| Edcel Santos | Backend · document module |
-| Denise Valencia | Security focal & QA |
-| Elijah Zyrus Tipo | Backend · admin module & reports |
-| Mycah Layaban | Frontend · staff/viewer experience |
-| Sofia Jhaye Peñaflor | Frontend · admin dashboard & reports |
-
-*Role assignments are proposals — see [06 – Team](docs/06-TEAM.md) and adjust to each member's strengths.*
 
 ## 📄 Status
 
