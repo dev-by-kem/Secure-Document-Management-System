@@ -1,0 +1,19 @@
+# ============================================================
+# SDMS — web-access guard
+# In plain words: only the public/ folder is meant to be opened
+# from a browser. This file answers "404 Not Found" for anything
+# that tries to reach the internal folders directly, and blocks
+# common source/config file types everywhere.
+# Works on Apache — both local XAMPP and the staging host.
+# ============================================================
+
+# Internal folders: application code, SQL dumps, logs, tests, docs,
+# and uploaded files. Uploaded documents are NEVER served directly —
+# they stream through public/documents/download.php, which checks
+# the session and role first (SR-4, docs/04-SECURITY-PLAN.md).
+RedirectMatch 404 ^/(app|database|docs|logs|scripts|storage|tests)(/.*)?$
+
+# Source/config file types that must never be downloadable anywhere:
+<FilesMatch "\.(sql|md|log|ya?ml|json|sample|ps1|bak|ini|sh)$">
+    Require all denied
+</FilesMatch>

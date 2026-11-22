@@ -1,0 +1,239 @@
+<?php
+require_once __DIR__ . '/../../app/bootstrap.php';
+require_role(['admin']);
+
+$u = current_user();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
+    $action = post('action');
+
+    if ($action === 'create') {
+        $username = post('username');
+        $email    = post('email');
+        $fullName = post('full_name');
+        $roleId   = (int) post('role_id');
+        $password = $_POST['password'] ?? '';
+        $errors   = [];
+        if (!is_valid_username($username))    { $errors[] = 'Username must be 3-50 letters, numbers, dots or underscores.'; }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors[] = 'A valid email address is required.'; }
+        if ($fullName === '')                 { $errors[] = 'Full name is required.'; }
+        if (!in_array($roleId, [1, 2, 3], true)) { $errors[] = 'Choose a valid role.'; }
+        if (!is_valid_password($password))    { $errors[] = 'Password must be at least 8 characters.'; }
+        if ($errors !== []) {
+            flash_set('danger', implode(' ', $errors));
+        } else {
+            $dup = db()->prepare('SELECT user_id FROM users WHERE username = ? OR email = ?');
+            $dup->execute([$username, $email]);
+            if ($dup->fetch()) {
+                flash_set('danger', 'That username or email is already taken.');
+            } else {
+                db()->prepare('INSERT INTO users (username, email, password_hash, full_name, role_id) VALUES (?, ?, ?, ?, ?)')
+                    ->execute([$username, $email, password_hash($password, PASSWORD_DEFAULT), $fullName, $roleId]);
+                log_activity((int) $u['user_id'], 'CREATE_USER', 'user', (int) db()->lastInsertId(), $username . ' (role ' . $roleId . ')');
+                flash_set('success', 'Account created for ' . $username . '.');
+            }
+        }
+        redirect('admin/users.php');
+    }
+
+    if ($action === 'update') {
+        $userId  = (int) post('user_id');
+        $fullName = post('full_name');
+        $email    = post('email');
+        $roleId   = (int) post('role_id');
+        $target   = fetch_user($userId);
+        if (!$target) {
+            flash_set('danger', 'User not found.');
+        } elseif ($fullName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            flash_set('danger', 'Full name and a valid email are required.');
+        } else {
+            if ((int) $target['user_id'] === (int) $u['user_id']) {
+                $roleId = (int) $target['role_id']; // an admin cannot change their own role
+            }
+            try {
+                db()->prepare('UPDATE users SET full_name = ?, email = ?, role_id = ? WHERE user_id = ?')
+                    ->execute([$fullName, $email, $roleId, $userId]);
+                log_activity((int) $u['user_id'], 'UPDATE_USER', 'user', $userId, $target['username']);
+                flash_set('success', 'Account updated for ' . $target['username'] . '.');
+            } catch (Throwable $ex) {
+                error_log('user update failed: ' . $ex->getMessage());
+                flash_set('danger', 'Update failed — that email may already belong to another account.');
+            }
+        }
+        redirect('admin/users.php');
+    }
+
+    if ($action === 'reset_password') {
+        $userId = (int) post('user_id');
+        $new    = $_POST['new_password'] ?? '';
+        $target = fetch_user($userId);
+        if (!$target) {
+            flash_set('danger', 'User not found.');
+        } elseif (!is_valid_password($new)) {
+            flash_set('danger', 'The new password must be at least 8 characters long.');
+        } else {
+            db()->prepare('UPDATE users SET password_hash = ? WHERE user_id = ?')
+                ->execute([password_hash($new, PASSWORD_DEFAULT), $userId]);
+            log_activity((int) $u['user_id'], 'RESET_PASSWORD', 'user', $userId, $target['username']);
+            flash_set('success', 'Password reset for ' . $target['username'] . '.');
+        }
+        redirect('admin/users.php');
+    }
+
+    if ($action === 'toggle_status') {
+        $userId = (int) post('user_id');
+        $target = fetch_user($userId);
+        $block  = null;
+        if (!$target) {
+            $block = 'User not found.';
+        } elseif ((int) $target['user_id'] === (int) $u['user_id']) {
+            $block = 'You cannot change the status of your own account.';
+        } elseif ($target['role_name'] === 'admin' && $target['status'] === 'active' && active_admin_count() <= 1) {
+            $block = 'Cannot deactivate the last active administrator.';
+        }
+        if ($block !== null) {
+            flash_set('danger', $block);
+        } else {
+            $newStatus = $target['status'] === 'active' ? 'inactive' : 'active';
+            db()->prepare('UPDATE users SET status = ? WHERE user_id = ?')->execute([$newStatus, $userId]);
+            log_activity((int) $u['user_id'], $newStatus === 'active' ? 'ACTIVATE_USER' : 'DEACTIVATE_USER', 'user', $userId, $target['username']);
+            flash_set('success', $target['username'] . ' is now ' . $newStatus . '.');
+        }
+        redirect('admin/users.php');
+    }
+
+    redirect('admin/users.php');
+}
+
+$users = db()->query(
+    'SELECT u.*, r.role_name FROM users u JOIN roles r ON r.role_id = u.role_id ORDER BY u.username'
+)->fetchAll();
+$roles = db()->query('SELECT role_id, role_name FROM roles ORDER BY role_id')->fetchAll();
+
+$pageTitle = 'Manage users';
+require BASE_PATH . '/app/includes/header.php';
+?>
+<div class="page-head">
+  <div>
+    <h1>Manage users</h1>
+    <p class="page-sub">Accounts are created by administrators only — there is no self-registration. Deactivating an account blocks its login instantly.</p>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><i class="bi bi-person-plus me-1"></i> Create a new account</div>
+  <div class="card-body">
+    <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row g-2 align-items-end">
+      <?= csrf_field() ?>
+      <input type="hidden" name="action" value="create">
+      <div class="col-md-2">
+        <label for="nu-username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="nu-username" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" required>
+      </div>
+      <div class="col-md-3">
+        <label for="nu-fullname" class="form-label">Full name</label>
+        <input type="text" class="form-control" id="nu-fullname" name="full_name" autocomplete="name" required>
+      </div>
+      <div class="col-md-3">
+        <label for="nu-email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="nu-email" name="email" autocomplete="email" required>
+      </div>
+      <div class="col-md-2">
+        <label for="nu-role" class="form-label">Role</label>
+        <select class="form-select" id="nu-role" name="role_id" required>
+          <?php foreach ($roles as $r): ?>
+            <option value="<?= (int) $r['role_id'] ?>"><?= e(ucfirst($r['role_name'])) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="nu-password" class="form-label">Initial password</label>
+        <input type="password" class="form-control" id="nu-password" name="password" autocomplete="new-password" minlength="8" required aria-describedby="nu-password-help">
+        <div id="nu-password-help" class="form-text">Min 8 characters.</div>
+      </div>
+      <div class="col-12 col-md-auto">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> Create account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive sdms-table-wrap" role="region" aria-label="Users table" tabindex="0">
+    <table class="table table-hover sdms-card-table">
+      <thead><tr><th>User</th><th>Role &amp; status</th><th>Last login</th><th style="min-width:300px">Edit details</th><th>Reset password</th><th>Status</th></tr></thead>
+      <tbody>
+        <?php foreach ($users as $row): ?>
+          <?php $isSelf = (int) $row['user_id'] === (int) $u['user_id']; ?>
+          <tr>
+            <td data-label="User">
+              <div class="user-cell">
+                <?= avatar($row['full_name']) ?>
+                <div>
+                  <div class="name"><?= e($row['full_name']) ?></div>
+                  <div class="sub">@<?= e($row['username']) ?> · <?= e($row['email']) ?></div>
+                </div>
+              </div>
+            </td>
+            <td data-label="Role & status">
+              <div class="d-flex flex-column gap-1 align-items-start">
+                <?= role_chip($row['role_name']) ?>
+                <span class="pill <?= $row['status'] === 'active' ? 'pill--approved' : 'pill--neutral' ?>"><?= e($row['status']) ?></span>
+              </div>
+            </td>
+            <td data-label="Last login" class="small text-nowrap"><?= e($row['last_login'] ?? 'never') ?></td>
+            <td data-label="Edit details">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row gx-1 gy-1 align-items-center">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
+                <div class="col-12 col-md-auto flex-grow-1">
+                  <label class="visually-hidden" for="fn-<?= (int) $row['user_id'] ?>">Full name</label>
+                  <input type="text" class="form-control form-control-sm" id="fn-<?= (int) $row['user_id'] ?>" name="full_name" value="<?= e($row['full_name']) ?>" required>
+                </div>
+                <div class="col-12 col-md-auto flex-grow-1">
+                  <label class="visually-hidden" for="em-<?= (int) $row['user_id'] ?>">Email</label>
+                  <input type="email" class="form-control form-control-sm" id="em-<?= (int) $row['user_id'] ?>" name="email" value="<?= e($row['email']) ?>" required>
+                </div>
+                <div class="col-auto">
+                  <label class="visually-hidden" for="rl-<?= (int) $row['user_id'] ?>">Role</label>
+                  <select class="form-select form-select-sm" id="rl-<?= (int) $row['user_id'] ?>" name="role_id" <?= $isSelf ? 'disabled title="You cannot change your own role"' : '' ?>>
+                    <?php foreach ($roles as $r): ?>
+                      <option value="<?= (int) $r['role_id'] ?>" <?= (int) $r['role_id'] === (int) $row['role_id'] ? 'selected' : '' ?>><?= e(ucfirst($r['role_name'])) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn-icon" aria-label="Save user" title="Save"><i class="bi bi-check2"></i></button>
+                </div>
+              </form>
+            </td>
+            <td data-label="Reset password">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="d-flex gap-1 align-items-center">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="reset_password">
+                <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
+                <label class="visually-hidden" for="pw-<?= (int) $row['user_id'] ?>">New password</label>
+                <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="New password (min 8)" autocomplete="new-password" minlength="8" required>
+                <button type="submit" class="btn-icon" aria-label="Reset password" title="Reset password"><i class="bi bi-key"></i></button>
+              </form>
+            </td>
+            <td data-label="Status">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="toggle_status">
+                <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
+                <button type="submit" class="btn btn-sm <?= $row['status'] === 'active' ? 'btn-outline-danger' : 'btn-outline-success' ?>" <?= $isSelf ? 'disabled title="You cannot change your own status"' : '' ?>>
+                  <?= $row['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted small mt-2"><i class="bi bi-info-circle me-1"></i>The last active administrator cannot be deactivated, and you cannot change your own role or status.</p>
+<?php require BASE_PATH . '/app/includes/footer.php'; ?>

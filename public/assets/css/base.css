@@ -1,0 +1,54 @@
+/* ============================================================
+   SDMS base styles: page canvas, type scale, links, focus,
+   skip link, motion preferences.
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: var(--sdms-page-bg);
+  color: var(--sdms-text);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { color: var(--sdms-text); }
+
+/* Friendly, confident page title scale */
+h1 { font-size: clamp(1.4rem, 1.2rem + 0.7vw, 1.85rem); font-weight: 750; letter-spacing: -0.015em; }
+h2 { font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.45rem); font-weight: 700; letter-spacing: -0.01em; }
+
+/* Links: AA-contrast in both themes */
+a { color: var(--sdms-link); text-decoration: none; }
+a:hover { color: var(--sdms-link-hover); text-decoration: underline; }
+
+/* Keyboard users must always see where focus is */
+:focus-visible {
+  outline: 3px solid var(--sdms-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip link: invisible until focused */
+.skip-link {
+  position: absolute;
+  inset-inline-start: -100vw;
+  inset-block-start: 0;
+  z-index: 2000;
+  padding: var(--sdms-space-2) var(--sdms-space-4);
+  background: var(--sdms-brand);
+  color: var(--sdms-brand-contrast);
+  border-radius: 0 0 var(--sdms-radius) 0;
+}
+.skip-link:focus { inset-inline-start: 0; }
+
+/* Respect OS animation preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,1 @@
+Runtime log files (PHP/app errors) live here. Audit logs live in the database, not here.

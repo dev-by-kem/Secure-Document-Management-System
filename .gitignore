@@ -15,6 +15,7 @@ app/config/config.php
 # Runtime data — never version uploaded documents or logs
 storage/uploads/*
 !storage/uploads/.gitkeep
+!storage/uploads/.htaccess
 logs/*
 !logs/.gitkeep
 

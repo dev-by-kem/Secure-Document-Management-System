@@ -1,0 +1,3 @@
+SDMS backend smoke test document.
+Created by tests/backend-smoke.ps1 to verify the upload/download pipeline.
+Content line three: integrity check payload.

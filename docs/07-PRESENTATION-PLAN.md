@@ -32,22 +32,49 @@ exists to satisfy the manual's 10 security requirements — and we can prove it 
 
 ---
 
-## 2. Live Demo Script (~6–8 minutes, seeded data)
+## 2. Live Demo — Role-Play Format (~8 minutes, seeded data)
 
-1. **Login as admin** → dashboard shows user and document counts (FR-19).
-2. **Admin creates a staff account and a viewer account** (FR-20…FR-21).
-3. **Log in as staff** → upload a PDF with title/category/description; category requires approval →
+> **In plain words:** instead of one person clicking through everything, each member **plays their
+> system role live** — and one member plays an attacker. The audience sees the product work *and* see
+> it survive an attack. Casting is a proposal (doc 06 §1b) — swap freely, then rehearse once with all
+> actors before demo day.
+
+**The cast**
+
+| Actor | Plays | Shows the audience |
+|---|---|---|
+| Kim | Narrator / drives the laptop | Keeps the story moving; says what each step proves |
+| Elijah | **Administrator** | Control: accounts, approvals, logs, reports (FR-19…FR-29) |
+| Mycah | **Staff member** | The daily workflow: upload → pending → approved (FR-6, FR-13) |
+| Edcel | **Viewer** | Least privilege: only approved documents are visible (SR-4) |
+| Denise | **The Hacker** | Attacks the system and loses — every attempt gets recorded (SR-8) |
+| Dyna | Database witness | phpMyAdmin: hashed passwords, audit rows (SR-1, SR-8) |
+| Sofia | Timekeeper + slides | Feeds the next slide; watches the clock |
+
+**The script**
+
+1. **(Kim narrates · Elijah as admin)** Login → dashboard shows user and document counts (FR-19).
+2. **(Elijah)** Admin creates a staff account and a viewer account (FR-20…FR-21).
+3. **(Mycah as staff)** Uploads a PDF with title/category/description; category requires approval →
    status **Pending** (FR-6, FR-13).
-4. **Show security internals while logged in as staff:**
-   - open phpMyAdmin → `users.password_hash` shows only `$2y$…` hashes (SR-1);
-   - attempt login `' OR 1=1 --` → generic failure (SR-5);
-   - attempt to open `admin/users.php` by URL → 403 (SR-3).
-5. **Log in as viewer** → the Pending document is **not** visible/downloadable (SR-4).
-6. **Log in as admin** → approve the document with one click (FR-25).
-7. **Viewer now downloads it** → file arrives with its original name (FR-18).
-8. **Admin opens the log viewer** → the upload, the denied attempt, and the download are all there with
-   IP and timestamp (SR-8).
-9. **Reports** → generate and print a document report (FR-29).
+4. **(Dyna) Security internals:** open phpMyAdmin → `users.password_hash` shows only `$2y$…`
+   hashes (SR-1, ST-13).
+5. **(Denise — Hacker segment, ~2 min, prepared payloads only):**
+   - login attempt `' OR 1=1 --` → normal failure, no bypass (SR-5, ST-01);
+   - as viewer, open `admin/users.php` by URL → 403 (SR-3, ST-02);
+   - request a stored file by a guessed URL → nothing serves it (SR-4, ST-03);
+   - upload a `.php` renamed to `.pdf` → rejected by validation (ST-12);
+   - document title `<script>alert(1)</script>` → renders as inert text (ST-07).
+   Denise *loses every time* — and says so. That is the point.
+6. **(Edcel as viewer)** The Pending document is **not** visible or downloadable (SR-4, ST-05).
+7. **(Elijah)** Admin approves the document (FR-25).
+8. **(Edcel)** Viewer now downloads it → the file arrives with its original name (FR-18).
+9. **(Elijah) The punchline:** admin opens the log viewer → the upload, **every hacker attempt**, and
+   the download are all recorded with user, IP, and timestamp (SR-8, ST-14).
+10. **(Dyna)** Reports → generate and print a document report (FR-29).
+
+> ⚠️ The Hacker uses **pre-prepared payloads rehearsed in advance** — nothing improvised live.
+> If live probing is skipped for time, slides 8–11 carry the same evidence as screenshots.
 
 Fallback: pre-recorded screen capture of the same steps, in case the demo laptop misbehaves.
 
@@ -70,9 +97,10 @@ Fallback: pre-recorded screen capture of the same steps, in case the demo laptop
 
 ## 4. Presentation Logistics
 
-- **Speaker split (suggested):** intro + architecture (Kim), roles + demo navigation (Mycah), security deep-dive (Denise), database + reports (Dyna), admin flows + conclusion (Elijah/Edcel/Sofia).
+- **Speaker split (suggested):** intro + architecture (Kim), roles + demo navigation (Kim/Mycah), security deep-dive (Denise), database + reports (Dyna), conclusion (Elijah, Edcel, Sofia) — and everyone acts their demo role (§2).
 - **Checklist before the session:**
   - [ ] Fresh seed data, demo accounts for all 3 roles
+  - [ ] Role-play rehearsed once with all actors; hacker payloads prepared and tested (§2)
   - [ ] XAMPP Apache + MySQL running; browser tabs pre-opened (app, phpMyAdmin, logs)
   - [ ] Slides exported to PDF on laptop **and** USB/email/cloud backup
   - [ ] Backup laptop with the same setup; recorded demo as final fallback

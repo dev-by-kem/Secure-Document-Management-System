@@ -1,0 +1,5 @@
+# SR-4 hardening (docs/02-ARCHITECTURE.md, docs/04-SECURITY-PLAN.md):
+# uploaded files must never be reachable by a direct URL, even if the
+# folder ever ends up inside a web root. Access goes through the gated
+# download endpoint (public/documents/download.php) only.
+Require all denied

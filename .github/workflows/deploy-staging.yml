@@ -1,0 +1,65 @@
+# ============================================================
+# SDMS — auto-deploy to the team's shared STAGING server
+# (free InfinityFree PHP hosting, copied over FTP)
+#
+# In plain words: every time code is merged into `main`, GitHub
+# copies the changed files to the staging site by itself — about
+# 1–3 minutes later all seven teammates see the newest version
+# at the same URL. Only reviewed, merged code ever reaches it.
+#
+# One-time setup: docs/09-STAGING-DEPLOY.md  (Steps 5 and 7)
+# Secrets needed (Settings → Secrets and variables → Actions):
+#   FTP_SERVER    = ftpupload.net
+#   FTP_USERNAME  = your InfinityFree username (epiz_…)
+#   FTP_PASSWORD  = your InfinityFree FTP password
+#
+# NOTE: app/config/config.php is intentionally EXCLUDED below.
+# The staging server keeps its own config with the staging
+# database password — it is uploaded once by hand (doc 09,
+# Step 4) and no deploy can ever overwrite it.
+# ============================================================
+
+name: Deploy staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # manual "Run workflow" button in the Actions tab
+
+# Never run two deploys at the same time (rapid pushes are fine:
+# the older deploy is cancelled, the newest one wins)
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the latest code
+        uses: actions/checkout@v4
+
+      - name: Copy changed files to the staging server (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          server-dir: htdocs/
+
+          # Files and folders that must NEVER be copied to the server:
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/.agents*
+            **/.zwork*
+            docs/**
+            tests/**
+            scripts/**
+            database/**
+            logs/**
+            storage/uploads/*
+            !storage/uploads/.htaccess
+            app/config/config.php
+            skills-lock.json

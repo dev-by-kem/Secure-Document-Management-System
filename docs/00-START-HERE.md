@@ -28,6 +28,10 @@ project for *Information Security* — the interesting part is the safety, not t
 2. You open the site in your browser at `http://localhost/SDMS/public/`.
 3. At the final presentation, you demo it live from your laptop. No venue Wi-Fi needed.
 
+> 🧪 During development we *also* run one shared **staging site** on free hosting: every push to
+> `main` appears there within a couple of minutes, so all seven of us test the same live copy.
+> One-time setup: [09 – Staging Server](09-STAGING-DEPLOY.md).
+
 Two clarifications people often mix up:
 
 - Putting the **code** on GitHub does **not** put the **website** online. GitHub only stores the code.
@@ -102,8 +106,8 @@ them, so everyone's assistant gives the same modern advice.
 1. Install [XAMPP](https://www.apachefriends.org/) — next, next, finish.
 2. Open the **XAMPP Control Panel** and start **Apache** and **MySQL**.
 3. Get the project folder into `C:\xampp\htdocs\SDMS` (clone from GitHub, or copy it).
-4. Open `http://localhost/phpmyadmin` → create database `sdms` → **Import** `database/schema.sql` → **Import** `database/seed.sql`.
-5. Open `http://localhost/SDMS/public/` — you should see the login page.
+4. Open `http://localhost/phpmyadmin` → **Import** `database/schema.sql` (creates the database and all tables) → **Import** `database/seed.sql` (roles, categories, demo accounts) → **Import** `database/demo-data.sql` (realistic sample documents so the site is not empty).
+5. Open `http://localhost/SDMS/public/` and sign in with `admin / Admin@123`, `staff / Staff@123`, or `viewer / Viewer@123`.
 
 Stuck? Post a screenshot of the error in the group chat — that's normal; everyone gets stuck on setup.
 
@@ -120,6 +124,7 @@ Stuck? Post a screenshot of the error in the group chat — that's normal; every
 | 7 | [03 – Database Design](03-DATABASE-DESIGN.md) | The tables + the ready-made SQL |
 | 8 | [04 – Security Plan](04-SECURITY-PLAN.md) | How each of the 10 security rules is implemented and tested |
 | 9 | [07 – Presentation Plan](07-PRESENTATION-PLAN.md) | The demo-day script |
+| 10 | [09 – Staging Server](09-STAGING-DEPLOY.md) | Our shared online test site — one-time setup, then updates arrive on their own |
 
 **Remember:** no requirement was removed to make things easier to read — every FR/SR/NFR is still in
 docs 01–04, just with friendlier signposts.

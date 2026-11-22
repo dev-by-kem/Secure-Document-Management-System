@@ -1,0 +1,105 @@
+/* ============================================================
+   SDMS design tokens — the single place to rebrand the UI.
+   Friendly + clean: indigo brand, teal accent, soft surfaces,
+   generous rounding. Light values on :root, dark overrides below.
+   ============================================================ */
+:root {
+  /* Brand & links */
+  --sdms-brand: #4f46e5;            /* indigo 600 — 6.2:1 with white text */
+  --sdms-brand-hover: #4338ca;
+  --sdms-brand-soft: rgba(79, 70, 229, 0.10);
+  --sdms-brand-contrast: #ffffff;
+  --sdms-link: #4338ca;             /* 8.6:1 on white */
+  --sdms-link-hover: #3730a3;
+
+  /* Accent (teal) for secondary emphasis */
+  --sdms-accent: #0f766e;
+  --sdms-accent-soft: rgba(13, 148, 136, 0.12);
+
+  /* Surfaces */
+  --sdms-page-bg: #f5f6fa;
+  --sdms-surface: #ffffff;
+  --sdms-surface-muted: #f3f4f8;
+  --sdms-border: #e6e8ef;
+
+  /* Text */
+  --sdms-text: #1f2430;
+  --sdms-text-muted: #5b6472;       /* 5.7:1 on white */
+
+  /* Navigation */
+  --sdms-navbar-bg: #ffffff;
+  --sdms-navbar-text: #1f2430;
+  --sdms-navbar-muted: #5b6472;
+
+  /* Semantic */
+  --sdms-success: #15803d;
+  --sdms-warning: #92400e;
+  --sdms-danger: #b91c1c;
+  --sdms-info: #0369a1;
+
+  /* Shape & rhythm */
+  --sdms-radius-sm: 8px;
+  --sdms-radius: 12px;
+  --sdms-radius-lg: 16px;
+  --sdms-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --sdms-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 16px rgba(16, 24, 40, 0.06);
+  --sdms-space-1: 0.25rem;
+  --sdms-space-2: 0.5rem;
+  --sdms-space-3: 0.75rem;
+  --sdms-space-4: 1rem;
+  --sdms-space-5: 1.5rem;
+  --sdms-space-6: 2rem;
+
+  color-scheme: light;
+}
+
+[data-bs-theme="dark"] {
+  --sdms-brand: #4f46e5;            /* buttons keep white-text contrast */
+  --sdms-brand-hover: #6366f1;
+  --sdms-brand-soft: rgba(99, 102, 241, 0.18);
+  --sdms-link: #a5b4fc;             /* light indigo on dark = ~9:1 */
+  --sdms-link-hover: #c7d2fe;
+
+  --sdms-accent: #5eead4;
+  --sdms-accent-soft: rgba(45, 212, 191, 0.14);
+
+  --sdms-page-bg: #0e1015;
+  --sdms-surface: #161922;
+  --sdms-surface-muted: #1c2029;
+  --sdms-border: #282d39;
+
+  --sdms-text: #e5e7eb;
+  --sdms-text-muted: #9aa3b2;       /* ~7:1 on surface */
+
+  --sdms-navbar-bg: #14161d;
+  --sdms-navbar-text: #f3f4f6;
+  --sdms-navbar-muted: #a8b0bf;
+
+  --sdms-success: #4ade80;
+  --sdms-warning: #fbbf24;
+  --sdms-danger: #f87171;
+  --sdms-info: #7dd3fc;
+
+  --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sdms-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.35);
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------
+   Category label tints (used by category_chip() in helpers.php).
+   Six rotating hues; each has a light and a dark variant.
+   ------------------------------------------------------------ */
+.cat-tint-0 { --cat-fg: #1d4ed8; --cat-bg: rgba(59, 130, 246, 0.12); }
+.cat-tint-1 { --cat-fg: #6d28d9; --cat-bg: rgba(139, 92, 246, 0.13); }
+.cat-tint-2 { --cat-fg: #0f766e; --cat-bg: rgba(13, 148, 136, 0.13); }
+.cat-tint-3 { --cat-fg: #92400e; --cat-bg: rgba(245, 158, 11, 0.15); }
+.cat-tint-4 { --cat-fg: #be123c; --cat-bg: rgba(244, 63, 94, 0.12); }
+.cat-tint-5 { --cat-fg: #475569; --cat-bg: rgba(100, 116, 139, 0.14); }
+
+[data-bs-theme="dark"] .cat-tint-0 { --cat-fg: #93c5fd; --cat-bg: rgba(59, 130, 246, 0.18); }
+[data-bs-theme="dark"] .cat-tint-1 { --cat-fg: #c4b5fd; --cat-bg: rgba(139, 92, 246, 0.20); }
+[data-bs-theme="dark"] .cat-tint-2 { --cat-fg: #5eead4; --cat-bg: rgba(45, 212, 191, 0.16); }
+[data-bs-theme="dark"] .cat-tint-3 { --cat-fg: #fcd34d; --cat-bg: rgba(245, 158, 11, 0.18); }
+[data-bs-theme="dark"] .cat-tint-4 { --cat-fg: #fda4af; --cat-bg: rgba(244, 63, 94, 0.18); }
+[data-bs-theme="dark"] .cat-tint-5 { --cat-fg: #cbd5e1; --cat-bg: rgba(148, 163, 184, 0.16); }

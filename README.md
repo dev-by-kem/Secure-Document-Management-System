@@ -84,7 +84,7 @@ Full implementation details: [Security Plan](docs/04-SECURITY-PLAN.md).
 3. Start **Apache** and **MySQL** from the XAMPP Control Panel.
 4. Create the database:
    - Open `http://localhost/phpmyadmin`
-   - Import `database/schema.sql`, then `database/seed.sql`
+   - Import `database/schema.sql`, then `database/seed.sql`, then `database/demo-data.sql` (realistic sample documents)
 5. Copy `app/config/config.sample.php` to `app/config/config.php` and set your DB credentials.
 6. Open `http://localhost/SDMS/public/` and log in with the seeded administrator account.
 
@@ -94,6 +94,7 @@ Full implementation details: [Security Plan](docs/04-SECURITY-PLAN.md).
 SDMS/
 ├── public/            # browser-facing pages (the only web-visible folder)
 ├── app/               # config + shared libraries (auth, rbac, db, logger, ...)
+├── .github/workflows/ # auto-deploy: every push to main lands on the staging site (docs/09)
 ├── database/          # schema.sql + seed.sql
 ├── storage/uploads/   # uploaded files — NOT directly reachable from the browser
 ├── logs/              # optional runtime logs (audit data lives in MySQL)
@@ -113,6 +114,8 @@ SDMS/
 | [05 – Development Plan](docs/05-DEVELOPMENT-PLAN.md) | Milestones, task assignments, timeline, QA & risks |
 | [06 – Team](docs/06-TEAM.md) | Members, suggested roles, work agreements |
 | [07 – Presentation Plan](docs/07-PRESENTATION-PLAN.md) | Slide outline, live-demo script, Q&A preparation |
+| [08 – Frontend Guide](docs/08-FRONTEND-GUIDE.md) | Frontend sample base: tokens, dark mode, dialogs, responsive tables, redesign rules |
+| [09 – Staging Server](docs/09-STAGING-DEPLOY.md) | Shared online test site: one-time setup, auto-deploy workflow, team workflow, security rules |
 | [Contributing](CONTRIBUTING.md) | Branching, commit style, code conventions, review rules |
 | Project manual (source) | `docs/Secure-Document-Management-System.pdf` |
 

@@ -180,8 +180,10 @@ erDiagram
 ## 3. Schema DDL (`database/schema.sql`)
 
 ```sql
-CREATE DATABASE IF NOT EXISTS sdms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE sdms;
+-- The shipped file no longer contains CREATE DATABASE / USE / DROP DATABASE:
+-- free staging hosts (InfinityFree) disable them. Create/select the database
+-- first (localhost: `sdms`; staging: the panel database, doc 09 Step 2),
+-- then import — the tables land inside the selected database.
 
 CREATE TABLE roles (
   role_id     TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -286,16 +288,22 @@ CREATE TABLE login_attempts (
 
 ## 4. Seed Data (`database/seed.sql`)
 
+Ready-to-import versions of both files live in `database/schema.sql` and `database/seed.sql` in the
+repo — students only ever click **Import** in phpMyAdmin. The snippets below show what they contain.
+
 ```sql
 INSERT INTO roles (role_name, description) VALUES
 ('admin',  'Administrator - full control of users, documents, and settings'),
 ('staff',  'Employee - uploads, organizes, and updates documents'),
 ('viewer', 'Viewer - can only view and download authorized documents');
 
--- Default administrator. The password is NOT committed:
--- generate at install time with  php -r "echo password_hash('CHANGE_ME', PASSWORD_DEFAULT);"
+-- Three demo accounts, one per role — passwords for testing:
+--   admin / Admin@123 · staff / Staff@123 · viewer / Viewer@123 (change after first login)
+-- Only bcrypt hashes are stored (SR-1) — the real hashes are in database/seed.sql.
 INSERT INTO users (username, email, password_hash, full_name, role_id) VALUES
-('admin', 'admin@sdms.local', '<paste-generated-hash-here>', 'System Administrator', 1);
+('admin',  'admin@sdms.local',  '<bcrypt hash of Admin@123>',  'System Administrator', 1),
+('staff',  'staff@sdms.local',  '<bcrypt hash of Staff@123>',  'Demo Staff User',      2),
+('viewer', 'viewer@sdms.local', '<bcrypt hash of Viewer@123>', 'Demo Viewer User',     3);
 
 INSERT INTO document_categories (category_name, description, requires_approval) VALUES
 ('Assignments',      'Class assignments and homework',      0),

@@ -68,7 +68,8 @@ SDMS/
 │   │   ├── logs.php            # activity + access log viewer
 │   │   └── reports.php         # generate + print reports
 │   └── assets/
-│       ├── css/ · js/ · img/
+│       ├── css/  # tokens.css → base.css → components.css (loaded via custom.css)
+│       └── js/   # app.js: theme toggle, confirm dialog, password visibility
 ├── app/
 │   ├── config/
 │   │   ├── config.sample.php   # committed template
@@ -84,7 +85,7 @@ SDMS/
 │       ├── flash.php           # one-shot success/error messages
 │       └── helpers.php         # e(), redirect(), base_url(), formatting
 ├── database/
-│   ├── schema.sql              # CREATE DATABASE/TABLEs (see doc 03)
+│   ├── schema.sql              # creates ALL tables (see doc 03)
 │   └── seed.sql                # roles, categories, initial admin
 ├── storage/
 │   └── uploads/                # server-generated filenames; .htaccess blocks execution
