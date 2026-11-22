@@ -138,12 +138,17 @@ GitHub repo → **Settings → Secrets and variables → Actions → New reposit
 
 ### Step 6 — Turn on HTTPS
 
-1. In the Client Area, request the **free SSL certificate** for your subdomain (search "SSL" in the
-   panel — exact menu names change sometimes), then install it.
-2. Verify that `https://your-subdomain.infinityfreeapp.com` opens without a browser warning.
-3. **Only then** edit the server's `htdocs/app/config/config.php` and set
+Good news: free subdomains come with **SSL enabled automatically** — there is nothing to request
+or install (InfinityFree made this the default in May 2025). The **SSL/TLS** menu inside the
+control panel is only for custom domains, so ignore it.
+
+1. Open `https://your-subdomain.infinityfreeapp.com` — the **non-www** address, because the `www.`
+   version is NOT covered by the automatic certificate — and confirm it opens without a
+   certificate warning. HTTPS is available but not forced, so always share the `https://` link
+   with the team.
+2. If the panel offers a **PHP version** selector, choose **8.1 or newer** to match local XAMPP.
+3. **Only after HTTPS is confirmed** — edit the server's `htdocs/app/config/config.php` and set
    `'session_secure_cookie' => true`. If you flip it too early, logins will loop.
-4. If the panel offers a **PHP version** selector, choose **8.1 or newer** to match local XAMPP.
 
 ### Step 7 — First deploy
 
@@ -196,6 +201,7 @@ code on your laptop → push your branch → PR reviewed (CONTRIBUTING.md)
 | Deploy fails in the Actions tab (red ❌) | Open the log; usually a typo in a secret, or a temporary FTP rate limit → fix and re-run |
 | Merged change not appearing | Deploy only runs on pushes to `main`; check the Actions tab ran; then hard-refresh (Ctrl+F5) |
 | First visit shows a "checking your browser…" page | That is the host's bot check, not our app — pass it once per browser |
+| Can't find SSL settings — only an "SSL/TLS" menu in the control panel | Normal: that menu is only for custom domains. Free subdomains already have SSL automatically — nothing to request or install (Step 6) |
 | Logins loop after Step 6 | `session_secure_cookie` was set `true` before HTTPS worked → set it back to `false`, confirm HTTPS, then flip |
 | Uploads fail on staging | Host PHP limits differ from XAMPP; stay within the 10 MB cap (NFR-4) or raise `upload_max_mb` |
 
