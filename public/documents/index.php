@@ -164,24 +164,18 @@ require BASE_PATH . '/app/includes/header.php';
               $canView  = can_access_document($u, $d);
               $canEdit  = $isOwner || $u['role_name'] === 'admin';
           ?>
-          <tr <?= (int) $d['is_deleted'] === 1 ? 'class="table-light opacity-75"' : '' ?>>
+          <tr class="doc-row <?= (int) $d['is_deleted'] === 1 ? 'table-light opacity-75' : '' ?>">
             <td data-label="Document Title">
-              <div class="doc-cell">
+              <div class="doc-cell align-items-center">
+                <button type="button" class="btn btn-sm btn-icon border-0 js-doc-toggle text-muted p-0 me-1" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false" style="width:24px;height:24px;">
+                  <i class="bi bi-chevron-right doc-chevron"></i>
+                </button>
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div class="min-w-0">
-                  <?php if ($canView): ?>
-                    <a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
-                  <?php else: ?>
-                    <span class="doc-title"><?= e($d['title']) ?></span>
+                  <a class="doc-title-link js-doc-toggle text-decoration-none" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" role="button" aria-expanded="false"><?= e($d['title']) ?></a>
+                  <?php if ((int) $d['is_deleted'] === 1): ?>
+                    <span class="badge bg-danger ms-1">Deleted</span>
                   <?php endif; ?>
-                  <div class="doc-meta">
-                    <span><?= e(strtoupper($d['file_ext'])) ?></span>
-                    <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
-                    <span class="dot"><?= e($d['created_at']) ?></span>
-                    <?php if ((int) $d['is_deleted'] === 1): ?>
-                      <span class="dot text-danger fw-bold">[DELETED]</span>
-                    <?php endif; ?>
-                  </div>
                 </div>
               </div>
             </td>
@@ -196,21 +190,80 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
             <td class="text-end" data-label="Actions">
               <div class="action-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" title="Toggle Details">
+                  <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Details
+                </button>
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
-                  <a class="btn-icon" href="<?= e(url('admin/approvals.php')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning"></i></a>
+                  <a class="btn-icon" href="<?= e(url('admin/approvals.php?decision=pending')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning"></i></a>
                 <?php endif; ?>
                 <?php if ($canView): ?>
-                  <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View Details"><i class="bi bi-eye"></i></a>
                   <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download"></i></a>
                 <?php endif; ?>
-                <?php if ($canEdit && (int) $d['is_deleted'] === 0): ?>
-                  <a class="btn-icon" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>" aria-label="Edit document" title="Edit Metadata"><i class="bi bi-pencil"></i></a>
-                  <form class="d-inline js-confirm" method="post" action="<?= e(url('documents/delete.php')) ?>" data-confirm-message="Delete document “<?= e($d['title']) ?>”? It remains recoverable by an administrator.">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="id" value="<?= (int) $d['document_id'] ?>">
-                    <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete document" title="Delete Document"><i class="bi bi-trash3"></i></button>
-                  </form>
-                <?php endif; ?>
+              </div>
+            </td>
+          </tr>
+          <tr id="doc-drawer-<?= (int) $d['document_id'] ?>" class="doc-drawer-row d-none">
+            <td colspan="5" class="p-0 border-0">
+              <div class="doc-drawer-content p-3 p-md-4">
+                <div class="row g-3">
+                  <div class="col-lg-8">
+                    <div class="drawer-meta-card mb-3">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="fw-bold mb-0 text-cvsu-emerald"><i class="bi bi-card-text me-1"></i> Summary / Abstract</h6>
+                        <span class="badge bg-light text-muted border font-monospace"><?= strtoupper(e($d['file_ext'])) ?> · <?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+                      </div>
+                      <div class="text-muted small mb-0"><?= !empty($d['description']) ? nl2br(e($d['description'])) : '<em>No summary or abstract provided for this institutional file.</em>' ?></div>
+                    </div>
+                    <div class="row g-2">
+                      <div class="col-sm-6">
+                        <div class="p-2 border rounded bg-white">
+                          <span class="text-muted small d-block">Uploaded by:</span>
+                          <span class="user-cell mt-1"><?= avatar($d['uploader_name']) ?> <span class="fw-semibold small"><?= e($d['uploader_name']) ?> (<?= e($d['uploader_username']) ?>)</span></span>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="p-2 border rounded bg-white">
+                          <span class="text-muted small d-block">Submission Date:</span>
+                          <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted"></i><?= e($d['created_at']) ?></span>
+                        </div>
+                      </div>
+                      <?php if (!empty($d['file_hash'])): ?>
+                      <div class="col-12">
+                        <div class="p-2 border rounded bg-white">
+                          <span class="text-muted small d-block"><i class="bi bi-shield-check me-1 text-success"></i> SHA-256 Integrity Checksum:</span>
+                          <span class="small font-monospace text-break text-muted"><?= e($d['file_hash']) ?></span>
+                        </div>
+                      </div>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 d-flex flex-column justify-content-between">
+                    <div class="drawer-meta-card mb-3">
+                      <h6 class="fw-bold mb-2"><i class="bi bi-shield-check me-1"></i> Review Status &amp; Metadata</h6>
+                      <div class="mb-2"><?= status_badge($d['status']) ?></div>
+                      <div class="small text-muted">Category: <span class="text-body fw-semibold"><?= e($d['category_name']) ?></span></div>
+                      <?php if (!empty($d['review_remarks'])): ?>
+                        <div class="mt-2 p-2 bg-light rounded small text-danger">
+                          <strong>Review Remarks:</strong> <?= e($d['review_remarks']) ?>
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                      <?php if ($canView): ?>
+                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-file-earmark-text me-1"></i> View Full Page</a>
+                        <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download File</a>
+                      <?php endif; ?>
+                      <?php if ($canEdit && (int) $d['is_deleted'] === 0): ?>
+                        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-pencil me-1"></i> Edit</a>
+                        <form class="d-inline js-confirm" method="post" action="<?= e(url('documents/delete.php')) ?>" data-confirm-message="Delete document “<?= e($d['title']) ?>”? It remains recoverable by an administrator.">
+                          <?= csrf_field() ?>
+                          <input type="hidden" name="id" value="<?= (int) $d['document_id'] ?>">
+                          <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3 me-1"></i> Delete</button>
+                        </form>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </div>
               </div>
             </td>
           </tr>

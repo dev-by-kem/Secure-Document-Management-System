@@ -7,27 +7,53 @@
 
     var STORAGE_KEY = 'sdms-theme';
 
-    /* ---- Theme: follow system by default, optional override ----- */
+    /* ---- Theme Management: System Default + User Override ----- */
     function systemTheme() {
         return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
+
     function appliedTheme() {
         return document.documentElement.getAttribute('data-bs-theme') || 'light';
     }
+
+    function updateThemeUI(theme) {
+        var btns = document.querySelectorAll('#themeToggle, .js-theme-toggle');
+        btns.forEach(function (btn) {
+            btn.setAttribute('aria-pressed', String(theme === 'dark'));
+            var isDark = theme === 'dark';
+            btn.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+            btn.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+            // Update icon inside the button if it exists
+            var icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars';
+            }
+            // Update text if button has a label span
+            var label = btn.querySelector('.theme-label');
+            if (label) {
+                label.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            }
+        });
+    }
+
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-bs-theme', theme);
-        var btn = document.getElementById('themeToggle');
-        if (btn) { btn.setAttribute('aria-pressed', String(theme === 'dark')); }
+        updateThemeUI(theme);
     }
+
     function storedTheme() {
         try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
     }
+
     function syncTheme() {
         applyTheme(storedTheme() || systemTheme());
     }
+
+    // Toggle theme click listener
     document.addEventListener('click', function (ev) {
-        var btn = ev.target.closest ? ev.target.closest('#themeToggle') : null;
+        var btn = ev.target.closest ? (ev.target.closest('#themeToggle') || ev.target.closest('.js-theme-toggle')) : null;
         if (!btn) { return; }
+        ev.preventDefault();
         var target = appliedTheme() === 'dark' ? 'light' : 'dark';
         try {
             if (target === systemTheme()) {
@@ -38,7 +64,68 @@
         } catch (e) {}
         applyTheme(target);
     });
+
+    // Run sync on script parse and DOM ready
     syncTheme();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', syncTheme);
+    }
+
+    /* ---- Password Visibility Toggles ----- */
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest ? ev.target.closest('[data-password-toggle]') : null;
+        if (!btn) { return; }
+        ev.preventDefault();
+        var selector = btn.getAttribute('data-password-toggle');
+        if (!selector) { return; }
+        var input = document.querySelector(selector);
+        if (!input) { return; }
+
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', String(show));
+        btn.textContent = show ? 'Hide' : 'Show';
+    });
+
+    /* ---- Document Details Drawer Expansion (Document Directory) ----- */
+    document.addEventListener('click', function (ev) {
+        var toggle = ev.target.closest ? (ev.target.closest('.js-doc-toggle') || ev.target.closest('[data-doc-drawer]')) : null;
+        if (!toggle) { return; }
+
+        var targetId = toggle.getAttribute('data-doc-drawer');
+        if (!targetId) { return; }
+
+        var drawer = document.getElementById(targetId);
+        if (!drawer) { return; }
+
+        ev.preventDefault();
+        var isExpanded = !drawer.classList.contains('d-none');
+        var parentRow  = toggle.closest ? toggle.closest('tr') : null;
+
+        if (isExpanded) {
+            drawer.classList.add('d-none');
+            toggle.setAttribute('aria-expanded', 'false');
+            if (parentRow) {
+                parentRow.classList.remove('doc-row--expanded');
+                var icon = parentRow.querySelector('.doc-chevron');
+                if (icon) {
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-right');
+                }
+            }
+        } else {
+            drawer.classList.remove('d-none');
+            toggle.setAttribute('aria-expanded', 'true');
+            if (parentRow) {
+                parentRow.classList.add('doc-row--expanded');
+                var icon = parentRow.querySelector('.doc-chevron');
+                if (icon) {
+                    icon.classList.remove('bi-chevron-right');
+                    icon.classList.add('bi-chevron-down');
+                }
+            }
+        }
+    });
 
     /* ---- Native confirmation dialog for all .js-confirm forms ----- */
     var dialog  = document.getElementById('confirm-dialog');
@@ -67,22 +154,11 @@
         });
     }
 
-    /* ---- Password visibility toggles ----- */
-    document.addEventListener('click', function (ev) {
-        var btn = ev.target.closest ? ev.target.closest('[data-password-toggle]') : null;
-        if (!btn) { return; }
-        var input = document.querySelector(btn.getAttribute('data-password-toggle'));
-        if (!input) { return; }
-        var show = input.type === 'password';
-        input.type = show ? 'text' : 'password';
-        btn.setAttribute('aria-pressed', String(show));
-        btn.textContent = show ? 'Hide' : 'Show';
-    });
-
     /* ---- Print Report Button Handler (FR-29) ----- */
     document.addEventListener('click', function (ev) {
-        var btn = ev.target.closest ? ev.target.closest('#print-report');
+        var btn = ev.target.closest ? ev.target.closest('#print-report') : null;
         if (btn) {
+            ev.preventDefault();
             window.print();
         }
     });

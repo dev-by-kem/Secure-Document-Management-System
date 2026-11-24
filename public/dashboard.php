@@ -44,40 +44,52 @@ require BASE_PATH . '/app/includes/header.php';
 
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span class="stat-icon"><i class="bi bi-files"></i></span>
-      <div>
-        <div class="stat-value"><?= $total ?></div>
-        <div class="stat-label">My documents</div>
+    <a href="<?= e(url('documents/index.php?mine=1')) ?>" class="stat-card stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-files"></i></span>
+        <div>
+          <div class="stat-value"><?= $total ?></div>
+          <div class="stat-label">My documents</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--pending">
-      <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
-      <div>
-        <div class="stat-value"><?= $counts['pending'] ?></div>
-        <div class="stat-label">Pending review</div>
+    <a href="<?= e(url('documents/index.php?mine=1&status=pending')) ?>" class="stat-card stat-card--pending stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
+        <div>
+          <div class="stat-value"><?= $counts['pending'] ?></div>
+          <div class="stat-label">Pending review</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--approved">
-      <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
-      <div>
-        <div class="stat-value"><?= $counts['approved'] ?></div>
-        <div class="stat-label">Approved</div>
+    <a href="<?= e(url('documents/index.php?status=approved')) ?>" class="stat-card stat-card--approved stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
+        <div>
+          <div class="stat-value"><?= $counts['approved'] ?></div>
+          <div class="stat-label">Approved</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--rejected">
-      <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
-      <div>
-        <div class="stat-value"><?= $counts['rejected'] ?></div>
-        <div class="stat-label">Rejected</div>
+    <a href="<?= e(url('documents/index.php?mine=1&status=rejected')) ?>" class="stat-card stat-card--rejected stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
+        <div>
+          <div class="stat-value"><?= $counts['rejected'] ?></div>
+          <div class="stat-label">Rejected</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
 </div>
 

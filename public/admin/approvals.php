@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $remarks = post('remarks');
         if ($remarks === '') {
             flash_set('danger', 'Rejection remarks are required so the uploader knows what to fix.');
-            redirect('admin/approvals.php');
+            redirect('admin/approvals.php?decision=pending');
         }
         db()->prepare("UPDATE documents SET status = 'rejected', reviewed_by = ?, reviewed_at = NOW(), review_remarks = ? WHERE document_id = ?")
             ->execute([(int) $u['user_id'], $remarks, $docId]);
@@ -35,19 +35,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         flash_set('danger', 'Unknown action.');
     }
-    redirect('admin/approvals.php');
+    redirect('admin/approvals.php?decision=pending');
 }
 
-$pending = db()->query(
-    'SELECT d.*, c.category_name, up.full_name AS uploader_name, up.username AS uploader_username
-     FROM documents d
-     JOIN document_categories c ON c.category_id = d.category_id
-     JOIN users up ON up.user_id = d.uploaded_by
-     WHERE d.status = "pending" AND d.is_deleted = 0
-     ORDER BY d.created_at'
-)->fetchAll();
+$decision = query_param('decision', 'pending');
+if (!in_array($decision, ['pending', 'approved', 'rejected', 'all'], true)) {
+    $decision = 'pending';
+}
 
-$reviewed = db()->query(
+$counts = [
+    'pending'  => (int) db()->query("SELECT COUNT(*) AS c FROM documents WHERE status = 'pending' AND is_deleted = 0")->fetch()['c'],
+    'approved' => (int) db()->query("SELECT COUNT(*) AS c FROM documents WHERE status = 'approved' AND is_deleted = 0")->fetch()['c'],
+    'rejected' => (int) db()->query("SELECT COUNT(*) AS c FROM documents WHERE status = 'rejected' AND is_deleted = 0")->fetch()['c'],
+];
+$counts['all'] = array_sum($counts);
+
+$where = ['d.is_deleted = 0'];
+$params = [];
+if ($decision === 'pending') {
+    $where[] = "d.status = 'pending'";
+} elseif ($decision === 'approved') {
+    $where[] = "d.status = 'approved'";
+} elseif ($decision === 'rejected') {
+    $where[] = "d.status = 'rejected'";
+}
+
+$sql = 'SELECT d.*, c.category_name, up.full_name AS uploader_name, up.username AS uploader_username,
+               rv.full_name AS reviewer_name, rv.username AS reviewer_username
+        FROM documents d
+        JOIN document_categories c ON c.category_id = d.category_id
+        JOIN users up ON up.user_id = d.uploaded_by
+        LEFT JOIN users rv ON rv.user_id = d.reviewed_by
+        WHERE ' . implode(' AND ', $where) . '
+        ORDER BY ' . ($decision === 'pending' ? 'd.created_at ASC' : 'COALESCE(d.reviewed_at, d.created_at) DESC') . '
+        LIMIT 100';
+$stmt = db()->prepare($sql);
+$stmt->execute($params);
+$items = $stmt->fetchAll();
+
+$recentModerated = db()->query(
     'SELECT d.document_id, d.title, d.status, d.reviewed_at, d.review_remarks, rv.full_name AS reviewer_name
      FROM documents d LEFT JOIN users rv ON rv.user_id = d.reviewed_by
      WHERE d.status IN ("approved","rejected") AND d.reviewed_by IS NOT NULL
@@ -57,89 +83,149 @@ $reviewed = db()->query(
 $pageTitle = 'Approvals';
 require BASE_PATH . '/app/includes/header.php';
 ?>
+<div class="d-none" aria-hidden="true"><?= csrf_field() ?></div>
+
 <div class="page-head">
   <div>
     <h1>Document Approval Queue</h1>
-    <p class="page-sub">Pending submissions remain strictly confidential until approved. Rejections require administrative remarks for the uploader.</p>
+    <p class="page-sub">Pending submissions remain strictly confidential until approved. Filter documents by review decision below.</p>
   </div>
   <div class="page-actions">
     <a class="btn btn-outline-secondary" href="<?= e(url('admin/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+    <a class="btn btn-outline-secondary" href="<?= e(url('documents/index.php')) ?>"><i class="bi bi-folder2-open me-1"></i> Document Directory</a>
   </div>
 </div>
 
-<?php if ($pending === []): ?>
+<!-- Decision Filter Tabs -->
+<div class="d-flex flex-wrap gap-2 mb-4 p-2 rounded border bg-white shadow-sm">
+  <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="btn btn-sm <?= $decision === 'pending' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-hourglass-split me-1"></i> Pending Verification
+    <span class="badge <?= $decision === 'pending' ? 'bg-white text-dark' : 'bg-warning text-dark' ?> ms-1"><?= $counts['pending'] ?></span>
+  </a>
+  <a href="<?= e(url('admin/approvals.php?decision=approved')) ?>" class="btn btn-sm <?= $decision === 'approved' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-check2-circle me-1"></i> Approved Documents
+    <span class="badge <?= $decision === 'approved' ? 'bg-white text-dark' : 'bg-success text-white' ?> ms-1"><?= $counts['approved'] ?></span>
+  </a>
+  <a href="<?= e(url('admin/approvals.php?decision=rejected')) ?>" class="btn btn-sm <?= $decision === 'rejected' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-x-circle me-1"></i> Rejected Submissions
+    <span class="badge <?= $decision === 'rejected' ? 'bg-white text-dark' : 'bg-danger text-white' ?> ms-1"><?= $counts['rejected'] ?></span>
+  </a>
+  <a href="<?= e(url('admin/approvals.php?decision=all')) ?>" class="btn btn-sm <?= $decision === 'all' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-collection me-1"></i> All Records
+    <span class="badge <?= $decision === 'all' ? 'bg-white text-dark' : 'bg-secondary text-white' ?> ms-1"><?= $counts['all'] ?></span>
+  </a>
+</div>
+
+<?php if ($items === []): ?>
   <div class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="empty">
-        <i class="bi bi-check2-circle text-success"></i>
-        <strong>Queue is clear!</strong><br>
-        All submitted documents have been reviewed. New staff submissions requiring moderation will appear here.
+        <?php if ($decision === 'pending'): ?>
+          <i class="bi bi-check2-circle text-success fs-1"></i>
+          <strong class="d-block mt-2">Queue is clear!</strong>
+          All submitted documents have been reviewed. New staff submissions requiring moderation will appear here.
+        <?php elseif ($decision === 'approved'): ?>
+          <i class="bi bi-folder-check text-success fs-1"></i>
+          <strong class="d-block mt-2">No approved documents found.</strong>
+          Documents approved by administrators will be listed here.
+        <?php elseif ($decision === 'rejected'): ?>
+          <i class="bi bi-shield-x text-muted fs-1"></i>
+          <strong class="d-block mt-2">No rejected documents on record.</strong>
+          Submissions rejected with revision remarks will appear here.
+        <?php else: ?>
+          <i class="bi bi-inbox text-muted fs-1"></i>
+          <strong class="d-block mt-2">No document records found.</strong>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 <?php endif; ?>
 
-<?php foreach ($pending as $d): ?>
-  <div class="card mb-3 shadow-sm card--accent-gold">
+<?php foreach ($items as $d): ?>
+  <?php
+    $accentClass = 'card--accent-gold';
+    if ($d['status'] === 'approved') {
+        $accentClass = 'card--accent-brand';
+    } elseif ($d['status'] === 'rejected') {
+        $accentClass = 'card--accent-danger';
+    }
+  ?>
+  <div class="card mb-3 shadow-sm <?= $accentClass ?>">
     <div class="card-body d-flex flex-wrap gap-3 align-items-center p-3">
       <span class="doc-ico" style="width:48px;height:48px;font-size:1.35rem;"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
       <div class="flex-grow-1 min-w-0">
         <div class="d-flex align-items-center gap-2 flex-wrap">
-          <a class="doc-title fs-6" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
-          <span class="pill pill--pending"><i class="bi bi-hourglass-split"></i>Pending</span>
+          <a class="doc-title fs-6 fw-bold" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
+          <?= status_badge($d['status']) ?>
         </div>
         <div class="doc-meta mt-1">
           <?= category_chip((int) $d['category_id'], $d['category_name']) ?>
           <span class="user-cell ms-1"><?= avatar($d['uploader_name']) ?><span><?= e($d['uploader_username']) ?></span></span>
           <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
           <span class="dot">Submitted <?= e($d['created_at']) ?></span>
+          <?php if (!empty($d['reviewed_at'])): ?>
+            <span class="dot">Decided <?= e($d['reviewed_at']) ?> by <strong><?= e($d['reviewer_name'] ?? 'Admin') ?></strong></span>
+          <?php endif; ?>
         </div>
+        <?php if (!empty($d['review_remarks'])): ?>
+          <div class="mt-2 p-2 rounded bg-light border text-danger small">
+            <strong>Rejection Remarks:</strong> <?= e($d['review_remarks']) ?>
+          </div>
+        <?php endif; ?>
       </div>
-      <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
-        <?= csrf_field() ?>
-        <input type="hidden" name="document_id" value="<?= (int) $d['document_id'] ?>">
-        <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
-        <input type="text" class="form-control form-control-sm" style="min-width:240px" id="rm-<?= (int) $d['document_id'] ?>"
-               name="remarks" placeholder="Remarks (required to reject)" maxlength="255">
-        <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm">
-          <i class="bi bi-check2-circle me-1"></i> Approve
-        </button>
-        <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm">
-          <i class="bi bi-x-circle me-1"></i> Reject
-        </button>
-      </form>
+
+      <?php if ($d['status'] === 'pending'): ?>
+        <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
+          <?= csrf_field() ?>
+          <input type="hidden" name="document_id" value="<?= (int) $d['document_id'] ?>">
+          <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
+          <input type="text" class="form-control form-control-sm" style="min-width:240px" id="rm-<?= (int) $d['document_id'] ?>"
+                 name="remarks" placeholder="Remarks (required to reject)" maxlength="255">
+          <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm">
+            <i class="bi bi-check2-circle me-1"></i> Approve
+          </button>
+          <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-x-circle me-1"></i> Reject
+          </button>
+        </form>
+      <?php else: ?>
+        <div class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-eye me-1"></i> View</a>
+          <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download</a>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 <?php endforeach; ?>
 
-<div class="card mt-4 shadow-sm">
-  <div class="card-header"><i class="bi bi-clock-history me-1"></i> Recently Moderated Documents</div>
-  <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recently reviewed table" tabindex="0">
-    <table class="table table-hover sdms-card-table">
-      <thead>
-        <tr>
-          <th>Document Title</th>
-          <th>Decision</th>
-          <th>Reviewed By</th>
-          <th>Timestamp</th>
-          <th>Administrative Remarks</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if ($reviewed === []): ?>
-          <tr><td colspan="5"><div class="empty"><i class="bi bi-inbox"></i>No moderated files on record yet.</div></td></tr>
-        <?php endif; ?>
-        <?php foreach ($reviewed as $r): ?>
+<?php if ($decision === 'pending' && $recentModerated !== []): ?>
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header"><i class="bi bi-clock-history me-1"></i> Recently Moderated Documents</div>
+    <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recently reviewed table" tabindex="0">
+      <table class="table table-hover sdms-card-table">
+        <thead>
           <tr>
-            <td data-label="Document Title"><a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $r['document_id'])) ?>"><?= e($r['title']) ?></a></td>
-            <td data-label="Decision"><?= status_badge($r['status']) ?></td>
-            <td data-label="Reviewed By"><?= e($r['reviewer_name'] ?? '—') ?></td>
-            <td data-label="Timestamp" class="small text-nowrap"><?= e($r['reviewed_at'] ?? '') ?></td>
-            <td data-label="Administrative Remarks" class="small"><?= e($r['review_remarks'] ?? '—') ?></td>
+            <th>Document Title</th>
+            <th>Decision</th>
+            <th>Reviewed By</th>
+            <th>Timestamp</th>
+            <th>Administrative Remarks</th>
           </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php foreach ($recentModerated as $r): ?>
+            <tr>
+              <td data-label="Document Title"><a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $r['document_id'])) ?>"><?= e($r['title']) ?></a></td>
+              <td data-label="Decision"><?= status_badge($r['status']) ?></td>
+              <td data-label="Reviewed By"><?= e($r['reviewer_name'] ?? '—') ?></td>
+              <td data-label="Timestamp" class="small text-nowrap"><?= e($r['reviewed_at'] ?? '') ?></td>
+              <td data-label="Administrative Remarks" class="small"><?= e($r['review_remarks'] ?? '—') ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+<?php endif; ?>
+
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

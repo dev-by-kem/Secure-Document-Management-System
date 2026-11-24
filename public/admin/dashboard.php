@@ -49,40 +49,52 @@ require BASE_PATH . '/app/includes/header.php';
 
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span class="stat-icon"><i class="bi bi-people"></i></span>
-      <div>
-        <div class="stat-value"><?= $stats['users_total'] ?></div>
-        <div class="stat-label">Total Users · <?= $stats['users_active'] ?> active</div>
+    <a href="<?= e(url('admin/users.php')) ?>" class="stat-card stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-people"></i></span>
+        <div>
+          <div class="stat-value"><?= $stats['users_total'] ?></div>
+          <div class="stat-label">Total Users · <?= $stats['users_active'] ?> active</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--teal">
-      <span class="stat-icon"><i class="bi bi-folder2"></i></span>
-      <div>
-        <div class="stat-value"><?= $stats['docs_total'] ?></div>
-        <div class="stat-label">Documents · <?= $stats['docs_approved'] ?> approved</div>
+    <a href="<?= e(url('documents/index.php?status=approved')) ?>" class="stat-card stat-card--teal stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-folder2"></i></span>
+        <div>
+          <div class="stat-value"><?= $stats['docs_total'] ?></div>
+          <div class="stat-label">Documents · <?= $stats['docs_approved'] ?> approved</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--pending">
-      <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
-      <div>
-        <div class="stat-value"><?= $stats['docs_pending'] ?></div>
-        <div class="stat-label">Pending Review</div>
+    <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="stat-card stat-card--pending stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
+        <div>
+          <div class="stat-value"><?= $stats['docs_pending'] ?></div>
+          <div class="stat-label">Pending Review</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card stat-card--rejected">
-      <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
-      <div>
-        <div class="stat-value"><?= $stats['docs_rejected'] ?></div>
-        <div class="stat-label">Rejected Files</div>
+    <a href="<?= e(url('admin/approvals.php?decision=rejected')) ?>" class="stat-card stat-card--rejected stat-card--clickable">
+      <div class="stat-card-left">
+        <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
+        <div>
+          <div class="stat-value"><?= $stats['docs_rejected'] ?></div>
+          <div class="stat-label">Rejected Files</div>
+        </div>
       </div>
-    </div>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
+    </a>
   </div>
 </div>
 
