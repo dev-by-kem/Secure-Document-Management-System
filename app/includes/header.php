@@ -31,7 +31,7 @@ try {
 <title><?= e($pageTitle ?? 'SDMS') ?> · SDMS</title>
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap-icons.min.css')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.0-cvsu')) ?>">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>

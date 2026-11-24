@@ -35,7 +35,7 @@ try {
 <title>Sign in · CvSU SDMS</title>
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap-icons.min.css')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.0-cvsu')) ?>">
 </head>
 <body>
 <main class="auth-page">
@@ -139,6 +139,6 @@ try {
     </div>
   </div>
 </main>
-<script src="<?= e(url('assets/js/app.js')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=2.0-cvsu')) ?>"></script>
 </body>
 </html>
