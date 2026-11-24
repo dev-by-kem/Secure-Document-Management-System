@@ -59,32 +59,40 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Approvals</h1>
-    <p class="page-sub">Documents below stay hidden from viewers until you approve them. Rejecting requires a short reason so the uploader knows what to fix.</p>
+    <h1>Document Approval Queue</h1>
+    <p class="page-sub">Pending submissions remain strictly confidential until approved. Rejections require administrative remarks for the uploader.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
   </div>
 </div>
 
 <?php if ($pending === []): ?>
-  <div class="card"><div class="card-body">
-    <div class="empty">
-      <i class="bi bi-check2-circle"></i>
-      <strong>All caught up!</strong><br>
-      New staff uploads that need approval will appear here.
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="empty">
+        <i class="bi bi-check2-circle text-success"></i>
+        <strong>Queue is clear!</strong><br>
+        All submitted documents have been reviewed. New staff submissions requiring moderation will appear here.
+      </div>
     </div>
-  </div></div>
+  </div>
 <?php endif; ?>
 
 <?php foreach ($pending as $d): ?>
-  <div class="card mb-3">
-    <div class="card-body d-flex flex-wrap gap-3 align-items-center">
-      <span class="doc-ico" style="width:46px;height:46px;font-size:1.3rem;"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
+  <div class="card mb-3 shadow-sm card--accent-gold">
+    <div class="card-body d-flex flex-wrap gap-3 align-items-center p-3">
+      <span class="doc-ico" style="width:48px;height:48px;font-size:1.35rem;"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
       <div class="flex-grow-1 min-w-0">
-        <a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a class="doc-title fs-6" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
+          <span class="pill pill--pending"><i class="bi bi-hourglass-split"></i>Pending</span>
+        </div>
         <div class="doc-meta mt-1">
           <?= category_chip((int) $d['category_id'], $d['category_name']) ?>
           <span class="user-cell ms-1"><?= avatar($d['uploader_name']) ?><span><?= e($d['uploader_username']) ?></span></span>
-          <span><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
-          <span>uploaded <?= e($d['created_at']) ?></span>
+          <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+          <span class="dot">Submitted <?= e($d['created_at']) ?></span>
         </div>
       </div>
       <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
@@ -93,7 +101,7 @@ require BASE_PATH . '/app/includes/header.php';
         <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
         <input type="text" class="form-control form-control-sm" style="min-width:240px" id="rm-<?= (int) $d['document_id'] ?>"
                name="remarks" placeholder="Remarks (required to reject)" maxlength="255">
-        <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
+        <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm">
           <i class="bi bi-check2-circle me-1"></i> Approve
         </button>
         <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm">
@@ -104,20 +112,30 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
 <?php endforeach; ?>
 
-<div class="card mt-4">
-  <div class="card-header"><i class="bi bi-clock-history me-1"></i> Recently reviewed</div>
+<div class="card mt-4 shadow-sm">
+  <div class="card-header"><i class="bi bi-clock-history me-1"></i> Recently Moderated Documents</div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recently reviewed table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>Document</th><th>Decision</th><th>Reviewed by</th><th>When</th><th>Remarks</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Document Title</th>
+          <th>Decision</th>
+          <th>Reviewed By</th>
+          <th>Timestamp</th>
+          <th>Administrative Remarks</th>
+        </tr>
+      </thead>
       <tbody>
-        <?php if ($reviewed === []): ?><tr><td colspan="5"><div class="empty"><i class="bi bi-inbox"></i>Nothing reviewed yet.</div></td></tr><?php endif; ?>
+        <?php if ($reviewed === []): ?>
+          <tr><td colspan="5"><div class="empty"><i class="bi bi-inbox"></i>No moderated files on record yet.</div></td></tr>
+        <?php endif; ?>
         <?php foreach ($reviewed as $r): ?>
           <tr>
-            <td data-label="Document"><a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $r['document_id'])) ?>"><?= e($r['title']) ?></a></td>
+            <td data-label="Document Title"><a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $r['document_id'])) ?>"><?= e($r['title']) ?></a></td>
             <td data-label="Decision"><?= status_badge($r['status']) ?></td>
-            <td data-label="Reviewed by"><?= e($r['reviewer_name'] ?? '—') ?></td>
-            <td data-label="When" class="text-nowrap"><?= e($r['reviewed_at'] ?? '') ?></td>
-            <td data-label="Remarks" class="small"><?= e($r['review_remarks'] ?? '') ?></td>
+            <td data-label="Reviewed By"><?= e($r['reviewer_name'] ?? '—') ?></td>
+            <td data-label="Timestamp" class="small text-nowrap"><?= e($r['reviewed_at'] ?? '') ?></td>
+            <td data-label="Administrative Remarks" class="small"><?= e($r['review_remarks'] ?? '—') ?></td>
           </tr>
         <?php endforeach; ?>
       </tbody>

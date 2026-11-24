@@ -1,19 +1,13 @@
 /* ============================================================
-   SDMS frontend behaviors — all progressive enhancement.
-   Rules: no inline JS anywhere; if this file fails to load, every
-   feature still works (forms submit, pages render, light theme shows).
+   SDMS Frontend Behaviors — Progressive Enhancement
+   Cavite State University (CvSU) Theme
    ============================================================ */
 (function () {
     'use strict';
 
     var STORAGE_KEY = 'sdms-theme';
 
-    /* ---- Theme: follow the system by default, optional override -----
-       Two-state model from the dark-mode-toggle guidance:
-       - no stored value  → follow the OS preference
-       - stored value     → pin that scheme
-       - toggling back to the system scheme removes the stored value,
-         so the site keeps following the OS when it changes later.   */
+    /* ---- Theme: follow system by default, optional override ----- */
     function systemTheme() {
         return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
@@ -37,18 +31,16 @@
         var target = appliedTheme() === 'dark' ? 'light' : 'dark';
         try {
             if (target === systemTheme()) {
-                localStorage.removeItem(STORAGE_KEY); // undo the override
+                localStorage.removeItem(STORAGE_KEY);
             } else {
-                localStorage.setItem(STORAGE_KEY, target); // pin the override
+                localStorage.setItem(STORAGE_KEY, target);
             }
-        } catch (e) { /* persistence is a nice-to-have, never required */ }
+        } catch (e) {}
         applyTheme(target);
     });
-    syncTheme(); // keeps the button's aria-pressed state honest on load
+    syncTheme();
 
-    /* ---- Confirm dialog: one native <dialog> for all .js-confirm forms --
-       The dialog markup lives in app/includes/footer.php. The browser
-       already provides focus containment, Esc-to-close and focus return. */
+    /* ---- Native confirmation dialog for all .js-confirm forms ----- */
     var dialog  = document.getElementById('confirm-dialog');
     var message = document.getElementById('confirm-dialog-message');
     var pending = null;
@@ -63,20 +55,19 @@
                 || 'Are you sure? This cannot be undone from the interface.';
             dialog.showModal();
         }
-        // No <dialog> support (very old browser): the form simply submits.
     });
 
     if (dialog) {
         dialog.addEventListener('close', function () {
             if (dialog.returnValue === 'confirm' && pending) {
-                pending.submit(); // programmatic submit skips the submit event on purpose
+                pending.submit();
             }
-            dialog.returnValue = ''; // reset: never leak a stale value into the next open
+            dialog.returnValue = '';
             pending = null;
         });
     }
 
-    /* ---- Password visibility toggles (login, profile forms) ----------- */
+    /* ---- Password visibility toggles ----- */
     document.addEventListener('click', function (ev) {
         var btn = ev.target.closest ? ev.target.closest('[data-password-toggle]') : null;
         if (!btn) { return; }
@@ -85,6 +76,74 @@
         var show = input.type === 'password';
         input.type = show ? 'text' : 'password';
         btn.setAttribute('aria-pressed', String(show));
-        btn.textContent = show ? 'Hide password' : 'Show password';
+        btn.textContent = show ? 'Hide' : 'Show';
     });
+
+    /* ---- Print Report Button Handler (FR-29) ----- */
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest ? ev.target.closest('#print-report');
+        if (btn) {
+            window.print();
+        }
+    });
+
+    /* ---- Upload Dropzone Interaction (Progressive Enhancement) ----- */
+    document.addEventListener('DOMContentLoaded', function () {
+        var dropzone = document.getElementById('uploadDropzone');
+        var fileInput = document.getElementById('document_file');
+        var fileNameDisplay = document.getElementById('selectedFileName');
+
+        if (dropzone && fileInput) {
+            dropzone.addEventListener('click', function () {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function () {
+                if (fileInput.files && fileInput.files.length > 0) {
+                    var f = fileInput.files[0];
+                    if (fileNameDisplay) {
+                        fileNameDisplay.innerHTML = '<i class="bi bi-file-earmark-check text-success me-1"></i><strong>' +
+                            escapeHtml(f.name) + '</strong> (' + formatBytes(f.size) + ')';
+                    }
+                }
+            });
+
+            ['dragenter', 'dragover'].forEach(function (eventName) {
+                dropzone.addEventListener(eventName, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(function (eventName) {
+                dropzone.addEventListener(eventName, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', function (e) {
+                var dt = e.dataTransfer;
+                if (dt && dt.files && dt.files.length > 0) {
+                    fileInput.files = dt.files;
+                    var event = new Event('change', { bubbles: true });
+                    fileInput.dispatchEvent(event);
+                }
+            }, false);
+        }
+    });
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function formatBytes(bytes) {
+        if (bytes >= 1048576) { return (bytes / 1048576).toFixed(1) + ' MB'; }
+        if (bytes >= 1024)    { return (bytes / 1024).toFixed(1) + ' KB'; }
+        return bytes + ' B';
+    }
 })();

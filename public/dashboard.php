@@ -26,107 +26,161 @@ $recentStmt = db()->prepare(
 $recentStmt->execute([$u['user_id']]);
 $recentDocs = $recentStmt->fetchAll();
 
-$firstName = explode(' ', trim($u['full_name']))[0];
 $pageTitle = 'Dashboard';
 require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Welcome back, <?= e($u['username']) ?> 👋</h1>
-    <p class="page-sub">Your class document hub — upload work, track reviews, and grab approved files.</p>
+    <h1>Welcome, <?= e($u['username']) ?></h1>
+    <p class="page-sub">Cavite State University Document Hub — submit academic files, track approvals, and retrieve verified materials.</p>
   </div>
   <div class="page-actions">
     <?php if ($u['role_name'] === 'staff'): ?>
-      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload a document</a>
+      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload document</a>
     <?php endif; ?>
     <a class="btn btn-outline-secondary" href="<?= e(url('documents/index.php')) ?>"><i class="bi bi-folder2-open me-1"></i> Browse documents</a>
   </div>
 </div>
 
 <div class="row g-3 mb-4">
-  <div class="col-6 col-lg-3"><div class="stat-card">
-    <span class="stat-icon"><i class="bi bi-folder2"></i></span>
-    <div><div class="stat-value"><?= $total ?></div><div class="stat-label">My documents</div></div>
-  </div></div>
-  <div class="col-6 col-lg-3"><div class="stat-card stat-card--pending">
-    <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
-    <div><div class="stat-value"><?= $counts['pending'] ?></div><div class="stat-label">Pending review</div></div>
-  </div></div>
-  <div class="col-6 col-lg-3"><div class="stat-card stat-card--approved">
-    <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
-    <div><div class="stat-value"><?= $counts['approved'] ?></div><div class="stat-label">Approved</div></div>
-  </div></div>
-  <div class="col-6 col-lg-3"><div class="stat-card stat-card--rejected">
-    <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
-    <div><div class="stat-value"><?= $counts['rejected'] ?></div><div class="stat-label">Rejected</div></div>
-  </div></div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <span class="stat-icon"><i class="bi bi-files"></i></span>
+      <div>
+        <div class="stat-value"><?= $total ?></div>
+        <div class="stat-label">My documents</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--pending">
+      <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
+      <div>
+        <div class="stat-value"><?= $counts['pending'] ?></div>
+        <div class="stat-label">Pending review</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--approved">
+      <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
+      <div>
+        <div class="stat-value"><?= $counts['approved'] ?></div>
+        <div class="stat-label">Approved</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card stat-card--rejected">
+      <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
+      <div>
+        <div class="stat-value"><?= $counts['rejected'] ?></div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <?php if ($u['role_name'] !== 'staff'): ?>
-  <div class="alert alert-info d-flex align-items-start gap-2">
-    <i class="bi bi-info-circle mt-1"></i>
-    <div>You are signed in as a <strong>viewer</strong> — you can browse and download every approved document. Uploading is done by staff accounts.</div>
+  <div class="alert alert-info d-flex align-items-center gap-3 mb-4 shadow-sm" role="alert">
+    <i class="bi bi-info-circle-fill fs-5 text-primary"></i>
+    <div>You are signed in as a <strong>Viewer</strong>. You can browse, search, and download all officially approved documents. File submissions are authorized for staff and faculty accounts.</div>
   </div>
 <?php endif; ?>
 
-<div class="row g-3 mb-4">
-  <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body text-center">
-    <i class="bi bi-cloud-arrow-up fs-3 text-primary"></i>
-    <div class="fw-bold mt-1">1 · Upload</div>
-    <div class="small text-muted">Staff add files with a title, category, and description.</div>
-  </div></div></div>
-  <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body text-center">
-    <i class="bi bi-check2-square fs-3 text-warning"></i>
-    <div class="fw-bold mt-1">2 · Review</div>
-    <div class="small text-muted">An administrator checks the submission.</div>
-  </div></div></div>
-  <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body text-center">
-    <i class="bi bi-check2-circle fs-3 text-success"></i>
-    <div class="fw-bold mt-1">3 · Approved</div>
-    <div class="small text-muted">Everyone signed in can now see it.</div>
-  </div></div></div>
-  <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body text-center">
-    <i class="bi bi-download fs-3 text-info"></i>
-    <div class="fw-bold mt-1">4 · Download</div>
-    <div class="small text-muted">Grab the file anytime from Documents.</div>
-  </div></div></div>
+<div class="card mb-4 shadow-sm card--accent-brand">
+  <div class="card-header bg-transparent py-3">
+    <i class="bi bi-diagram-3 me-2"></i> Document Lifecycle &amp; Security Workflow
+  </div>
+  <div class="card-body p-3">
+    <div class="row g-2">
+      <div class="col-6 col-md-3">
+        <div class="workflow-step">
+          <div class="workflow-step-badge workflow-step-badge--1"><i class="bi bi-cloud-arrow-up"></i></div>
+          <div class="fw-bold small text-body">1. Submission</div>
+          <div class="small text-muted">Uploaded with title, category, and SHA-256 integrity hash.</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="workflow-step">
+          <div class="workflow-step-badge workflow-step-badge--2"><i class="bi bi-shield-check"></i></div>
+          <div class="fw-bold small text-body">2. Verification</div>
+          <div class="small text-muted">Administrators evaluate content against university guidelines.</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="workflow-step">
+          <div class="workflow-step-badge workflow-step-badge--3"><i class="bi bi-check2-circle"></i></div>
+          <div class="fw-bold small text-body">3. Publication</div>
+          <div class="small text-muted">Approved documents are released to authorized institutional users.</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="workflow-step">
+          <div class="workflow-step-badge workflow-step-badge--4"><i class="bi bi-download"></i></div>
+          <div class="fw-bold small text-body">4. Secure Access</div>
+          <div class="small text-muted">Gated download endpoint records every access for audit logging.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-  <div class="card-header"><i class="bi bi-clock-history me-1"></i> My recent uploads</div>
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div><i class="bi bi-clock-history me-1"></i> Recent Uploads</div>
+    <?php if ($u['role_name'] === 'staff'): ?>
+      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/history.php')) ?>">View full history <i class="bi bi-arrow-right"></i></a>
+    <?php endif; ?>
+  </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recent uploads table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>Document</th><th>Category</th><th>Status</th><th>Uploaded</th><th class="text-end">Actions</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Document Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Uploaded On</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
       <tbody>
         <?php if ($recentDocs === []): ?>
           <tr><td colspan="5">
             <div class="empty">
               <i class="bi bi-inbox"></i>
-              <strong>Nothing here yet.</strong><br>
+              <strong>No uploads on record yet.</strong><br>
               <?php if ($u['role_name'] === 'staff'): ?>
-                Upload your first document to get started.
-                <div class="mt-2"><a class="btn btn-primary btn-sm" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload a document</a></div>
+                Submit your first document to populate your dashboard history.
+                <div class="mt-3"><a class="btn btn-primary btn-sm" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload a document</a></div>
               <?php else: ?>
-                Approved documents from staff will appear in <a href="<?= e(url('documents/index.php')) ?>">Documents</a>.
+                Approved academic materials from faculty will appear in <a href="<?= e(url('documents/index.php')) ?>">Documents</a>.
               <?php endif; ?>
             </div>
           </td></tr>
         <?php endif; ?>
         <?php foreach ($recentDocs as $d): ?>
           <tr>
-            <td data-label="Document">
+            <td data-label="Document Title">
               <div class="doc-cell">
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div>
                   <a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
-                  <div class="doc-meta"><span><?= e(strtoupper($d['file_ext'])) ?></span><span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span></div>
+                  <div class="doc-meta">
+                    <span><?= e(strtoupper($d['file_ext'])) ?></span>
+                    <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+                  </div>
                 </div>
               </div>
             </td>
             <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
-            <td data-label="Uploaded"><?= e($d['created_at']) ?></td>
-            <td class="text-end" data-label="Actions"><a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document"><i class="bi bi-eye"></i></a></td>
+            <td data-label="Uploaded On" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+            <td class="text-end" data-label="Action">
+              <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
           </tr>
         <?php endforeach; ?>
       </tbody>

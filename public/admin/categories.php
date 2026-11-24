@@ -72,80 +72,97 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Manage categories</h1>
-    <p class="page-sub">Categories color-code documents and decide whether uploads need approval before they are published.</p>
+    <h1>Document Categories &amp; Policy Rules</h1>
+    <p class="page-sub">Define institutional classifications and configure whether submissions in each category require administrator approval prior to publication.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
   </div>
 </div>
 
-<div class="card mb-4">
-  <div class="card-header"><i class="bi bi-plus-circle me-1"></i> Add a category</div>
-  <div class="card-body">
+<div class="card mb-4 shadow-sm card--accent-brand">
+  <div class="card-header"><i class="bi bi-folder-plus me-1"></i> Add New Classification Category</div>
+  <div class="card-body p-3">
     <form method="post" action="<?= e(url('admin/categories.php')) ?>" class="row g-2 align-items-end">
       <?= csrf_field() ?>
       <input type="hidden" name="action" value="create">
       <div class="col-md-4">
-        <label for="nc-name" class="form-label">Name</label>
-        <input type="text" class="form-control" id="nc-name" name="category_name" maxlength="80" required placeholder="e.g., Laboratory Exercises">
+        <label for="nc-name" class="form-label">Category Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="nc-name" name="category_name" maxlength="80" required placeholder="e.g. Research Papers &amp; Capstones">
       </div>
-      <div class="col-md-4">
-        <label for="nc-desc" class="form-label">Description</label>
-        <input type="text" class="form-control" id="nc-desc" name="description" maxlength="255">
+      <div class="col-md-5">
+        <label for="nc-desc" class="form-label">Scope Description</label>
+        <input type="text" class="form-control" id="nc-desc" name="description" maxlength="255" placeholder="Guidelines on what materials belong to this classification…">
       </div>
       <div class="col-md-2">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="nc-approval" name="requires_approval" value="1">
-          <label class="form-check-label" for="nc-approval">Needs approval</label>
+        <div class="form-check pb-2">
+          <input class="form-check-input" type="checkbox" id="nc-approval" name="requires_approval" value="1" checked>
+          <label class="form-check-label fw-semibold small" for="nc-approval">Requires Approval</label>
         </div>
       </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add</button>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus-lg me-1"></i> Add</button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="card">
+<div class="card shadow-sm">
+  <div class="card-header"><i class="bi bi-tags me-1"></i> Configured Document Categories</div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Categories table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>Category</th><th>Documents</th><th style="min-width:320px">Edit</th><th class="text-end">Delete</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Category Classification</th>
+          <th>Documents</th>
+          <th style="min-width:340px">Modify Settings</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
       <tbody>
         <?php foreach ($categories as $c): ?>
           <tr>
-            <td data-label="Category">
+            <td data-label="Category Classification">
               <?= category_chip((int) $c['category_id'], $c['category_name']) ?>
-              <?php if ((int) $c['requires_approval'] === 1): ?><span class="pill pill--pending ms-1">needs approval</span><?php endif; ?>
-              <div class="small text-muted mt-1"><?= e($c['description'] ?? '') ?></div>
+              <?php if ((int) $c['requires_approval'] === 1): ?>
+                <span class="pill pill--pending ms-1"><i class="bi bi-shield-lock"></i>moderated</span>
+              <?php else: ?>
+                <span class="pill pill--approved ms-1"><i class="bi bi-check2"></i>instant</span>
+              <?php endif; ?>
+              <div class="small text-muted mt-1"><?= e($c['description'] ?? 'No description specified.') ?></div>
             </td>
-            <td data-label="Documents"><span class="pill pill--neutral"><?= (int) $c['doc_count'] ?></span></td>
-            <td data-label="Edit">
+            <td data-label="Documents">
+              <span class="pill pill--neutral fw-bold"><?= (int) $c['doc_count'] ?> file<?= (int) $c['doc_count'] === 1 ? '' : 's' ?></span>
+            </td>
+            <td data-label="Modify Settings">
               <form method="post" action="<?= e(url('admin/categories.php')) ?>" class="row gx-1 gy-1 align-items-center">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="category_id" value="<?= (int) $c['category_id'] ?>">
                 <div class="col-12 col-md-auto flex-grow-1">
                   <label class="visually-hidden" for="cn-<?= (int) $c['category_id'] ?>">Name</label>
-                  <input type="text" class="form-control form-control-sm" id="cn-<?= (int) $c['category_id'] ?>" name="category_name" value="<?= e($c['category_name']) ?>" maxlength="80" required>
+                  <input type="text" class="form-control form-control-sm" id="cn-<?= (int) $c['category_id'] ?>" name="category_name" value="<?= e($c['category_name']) ?>" maxlength="80" required title="Category Name">
                 </div>
                 <div class="col-12 col-md-auto flex-grow-1">
                   <label class="visually-hidden" for="cd-<?= (int) $c['category_id'] ?>">Description</label>
-                  <input type="text" class="form-control form-control-sm" id="cd-<?= (int) $c['category_id'] ?>" name="description" value="<?= e($c['description'] ?? '') ?>" maxlength="255">
+                  <input type="text" class="form-control form-control-sm" id="cd-<?= (int) $c['category_id'] ?>" name="description" value="<?= e($c['description'] ?? '') ?>" maxlength="255" title="Category Description">
                 </div>
                 <div class="col-auto form-check ms-1 mb-0">
                   <input class="form-check-input" type="checkbox" id="ca-<?= (int) $c['category_id'] ?>" name="requires_approval" value="1" <?= (int) $c['requires_approval'] === 1 ? 'checked' : '' ?>>
-                  <label class="form-check-label small" for="ca-<?= (int) $c['category_id'] ?>">approval</label>
+                  <label class="form-check-label small" for="ca-<?= (int) $c['category_id'] ?>">Approval</label>
                 </div>
                 <div class="col-auto">
-                  <button type="submit" class="btn-icon" aria-label="Save category" title="Save"><i class="bi bi-check2"></i></button>
+                  <button type="submit" class="btn-icon" aria-label="Save category" title="Save changes"><i class="bi bi-check2"></i></button>
                 </div>
               </form>
             </td>
-            <td class="text-end" data-label="Delete">
+            <td class="text-end" data-label="Action">
               <form method="post" action="<?= e(url('admin/categories.php')) ?>">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="category_id" value="<?= (int) $c['category_id'] ?>">
-                <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete category" title="Delete"
-                        <?= (int) $c['doc_count'] > 0 ? 'disabled title="Category still has documents"' : '' ?>>
+                <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete category" title="Delete category"
+                        <?= (int) $c['doc_count'] > 0 ? 'disabled title="Cannot delete: category still contains active documents"' : '' ?>>
                   <i class="bi bi-trash3"></i>
                 </button>
               </form>

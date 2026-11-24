@@ -1,6 +1,15 @@
 </main>
-<footer class="container py-3 text-muted small d-print-none">
-  Secure Document Management System · ITEC 85 · Information Security · CvSU-CEIT
+<footer class="container-xl py-4 mt-5 text-muted small d-print-none border-top">
+  <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-center text-md-start">
+    <div>
+      <div class="fw-bold text-body">Cavite State University · Don Severino delas Alas Campus</div>
+      <div class="text-muted small">College of Engineering and Information Technology · Department of Information Technology</div>
+    </div>
+    <div class="text-md-end text-muted small">
+      <div>Secure Document Management System (SDMS) · ITEC 85 Information Security</div>
+      <div>Official Academic Document Repository &copy; <?= date('Y') ?></div>
+    </div>
+  </div>
 </footer>
 
 <!-- Shared native confirmation dialog: opened by app.js whenever a form

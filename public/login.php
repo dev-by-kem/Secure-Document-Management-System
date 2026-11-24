@@ -32,7 +32,7 @@ try {
     document.documentElement.setAttribute('data-bs-theme', t);
 } catch (e) {}
 </script>
-<title>Sign in · SDMS</title>
+<title>Sign in · CvSU SDMS</title>
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap-icons.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/custom.css')) ?>">
@@ -40,37 +40,50 @@ try {
 <body>
 <main class="auth-page">
   <div class="auth-card">
-    <div class="text-center mb-4">
-      <span class="brand-mark mx-auto mb-3" style="width:48px;height:48px;font-size:1.35rem;"><i class="bi bi-shield-lock"></i></span>
-      <h1 class="auth-title">Welcome to SDMS</h1>
-      <p class="page-sub mb-0">Your class document hub — upload your work, browse approved files.</p>
+    <div class="auth-header-card">
+      <div class="auth-crest">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div class="auth-univ-title">Cavite State University · CEIT</div>
+      <h1 class="auth-title">Document Management Portal</h1>
+      <p class="auth-sub">Secure digital repository for academic and administrative files</p>
     </div>
 
-    <div class="card">
+    <div class="card auth-form-card shadow-sm">
       <div class="card-body p-4">
         <?php if ($timedOut): ?>
-          <div class="alert alert-warning py-2" role="alert">Your session expired. Please sign in again.</div>
+          <div class="alert alert-warning py-2 d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-clock-history"></i>
+            <div>Your session expired. Please sign in again.</div>
+          </div>
         <?php endif; ?>
         <?php foreach ($flashes as $f): ?>
-          <div class="alert alert-<?= e($f['type']) ?> py-2" role="alert"><?= e($f['msg']) ?></div>
+          <div class="alert alert-<?= e($f['type']) ?> py-2 d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi <?= $f['type'] === 'danger' ? 'bi-exclamation-octagon' : 'bi-info-circle' ?>"></i>
+            <div><?= e($f['msg']) ?></div>
+          </div>
         <?php endforeach; ?>
 
         <form method="post" action="<?= e(url('login.php')) ?>">
           <?= csrf_field() ?>
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username"
-                   autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"
-                   required enterkeyhint="next">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control" id="username" name="username"
+                     autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"
+                     required enterkeyhint="next" placeholder="Enter your institutional username">
+            </div>
           </div>
           <div class="mb-4">
             <label for="password" class="form-label">Password</label>
             <div class="input-group">
+              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-lock"></i></span>
               <input type="password" class="form-control" id="password" name="password"
-                     autocomplete="current-password" required enterkeyhint="done" aria-describedby="password-toggle-help">
+                     autocomplete="current-password" required enterkeyhint="done" aria-describedby="password-toggle-help" placeholder="••••••••">
               <button type="button" class="btn btn-outline-secondary" data-password-toggle="#password" aria-pressed="false">Show</button>
             </div>
-            <div id="password-toggle-help" class="form-text">You can show the password to double-check it.</div>
+            <div id="password-toggle-help" class="form-text">Your password is encrypted with modern bcrypt hashing.</div>
           </div>
           <button type="submit" class="btn btn-primary w-100 py-2">
             <i class="bi bi-box-arrow-in-right me-1"></i> Sign in
@@ -79,39 +92,51 @@ try {
       </div>
     </div>
 
-    <div class="card mt-3">
-      <div class="card-body">
-        <div class="fw-bold mb-1">Who uses SDMS?</div>
+    <div class="card mt-3 shadow-sm">
+      <div class="card-body p-3">
+        <div class="fw-bold small text-uppercase text-muted letter-spacing-1 mb-2">Portal Access Tiers</div>
         <div class="role-list">
           <div class="role-row">
             <i class="bi bi-person-badge"></i>
-            <div><div class="t">Staff — uploaders</div><div class="d">Students or employees who upload assignments, papers, and project files.</div></div>
+            <div>
+              <div class="t">Staff &amp; Faculty</div>
+              <div class="d">Upload academic materials, assignments, research files, and project documents.</div>
+            </div>
           </div>
           <div class="role-row">
             <i class="bi bi-eye"></i>
-            <div><div class="t">Viewers — readers</div><div class="d">Browse and download approved documents only.</div></div>
+            <div>
+              <div class="t">Student &amp; Viewer</div>
+              <div class="d">Search, view, and download verified documents approved for public release.</div>
+            </div>
           </div>
           <div class="role-row">
             <i class="bi bi-shield-lock"></i>
-            <div><div class="t">Administrator</div><div class="d">Creates accounts, approves or rejects submissions, monitors activity.</div></div>
+            <div>
+              <div class="t">System Administrator</div>
+              <div class="d">Role-based access management, approval reviews, category rules, and system auditing.</div>
+            </div>
           </div>
         </div>
-        <?php /* Demo-account hints are for local XAMPP testing only — never shown on the public staging site (docs/09 §4). */ ?>
         <?php if (is_localhost()): ?>
-        <details class="mt-3 small">
-          <summary class="text-muted">Demo accounts (for team testing)</summary>
-          <ul class="mt-2 mb-2">
-            <li><code>admin</code> / <code>Admin@123</code> — full control</li>
-            <li><code>staff</code> / <code>Staff@123</code> — uploads documents</li>
-            <li><code>viewer</code> / <code>Viewer@123</code> — view and download only</li>
-          </ul>
-          <p class="text-muted mb-0">Change these passwords after signing in (Profile page).</p>
+        <details class="mt-3 small border-top pt-2">
+          <summary class="text-muted fw-semibold" style="cursor:pointer;"><i class="bi bi-terminal me-1"></i> Demo accounts (Local Testing Only)</summary>
+          <div class="bg-light p-2 rounded mt-2 border">
+            <ul class="mb-1 ps-3">
+              <li><code>admin</code> / <code>Admin@123</code> — Full Administrative Control</li>
+              <li><code>staff</code> / <code>Staff@123</code> — Upload &amp; Manage Submissions</li>
+              <li><code>viewer</code> / <code>Viewer@123</code> — View &amp; Download Approved Files</li>
+            </ul>
+          </div>
         </details>
         <?php endif; ?>
       </div>
     </div>
 
-    <p class="text-center text-muted small mt-3 mb-0">ITEC 85 · Information Security · CvSU-CEIT</p>
+    <div class="security-trust-badge">
+      <i class="bi bi-shield-check"></i>
+      <span>Cavite State University · ITEC 85 Information Security</span>
+    </div>
   </div>
 </main>
 <script src="<?= e(url('assets/js/app.js')) ?>"></script>

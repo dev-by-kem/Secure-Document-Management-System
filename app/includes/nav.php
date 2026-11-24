@@ -10,10 +10,10 @@ $isStaff = $u !== null && $u['role_name'] === 'staff';
 <nav class="navbar navbar-expand-lg sdms-navbar">
   <div class="container-xl">
     <a class="brand" href="<?= e(url('dashboard.php')) ?>">
-      <span class="brand-mark"><i class="bi bi-shield-lock"></i></span>
+      <span class="brand-mark"><i class="bi bi-shield-check"></i></span>
       <span class="brand-text">
-        <span class="brand-name">SDMS</span>
-        <span class="brand-tag d-none d-sm-block">Secure Document Management</span>
+        <span class="brand-name">CvSU · SDMS</span>
+        <span class="brand-tag d-none d-sm-block">Cavite State University · CEIT</span>
       </span>
     </a>
     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
@@ -28,7 +28,7 @@ $isStaff = $u !== null && $u['role_name'] === 'staff';
           <li class="nav-item">
             <a class="nav-link<?= $active('/admin/approvals.php') ?>" href="<?= e(url('admin/approvals.php')) ?>">
               <i class="bi bi-check2-square"></i> Approvals
-              <?php if ($pendingCount > 0): ?><span class="count-bubble"><?= $pendingCount ?></span><?php endif; ?>
+              <?php if ($pendingCount > 0): ?><span class="count-bubble ms-1"><?= $pendingCount ?></span><?php endif; ?>
             </a>
           </li>
           <li class="nav-item"><a class="nav-link<?= $active('/admin/users.php') ?>" href="<?= e(url('admin/users.php')) ?>"><i class="bi bi-people"></i> Users</a></li>
@@ -55,6 +55,7 @@ $isStaff = $u !== null && $u['role_name'] === 'staff';
         <span class="nav-user d-none d-lg-flex">
           <?= avatar($u['full_name']) ?>
           <span><?= e($u['username']) ?></span>
+          <span class="ms-1"><?= role_chip($u['role_name']) ?></span>
         </span>
         <form method="post" action="<?= e(url('logout.php')) ?>" class="d-inline">
           <?= csrf_field() ?>

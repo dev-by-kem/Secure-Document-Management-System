@@ -17,8 +17,8 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>My upload history</h1>
-    <p class="page-sub">Everything you've uploaded, newest first — including what's still waiting for review.</p>
+    <h1>My Upload History</h1>
+    <p class="page-sub">Comprehensive record of all digital documents submitted by your account, ordered newest first.</p>
   </div>
   <?php if ($u['role_name'] === 'staff'): ?>
     <div class="page-actions">
@@ -27,35 +27,56 @@ require BASE_PATH . '/app/includes/header.php';
   <?php endif; ?>
 </div>
 
-<div class="card">
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div><i class="bi bi-clock-history me-1"></i> Submission History (<?= count($docs) ?> files)</div>
+  </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="My uploads table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>Document</th><th>Category</th><th>Status</th><th>Uploaded</th><th class="text-end">Actions</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Document Title</th>
+          <th>Classification</th>
+          <th>Review Status</th>
+          <th>Uploaded Timestamp</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
       <tbody>
         <?php if ($docs === []): ?>
           <tr><td colspan="5">
             <div class="empty">
               <i class="bi bi-inbox"></i>
-              <strong>Nothing here yet.</strong><br>
-              Your upload history will appear here after your first upload.
+              <strong>No submissions found.</strong><br>
+              Your document submission history will appear here once you upload your first file.
             </div>
           </td></tr>
         <?php endif; ?>
         <?php foreach ($docs as $d): ?>
           <tr>
-            <td data-label="Document">
+            <td data-label="Document Title">
               <div class="doc-cell">
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div>
                   <a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
-                  <div class="doc-meta"><span><?= e(strtoupper($d['file_ext'])) ?></span><span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span></div>
+                  <div class="doc-meta">
+                    <span><?= e(strtoupper($d['file_ext'])) ?></span>
+                    <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+                  </div>
                 </div>
               </div>
             </td>
-            <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
-            <td data-label="Status"><?= status_badge($d['status']) ?></td>
-            <td data-label="Uploaded"><?= e($d['created_at']) ?></td>
-            <td class="text-end" data-label="Actions"><a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View"><i class="bi bi-eye"></i></a></td>
+            <td data-label="Classification"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
+            <td data-label="Review Status"><?= status_badge($d['status']) ?></td>
+            <td data-label="Uploaded Timestamp" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+            <td class="text-end" data-label="Actions">
+              <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download file">
+                <i class="bi bi-download"></i>
+              </a>
+            </td>
           </tr>
         <?php endforeach; ?>
       </tbody>

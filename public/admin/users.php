@@ -116,31 +116,34 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Manage users</h1>
-    <p class="page-sub">Accounts are created by administrators only — there is no self-registration. Deactivating an account blocks its login instantly.</p>
+    <h1>User Account Management</h1>
+    <p class="page-sub">Accounts are provisioned and administered by institutional administrators. Role permissions and activation states are enforced on every request.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
   </div>
 </div>
 
-<div class="card mb-4">
-  <div class="card-header"><i class="bi bi-person-plus me-1"></i> Create a new account</div>
-  <div class="card-body">
+<div class="card mb-4 shadow-sm card--accent-brand">
+  <div class="card-header"><i class="bi bi-person-plus me-1"></i> Provision New User Account</div>
+  <div class="card-body p-3">
     <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row g-2 align-items-end">
       <?= csrf_field() ?>
       <input type="hidden" name="action" value="create">
       <div class="col-md-2">
-        <label for="nu-username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="nu-username" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" required>
+        <label for="nu-username" class="form-label">Username <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="nu-username" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" required placeholder="e.g. jdelacruz">
       </div>
       <div class="col-md-3">
-        <label for="nu-fullname" class="form-label">Full name</label>
-        <input type="text" class="form-control" id="nu-fullname" name="full_name" autocomplete="name" required>
+        <label for="nu-fullname" class="form-label">Full Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="nu-fullname" name="full_name" autocomplete="name" required placeholder="Juan Dela Cruz">
       </div>
       <div class="col-md-3">
-        <label for="nu-email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="nu-email" name="email" autocomplete="email" required>
+        <label for="nu-email" class="form-label">Institutional Email <span class="text-danger">*</span></label>
+        <input type="email" class="form-control" id="nu-email" name="email" autocomplete="email" required placeholder="name@cvsu.edu.ph">
       </div>
       <div class="col-md-2">
-        <label for="nu-role" class="form-label">Role</label>
+        <label for="nu-role" class="form-label">Role <span class="text-danger">*</span></label>
         <select class="form-select" id="nu-role" name="role_id" required>
           <?php foreach ($roles as $r): ?>
             <option value="<?= (int) $r['role_id'] ?>"><?= e(ucfirst($r['role_name'])) ?></option>
@@ -148,26 +151,38 @@ require BASE_PATH . '/app/includes/header.php';
         </select>
       </div>
       <div class="col-md-2">
-        <label for="nu-password" class="form-label">Initial password</label>
-        <input type="password" class="form-control" id="nu-password" name="password" autocomplete="new-password" minlength="8" required aria-describedby="nu-password-help">
-        <div id="nu-password-help" class="form-text">Min 8 characters.</div>
+        <label for="nu-password" class="form-label">Initial Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" id="nu-password" name="password" autocomplete="new-password" minlength="8" required aria-describedby="nu-password-help" placeholder="••••••••">
       </div>
-      <div class="col-12 col-md-auto">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> Create account</button>
+      <div class="col-12 d-flex justify-content-between align-items-center pt-2 border-top">
+        <div id="nu-password-help" class="form-text mt-0"><i class="bi bi-shield-lock me-1"></i>Must be at least 8 characters. Hashed via bcrypt.</div>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> Create Account</button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="card">
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div><i class="bi bi-people me-1"></i> Active User Directory (<?= count($users) ?> accounts)</div>
+  </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Users table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>User</th><th>Role &amp; status</th><th>Last login</th><th style="min-width:300px">Edit details</th><th>Reset password</th><th>Status</th></tr></thead>
+      <thead>
+        <tr>
+          <th>User Profile</th>
+          <th>Role &amp; Status</th>
+          <th>Last Login</th>
+          <th style="min-width:320px">Account Details</th>
+          <th>Reset Password</th>
+          <th class="text-end">Account State</th>
+        </tr>
+      </thead>
       <tbody>
         <?php foreach ($users as $row): ?>
           <?php $isSelf = (int) $row['user_id'] === (int) $u['user_id']; ?>
           <tr>
-            <td data-label="User">
+            <td data-label="User Profile">
               <div class="user-cell">
                 <?= avatar($row['full_name']) ?>
                 <div>
@@ -176,50 +191,52 @@ require BASE_PATH . '/app/includes/header.php';
                 </div>
               </div>
             </td>
-            <td data-label="Role & status">
+            <td data-label="Role &amp; Status">
               <div class="d-flex flex-column gap-1 align-items-start">
                 <?= role_chip($row['role_name']) ?>
-                <span class="pill <?= $row['status'] === 'active' ? 'pill--approved' : 'pill--neutral' ?>"><?= e($row['status']) ?></span>
+                <span class="pill <?= $row['status'] === 'active' ? 'pill--approved' : 'pill--neutral' ?>">
+                  <i class="bi <?= $row['status'] === 'active' ? 'bi-check-circle' : 'bi-dash-circle' ?>"></i><?= e(ucfirst($row['status'])) ?>
+                </span>
               </div>
             </td>
-            <td data-label="Last login" class="small text-nowrap"><?= e($row['last_login'] ?? 'never') ?></td>
-            <td data-label="Edit details">
+            <td data-label="Last Login" class="small text-nowrap"><?= e($row['last_login'] ?? 'Never logged in') ?></td>
+            <td data-label="Account Details">
               <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row gx-1 gy-1 align-items-center">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
                 <div class="col-12 col-md-auto flex-grow-1">
                   <label class="visually-hidden" for="fn-<?= (int) $row['user_id'] ?>">Full name</label>
-                  <input type="text" class="form-control form-control-sm" id="fn-<?= (int) $row['user_id'] ?>" name="full_name" value="<?= e($row['full_name']) ?>" required>
+                  <input type="text" class="form-control form-control-sm" id="fn-<?= (int) $row['user_id'] ?>" name="full_name" value="<?= e($row['full_name']) ?>" required title="Full Name">
                 </div>
                 <div class="col-12 col-md-auto flex-grow-1">
                   <label class="visually-hidden" for="em-<?= (int) $row['user_id'] ?>">Email</label>
-                  <input type="email" class="form-control form-control-sm" id="em-<?= (int) $row['user_id'] ?>" name="email" value="<?= e($row['email']) ?>" required>
+                  <input type="email" class="form-control form-control-sm" id="em-<?= (int) $row['user_id'] ?>" name="email" value="<?= e($row['email']) ?>" required title="Email Address">
                 </div>
                 <div class="col-auto">
                   <label class="visually-hidden" for="rl-<?= (int) $row['user_id'] ?>">Role</label>
-                  <select class="form-select form-select-sm" id="rl-<?= (int) $row['user_id'] ?>" name="role_id" <?= $isSelf ? 'disabled title="You cannot change your own role"' : '' ?>>
+                  <select class="form-select form-select-sm" id="rl-<?= (int) $row['user_id'] ?>" name="role_id" <?= $isSelf ? 'disabled title="You cannot alter your own administrative role"' : '' ?>>
                     <?php foreach ($roles as $r): ?>
                       <option value="<?= (int) $r['role_id'] ?>" <?= (int) $r['role_id'] === (int) $row['role_id'] ? 'selected' : '' ?>><?= e(ucfirst($r['role_name'])) ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
                 <div class="col-auto">
-                  <button type="submit" class="btn-icon" aria-label="Save user" title="Save"><i class="bi bi-check2"></i></button>
+                  <button type="submit" class="btn-icon" aria-label="Save user" title="Save changes"><i class="bi bi-check2"></i></button>
                 </div>
               </form>
             </td>
-            <td data-label="Reset password">
+            <td data-label="Reset Password">
               <form method="post" action="<?= e(url('admin/users.php')) ?>" class="d-flex gap-1 align-items-center">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="reset_password">
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
                 <label class="visually-hidden" for="pw-<?= (int) $row['user_id'] ?>">New password</label>
-                <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="New password (min 8)" autocomplete="new-password" minlength="8" required>
+                <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="Min 8 chars" autocomplete="new-password" minlength="8" required>
                 <button type="submit" class="btn-icon" aria-label="Reset password" title="Reset password"><i class="bi bi-key"></i></button>
               </form>
             </td>
-            <td data-label="Status">
+            <td class="text-end" data-label="Account State">
               <form method="post" action="<?= e(url('admin/users.php')) ?>">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="toggle_status">
@@ -235,5 +252,5 @@ require BASE_PATH . '/app/includes/header.php';
     </table>
   </div>
 </div>
-<p class="text-muted small mt-2"><i class="bi bi-info-circle me-1"></i>The last active administrator cannot be deactivated, and you cannot change your own role or status.</p>
+<p class="text-muted small mt-2"><i class="bi bi-shield-check me-1 text-success"></i>Security Guard (SR-9): The system prevents deactivating the last active administrator and prevents self-demotion or self-lockout.</p>
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

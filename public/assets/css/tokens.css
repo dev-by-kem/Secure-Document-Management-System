@@ -1,48 +1,70 @@
 /* ============================================================
-   SDMS design tokens — the single place to rebrand the UI.
-   Friendly + clean: indigo brand, teal accent, soft surfaces,
-   generous rounding. Light values on :root, dark overrides below.
+   SDMS Design Tokens — Cavite State University (CvSU) Theme
+   Institutional, formal, and clean aesthetic:
+   - Primary: CvSU Dark Emerald Green (headers, active states, key actions)
+   - Secondary / Accent: CvSU Warm Gold (subtle highlights, badges)
+   - Canvas: Crisp pure white and refined slate neutrals
    ============================================================ */
 :root {
-  /* Brand & links */
-  --sdms-brand: #4f46e5;            /* indigo 600 — 6.2:1 with white text */
-  --sdms-brand-hover: #4338ca;
-  --sdms-brand-soft: rgba(79, 70, 229, 0.10);
+  /* CvSU Brand & Links (Dark Emerald Green) */
+  --sdms-brand: #064e3b;            /* CvSU Dark Emerald Green (WCAG AAA 10:1 on white) */
+  --sdms-brand-hover: #022c22;      /* Deep forest green */
+  --sdms-brand-active: #065f46;     /* Emerald 800 */
+  --sdms-brand-soft: rgba(6, 78, 59, 0.08);
+  --sdms-brand-subtle: rgba(6, 78, 59, 0.04);
   --sdms-brand-contrast: #ffffff;
-  --sdms-link: #4338ca;             /* 8.6:1 on white */
-  --sdms-link-hover: #3730a3;
+  
+  --sdms-link: #065f46;             /* 8.5:1 contrast on white */
+  --sdms-link-hover: #022c22;
 
-  /* Accent (teal) for secondary emphasis */
-  --sdms-accent: #0f766e;
-  --sdms-accent-soft: rgba(13, 148, 136, 0.12);
+  /* CvSU Accent (Warm Academic Gold / Amber) */
+  --sdms-accent: #b45309;           /* Amber 700 */
+  --sdms-accent-hover: #92400e;     /* Amber 800 */
+  --sdms-accent-soft: rgba(180, 83, 9, 0.10);
+  --sdms-accent-contrast: #ffffff;
 
-  /* Surfaces */
-  --sdms-page-bg: #f5f6fa;
-  --sdms-surface: #ffffff;
-  --sdms-surface-muted: #f3f4f8;
-  --sdms-border: #e6e8ef;
+  /* Clean Formal Surfaces (White & Shades) */
+  --sdms-page-bg: #f8fafc;          /* Neutral slate 50 - formal canvas */
+  --sdms-surface: #ffffff;          /* Pure white card surface */
+  --sdms-surface-muted: #f1f5f9;    /* Refined slate 100 for table heads & panels */
+  --sdms-surface-hover: #f8fafc;
+  --sdms-border: #e2e8f0;          /* Crisp slate 200 border */
+  --sdms-border-subtle: #edf2f7;
+  --sdms-border-focus: #064e3b;
 
-  /* Text */
-  --sdms-text: #1f2430;
-  --sdms-text-muted: #5b6472;       /* 5.7:1 on white */
+  /* Typography & High-Contrast Ink */
+  --sdms-text: #0f172a;             /* Slate 900 - authoritative formal ink */
+  --sdms-text-muted: #475569;       /* Slate 600 - 6.2:1 contrast on white */
+  --sdms-text-subtle: #64748b;      /* Slate 500 */
 
   /* Navigation */
   --sdms-navbar-bg: #ffffff;
-  --sdms-navbar-text: #1f2430;
-  --sdms-navbar-muted: #5b6472;
+  --sdms-navbar-border: #e2e8f0;
+  --sdms-navbar-text: #0f172a;
+  --sdms-navbar-muted: #475569;
+  --sdms-topbar-accent: linear-gradient(90deg, #064e3b 0%, #065f46 75%, #b45309 75%, #b45309 100%);
 
-  /* Semantic */
-  --sdms-success: #15803d;
-  --sdms-warning: #92400e;
-  --sdms-danger: #b91c1c;
-  --sdms-info: #0369a1;
+  /* Status & Semantics (Formal, high-clarity) */
+  --sdms-success: #15803d;          /* Green 700 */
+  --sdms-success-soft: rgba(21, 128, 61, 0.10);
+  --sdms-warning: #b45309;          /* Amber 700 */
+  --sdms-warning-soft: rgba(180, 83, 9, 0.12);
+  --sdms-danger: #b91c1c;           /* Red 700 */
+  --sdms-danger-soft: rgba(185, 28, 28, 0.10);
+  --sdms-info: #0369a1;             /* Sky 700 */
+  --sdms-info-soft: rgba(3, 105, 161, 0.10);
 
-  /* Shape & rhythm */
-  --sdms-radius-sm: 8px;
-  --sdms-radius: 12px;
-  --sdms-radius-lg: 16px;
-  --sdms-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --sdms-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 16px rgba(16, 24, 40, 0.06);
+  /* Form & Component Metrics */
+  --sdms-radius-sm: 6px;
+  --sdms-radius: 8px;
+  --sdms-radius-lg: 12px;
+
+  /* Subtle, crisp enterprise shadows */
+  --sdms-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --sdms-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 4px 12px 0 rgba(15, 23, 42, 0.03);
+  --sdms-shadow-lg: 0 10px 25px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+
+  /* Spacing Scale */
   --sdms-space-1: 0.25rem;
   --sdms-space-2: 0.5rem;
   --sdms-space-3: 0.75rem;
@@ -54,52 +76,76 @@
 }
 
 [data-bs-theme="dark"] {
-  --sdms-brand: #4f46e5;            /* buttons keep white-text contrast */
-  --sdms-brand-hover: #6366f1;
-  --sdms-brand-soft: rgba(99, 102, 241, 0.18);
-  --sdms-link: #a5b4fc;             /* light indigo on dark = ~9:1 */
-  --sdms-link-hover: #c7d2fe;
+  /* CvSU Brand in Dark Mode (High-contrast emerald) */
+  --sdms-brand: #10b981;            /* Emerald 500 */
+  --sdms-brand-hover: #34d399;      /* Emerald 400 */
+  --sdms-brand-active: #059669;
+  --sdms-brand-soft: rgba(16, 185, 129, 0.16);
+  --sdms-brand-subtle: rgba(16, 185, 129, 0.08);
+  --sdms-brand-contrast: #064e3b;
+  
+  --sdms-link: #34d399;             /* Emerald 400 (8.8:1 on dark) */
+  --sdms-link-hover: #6ee7b7;
 
-  --sdms-accent: #5eead4;
-  --sdms-accent-soft: rgba(45, 212, 191, 0.14);
+  /* Accent in Dark Mode */
+  --sdms-accent: #fbbf24;           /* Amber 400 */
+  --sdms-accent-hover: #fcd34d;
+  --sdms-accent-soft: rgba(251, 191, 36, 0.16);
+  --sdms-accent-contrast: #78350f;
 
-  --sdms-page-bg: #0e1015;
-  --sdms-surface: #161922;
-  --sdms-surface-muted: #1c2029;
-  --sdms-border: #282d39;
+  /* Surfaces in Dark Mode */
+  --sdms-page-bg: #0b0f17;          /* Slate 950 obsidian */
+  --sdms-surface: #111827;          /* Slate 900 */
+  --sdms-surface-muted: #1e293b;    /* Slate 800 */
+  --sdms-surface-hover: #1e293b;
+  --sdms-border: #334155;          /* Slate 700 */
+  --sdms-border-subtle: #1e293b;
+  --sdms-border-focus: #10b981;
 
-  --sdms-text: #e5e7eb;
-  --sdms-text-muted: #9aa3b2;       /* ~7:1 on surface */
+  /* Text in Dark Mode */
+  --sdms-text: #f8fafc;             /* Slate 50 */
+  --sdms-text-muted: #94a3b8;       /* Slate 400 */
+  --sdms-text-subtle: #64748b;
 
-  --sdms-navbar-bg: #14161d;
-  --sdms-navbar-text: #f3f4f6;
-  --sdms-navbar-muted: #a8b0bf;
+  /* Navigation in Dark Mode */
+  --sdms-navbar-bg: #0f172a;
+  --sdms-navbar-border: #1e293b;
+  --sdms-navbar-text: #f8fafc;
+  --sdms-navbar-muted: #94a3b8;
+  --sdms-topbar-accent: linear-gradient(90deg, #10b981 0%, #059669 75%, #fbbf24 75%, #fbbf24 100%);
 
+  /* Semantics in Dark Mode */
   --sdms-success: #4ade80;
+  --sdms-success-soft: rgba(74, 222, 128, 0.16);
   --sdms-warning: #fbbf24;
+  --sdms-warning-soft: rgba(251, 191, 36, 0.16);
   --sdms-danger: #f87171;
+  --sdms-danger-soft: rgba(248, 113, 113, 0.16);
   --sdms-info: #7dd3fc;
+  --sdms-info-soft: rgba(125, 211, 252, 0.16);
 
-  --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --sdms-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.35);
+  /* Shadows in Dark Mode */
+  --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --sdms-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35);
+  --sdms-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
 
   color-scheme: dark;
 }
 
 /* ------------------------------------------------------------
-   Category label tints (used by category_chip() in helpers.php).
-   Six rotating hues; each has a light and a dark variant.
+   Document Category Label Tints (category_chip in helpers.php)
+   Restrained academic hues with high legibility.
    ------------------------------------------------------------ */
-.cat-tint-0 { --cat-fg: #1d4ed8; --cat-bg: rgba(59, 130, 246, 0.12); }
-.cat-tint-1 { --cat-fg: #6d28d9; --cat-bg: rgba(139, 92, 246, 0.13); }
-.cat-tint-2 { --cat-fg: #0f766e; --cat-bg: rgba(13, 148, 136, 0.13); }
-.cat-tint-3 { --cat-fg: #92400e; --cat-bg: rgba(245, 158, 11, 0.15); }
-.cat-tint-4 { --cat-fg: #be123c; --cat-bg: rgba(244, 63, 94, 0.12); }
-.cat-tint-5 { --cat-fg: #475569; --cat-bg: rgba(100, 116, 139, 0.14); }
+.cat-tint-0 { --cat-fg: #065f46; --cat-bg: rgba(6, 95, 70, 0.10); }  /* CvSU Emerald */
+.cat-tint-1 { --cat-fg: #0369a1; --cat-bg: rgba(3, 105, 161, 0.10); } /* Academic Blue */
+.cat-tint-2 { --cat-fg: #475569; --cat-bg: rgba(71, 85, 105, 0.12); } /* Slate Gray */
+.cat-tint-3 { --cat-fg: #b45309; --cat-bg: rgba(180, 83, 9, 0.11); }  /* Bronze / Gold */
+.cat-tint-4 { --cat-fg: #7c2d12; --cat-bg: rgba(124, 45, 18, 0.10); } /* Russet */
+.cat-tint-5 { --cat-fg: #0f766e; --cat-bg: rgba(15, 118, 110, 0.10); }/* Teal */
 
-[data-bs-theme="dark"] .cat-tint-0 { --cat-fg: #93c5fd; --cat-bg: rgba(59, 130, 246, 0.18); }
-[data-bs-theme="dark"] .cat-tint-1 { --cat-fg: #c4b5fd; --cat-bg: rgba(139, 92, 246, 0.20); }
-[data-bs-theme="dark"] .cat-tint-2 { --cat-fg: #5eead4; --cat-bg: rgba(45, 212, 191, 0.16); }
-[data-bs-theme="dark"] .cat-tint-3 { --cat-fg: #fcd34d; --cat-bg: rgba(245, 158, 11, 0.18); }
-[data-bs-theme="dark"] .cat-tint-4 { --cat-fg: #fda4af; --cat-bg: rgba(244, 63, 94, 0.18); }
-[data-bs-theme="dark"] .cat-tint-5 { --cat-fg: #cbd5e1; --cat-bg: rgba(148, 163, 184, 0.16); }
+[data-bs-theme="dark"] .cat-tint-0 { --cat-fg: #6ee7b7; --cat-bg: rgba(6, 95, 70, 0.25); }
+[data-bs-theme="dark"] .cat-tint-1 { --cat-fg: #7dd3fc; --cat-bg: rgba(3, 105, 161, 0.25); }
+[data-bs-theme="dark"] .cat-tint-2 { --cat-fg: #cbd5e1; --cat-bg: rgba(71, 85, 105, 0.25); }
+[data-bs-theme="dark"] .cat-tint-3 { --cat-fg: #fde68a; --cat-bg: rgba(180, 83, 9, 0.25); }
+[data-bs-theme="dark"] .cat-tint-4 { --cat-fg: #fca5a5; --cat-bg: rgba(124, 45, 18, 0.25); }
+[data-bs-theme="dark"] .cat-tint-5 { --cat-fg: #5eead4; --cat-bg: rgba(15, 118, 110, 0.25); }

@@ -29,9 +29,20 @@ if (in_array($status, ['pending', 'approved', 'rejected'], true)) {
     $where[]  = 'd.status = ?';
     $params[] = $status;
 }
-if (query_param('mine') === '1') {
+$mine = query_param('mine') === '1';
+if ($mine) {
     $where[]  = 'd.uploaded_by = ?';
     $params[] = (int) $u['user_id'];
+}
+$from = query_param('from');
+if ($from !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+    $where[]  = 'd.created_at >= ?';
+    $params[] = $from . ' 00:00:00';
+}
+$to = query_param('to');
+if ($to !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
+    $where[]  = 'd.created_at <= ?';
+    $params[] = $to . ' 23:59:59';
 }
 
 $sql = 'SELECT d.*, c.category_name, up.full_name AS uploader_name, up.username AS uploader_username
@@ -51,8 +62,8 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Documents</h1>
-    <p class="page-sub">Approved files are downloadable by everyone signed in. Pending and rejected uploads stay visible only to their owner and administrators.</p>
+    <h1>Institutional Document Directory</h1>
+    <p class="page-sub">Browse, search, and download verified academic and administrative documents. Pending and rejected submissions are restricted to file owners and administrators.</p>
   </div>
   <div class="page-actions">
     <?php if (in_array($u['role_name'], ['admin', 'staff'], true)): ?>
@@ -62,59 +73,88 @@ require BASE_PATH . '/app/includes/header.php';
 </div>
 
 <search>
-<form method="get" action="<?= e(url('documents/index.php')) ?>" class="card mb-4">
-  <div class="card-body row g-2 align-items-end">
-    <div class="col-md-4">
-      <label for="q" class="form-label">Search</label>
-      <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="search" class="form-control" id="q" name="q" value="<?= e($q) ?>" placeholder="Title or description…">
+<form method="get" action="<?= e(url('documents/index.php')) ?>" class="card mb-4 shadow-sm card--accent-brand">
+  <div class="card-body p-3">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label for="q" class="form-label">Search Query</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent text-muted"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control" id="q" name="q" value="<?= e($q) ?>" placeholder="Title or description…">
+        </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <label for="category_id" class="form-label">Category</label>
-      <select class="form-select" id="category_id" name="category_id">
-        <option value="">All categories</option>
-        <?php foreach ($categories as $c): ?>
-          <option value="<?= (int) $c['category_id'] ?>" <?= $cat === (string) $c['category_id'] ? 'selected' : '' ?>><?= e($c['category_name']) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="col-md-2">
-      <label for="status" class="form-label">Status</label>
-      <select class="form-select" id="status" name="status">
-        <option value="">Any status</option>
-        <?php foreach (['pending', 'approved', 'rejected'] as $s): ?>
-          <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="col-md-3 d-flex gap-3 align-items-center">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="mine" name="mine" value="1" <?= $mine ? 'checked' : '' ?>>
-        <label class="form-check-label" for="mine">Only mine</label>
+      <div class="col-md-2">
+        <label for="category_id" class="form-label">Category</label>
+        <select class="form-select" id="category_id" name="category_id">
+          <option value="">All Categories</option>
+          <?php foreach ($categories as $c): ?>
+            <option value="<?= (int) $c['category_id'] ?>" <?= $cat === (string) $c['category_id'] ? 'selected' : '' ?>><?= e($c['category_name']) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
-      <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i> Search</button>
+      <div class="col-md-2">
+        <label for="status" class="form-label">Review Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">All Statuses</option>
+          <?php foreach (['pending', 'approved', 'rejected'] as $s): ?>
+            <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="from" class="form-label">From Date</label>
+        <input type="date" class="form-control" id="from" name="from" value="<?= e($from) ?>">
+      </div>
+      <div class="col-md-3 d-flex gap-2 align-items-center">
+        <?php if ($u['role_name'] !== 'viewer'): ?>
+        <div class="form-check me-2">
+          <input class="form-check-input" type="checkbox" id="mine" name="mine" value="1" <?= $mine ? 'checked' : '' ?>>
+          <label class="form-check-label small fw-semibold" for="mine">Only mine</label>
+        </div>
+        <?php endif; ?>
+        <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i> Search</button>
+        <?php if ($q !== '' || $cat !== '' || $status !== '' || $mine || $from !== '' || $to !== ''): ?>
+          <a href="<?= e(url('documents/index.php')) ?>" class="btn btn-outline-secondary" title="Reset filters"><i class="bi bi-x-lg"></i></a>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
 </form>
 </search>
 
 <?php if ($u['role_name'] === 'admin'): ?>
-  <p class="small"><i class="bi bi-trash3 me-1"></i> Admin: <a href="<?= e(url('documents/index.php?deleted=1')) ?>">include soft-deleted documents</a> (for integrity checks)</p>
+  <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+    <div class="small text-muted">Showing up to 200 records matching active filters.</div>
+    <div class="small">
+      <i class="bi bi-trash3 me-1 text-danger"></i> Admin Mode: 
+      <?php if (query_param('deleted') === '1'): ?>
+        <a href="<?= e(url('documents/index.php')) ?>" class="fw-bold">Hide deleted files</a>
+      <?php else: ?>
+        <a href="<?= e(url('documents/index.php?deleted=1')) ?>">Include soft-deleted files</a>
+      <?php endif; ?>
+    </div>
+  </div>
 <?php endif; ?>
 
-<div class="card">
+<div class="card shadow-sm">
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Documents table" tabindex="0">
     <table class="table table-hover sdms-card-table">
-      <thead><tr><th>Document</th><th>Category</th><th>Uploaded by</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Document Title</th>
+          <th>Category</th>
+          <th>Uploaded By</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
       <tbody>
         <?php if ($docs === []): ?>
           <tr><td colspan="5">
             <div class="empty">
-              <i class="bi bi-inbox"></i>
-              <strong>No documents match.</strong><br>
-              Try clearing the filters<?php if (in_array($u['role_name'], ['admin', 'staff'], true)): ?>, or upload the first one<?php endif; ?>.
+              <i class="bi bi-folder-x"></i>
+              <strong>No documents match your query.</strong><br>
+              Try adjusting your search criteria<?php if (in_array($u['role_name'], ['admin', 'staff'], true)): ?>, or submit a new upload<?php endif; ?>.
             </div>
           </td></tr>
         <?php endif; ?>
@@ -124,8 +164,8 @@ require BASE_PATH . '/app/includes/header.php';
               $canView  = can_access_document($u, $d);
               $canEdit  = $isOwner || $u['role_name'] === 'admin';
           ?>
-          <tr <?= (int) $d['is_deleted'] === 1 ? 'class="table-secondary"' : '' ?>>
-            <td data-label="Document">
+          <tr <?= (int) $d['is_deleted'] === 1 ? 'class="table-light opacity-75"' : '' ?>>
+            <td data-label="Document Title">
               <div class="doc-cell">
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div class="min-w-0">
@@ -138,34 +178,37 @@ require BASE_PATH . '/app/includes/header.php';
                     <span><?= e(strtoupper($d['file_ext'])) ?></span>
                     <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
                     <span class="dot"><?= e($d['created_at']) ?></span>
+                    <?php if ((int) $d['is_deleted'] === 1): ?>
+                      <span class="dot text-danger fw-bold">[DELETED]</span>
+                    <?php endif; ?>
                   </div>
                 </div>
               </div>
             </td>
             <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
-            <td data-label="Uploaded by">
+            <td data-label="Uploaded By">
               <div class="user-cell">
                 <?= avatar($d['uploader_name']) ?>
                 <span class="name"><?= e($d['uploader_username']) ?></span>
-                <?php if ($isOwner): ?><span class="pill pill--neutral">You</span><?php endif; ?>
+                <?php if ($isOwner): ?><span class="pill pill--neutral ms-1">You</span><?php endif; ?>
               </div>
             </td>
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
             <td class="text-end" data-label="Actions">
               <div class="action-group">
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
-                  <a class="btn-icon" href="<?= e(url('admin/approvals.php')) ?>" aria-label="Review document" title="Review"><i class="bi bi-check2-square"></i></a>
+                  <a class="btn-icon" href="<?= e(url('admin/approvals.php')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning"></i></a>
                 <?php endif; ?>
                 <?php if ($canView): ?>
-                  <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View"><i class="bi bi-eye"></i></a>
-                  <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download"><i class="bi bi-download"></i></a>
+                  <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View Details"><i class="bi bi-eye"></i></a>
+                  <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download"></i></a>
                 <?php endif; ?>
                 <?php if ($canEdit && (int) $d['is_deleted'] === 0): ?>
-                  <a class="btn-icon" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>" aria-label="Edit document" title="Edit"><i class="bi bi-pencil"></i></a>
-                  <form class="d-inline js-confirm" method="post" action="<?= e(url('documents/delete.php')) ?>" data-confirm-message="Delete this document? Only an administrator can recover it later.">
+                  <a class="btn-icon" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>" aria-label="Edit document" title="Edit Metadata"><i class="bi bi-pencil"></i></a>
+                  <form class="d-inline js-confirm" method="post" action="<?= e(url('documents/delete.php')) ?>" data-confirm-message="Delete document “<?= e($d['title']) ?>”? It remains recoverable by an administrator.">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= (int) $d['document_id'] ?>">
-                    <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete document" title="Delete"><i class="bi bi-trash3"></i></button>
+                    <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete document" title="Delete Document"><i class="bi bi-trash3"></i></button>
                   </form>
                 <?php endif; ?>
               </div>

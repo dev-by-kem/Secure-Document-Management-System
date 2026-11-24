@@ -39,76 +39,106 @@ $categories = db()->query('SELECT category_id, category_name FROM document_categ
 $pageTitle = 'Document reports';
 require BASE_PATH . '/app/includes/header.php';
 ?>
+<!-- Printable Institutional Header (Appears only during Print) -->
+<div class="d-none d-print-block print-academic-header">
+  <div style="font-size: 10pt; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Republic of the Philippines</div>
+  <div style="font-size: 14pt; font-weight: 800; color: #064e3b;">CAVITE STATE UNIVERSITY</div>
+  <div style="font-size: 10pt; font-weight: 600;">Don Severino delas Alas Campus · Indang, Cavite</div>
+  <div style="font-size: 9pt;">College of Engineering and Information Technology · Department of Information Technology</div>
+  <div style="font-size: 12pt; font-weight: bold; margin-top: 10px;">SECURE DOCUMENT MANAGEMENT SYSTEM (SDMS)</div>
+  <div style="font-size: 10pt; font-style: italic;">Official Institutional Document Summary &amp; Access Audit Report</div>
+  <div style="font-size: 8pt; color: #555; margin-top: 5px;">Generated: <?= e(date('F j, Y · g:i A')) ?> by Administrator (<?= e($u['username']) ?>)</div>
+</div>
+
 <div class="page-head">
   <div>
-    <h1>Document reports</h1>
-    <p class="page-sub">Generate a printable summary of documents and their download counts.</p>
+    <h1>Institutional Document Reports</h1>
+    <p class="page-sub">Generate, filter, and print comprehensive document inventory and access audit summaries.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
   </div>
 </div>
 
-<form method="get" action="<?= e(url('admin/reports.php')) ?>" class="card mb-4">
-  <div class="card-body row g-2 align-items-end">
+<form method="get" action="<?= e(url('admin/reports.php')) ?>" class="card mb-4 shadow-sm card--accent-brand d-print-none">
+  <div class="card-body p-3 row g-2 align-items-end">
     <div class="col-md-3">
-      <label for="category_id" class="form-label">Category</label>
+      <label for="category_id" class="form-label">Classification Category</label>
       <select class="form-select" id="category_id" name="category_id">
-        <option value="">All categories</option>
+        <option value="">All Categories</option>
         <?php foreach ($categories as $c): ?>
           <option value="<?= (int) $c['category_id'] ?>" <?= $cat === (string) $c['category_id'] ? 'selected' : '' ?>><?= e($c['category_name']) ?></option>
         <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-2">
-      <label for="status" class="form-label">Status</label>
+      <label for="status" class="form-label">Review Status</label>
       <select class="form-select" id="status" name="status">
-        <option value="">Any</option>
+        <option value="">Any Status</option>
         <?php foreach (['pending', 'approved', 'rejected'] as $s): ?>
           <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
         <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-2">
-      <label for="from" class="form-label">From</label>
+      <label for="from" class="form-label">From Date</label>
       <input type="date" class="form-control" id="from" name="from" value="<?= e($from) ?>">
     </div>
     <div class="col-md-2">
-      <label for="to" class="form-label">To</label>
+      <label for="to" class="form-label">To Date</label>
       <input type="date" class="form-control" id="to" name="to" value="<?= e($to) ?>">
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 d-flex gap-2">
       <input type="hidden" name="go" value="1">
-      <button type="submit" class="btn btn-primary"><i class="bi bi-bar-chart me-1"></i> Generate report</button>
+      <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-bar-chart me-1"></i> Generate Report</button>
       <?php if ($go): ?>
-        <button type="button" class="btn btn-outline-secondary" id="print-report"><i class="bi bi-printer me-1"></i> Print</button>
+        <button type="button" class="btn btn-outline-secondary" id="print-report" title="Print formal report"><i class="bi bi-printer me-1"></i> Print</button>
       <?php endif; ?>
     </div>
   </div>
 </form>
 
 <?php if ($go): ?>
-  <div class="card">
-    <div class="card-header">
-      <i class="bi bi-bar-chart me-1"></i> Report results — <?= count($docs) ?> document(s)
-      <span class="ms-auto small text-muted">Generated <?= e(date('Y-m-d H:i')) ?> by <?= e($u['username']) ?></span>
+  <div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <i class="bi bi-bar-chart me-1"></i> Summary Results — <strong><?= count($docs) ?></strong> document record(s)
+      </div>
+      <span class="small text-muted">Generated <?= e(date('Y-m-d H:i')) ?> by <?= e($u['username']) ?></span>
     </div>
     <div class="table-responsive sdms-table-wrap" role="region" aria-label="Report results table" tabindex="0">
       <table class="table table-hover sdms-card-table">
-        <thead><tr><th>Document</th><th>Category</th><th>Uploaded by</th><th>Status</th><th>Size</th><th>Created</th><th class="text-end">Downloads</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Document Title</th>
+            <th>Category</th>
+            <th>Uploader</th>
+            <th>Status</th>
+            <th>File Size</th>
+            <th>Created Date</th>
+            <th class="text-end">Downloads</th>
+          </tr>
+        </thead>
         <tbody>
-          <?php if ($docs === []): ?><tr><td colspan="7"><div class="empty"><i class="bi bi-inbox"></i>No documents match these filters.</div></td></tr><?php endif; ?>
+          <?php if ($docs === []): ?>
+            <tr><td colspan="7"><div class="empty"><i class="bi bi-inbox"></i>No documents found matching the specified report parameters.</div></td></tr>
+          <?php endif; ?>
           <?php foreach ($docs as $d): ?>
             <tr>
-              <td data-label="Document">
+              <td data-label="Document Title">
                 <div class="doc-cell">
                   <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                   <span class="doc-title"><?= e($d['title']) ?></span>
                 </div>
               </td>
               <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
-              <td data-label="Uploaded by"><?= e($d['uploader_name']) ?></td>
+              <td data-label="Uploader"><?= e($d['uploader_name']) ?></td>
               <td data-label="Status"><?= status_badge($d['status']) ?></td>
-              <td data-label="Size"><?= e(bytes_for_humans((int) $d['file_size'])) ?></td>
-              <td data-label="Created"><?= e($d['created_at']) ?></td>
-              <td class="text-end" data-label="Downloads"><span class="pill pill--neutral"><i class="bi bi-download"></i><?= (int) $d['downloads'] ?></span></td>
+              <td data-label="File Size" class="text-nowrap"><?= e(bytes_for_humans((int) $d['file_size'])) ?></td>
+              <td data-label="Created Date" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+              <td class="text-end" data-label="Downloads">
+                <span class="pill pill--neutral"><i class="bi bi-download"></i><?= (int) $d['downloads'] ?></span>
+              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>
