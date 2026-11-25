@@ -1,0 +1,18 @@
+# SDMS — Front Controller (.htaccess for public/)
+# Rewrites all non-file, non-directory requests to index.php
+# This enables clean URLs and ensures the navbar/sidebar is rendered properly.
+
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+    RewriteEngine On
+
+    # Don't rewrite requests for existing files/directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Rewrite everything else to index.php (the front controller)
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Fallback for mod_cgi or when mod_rewrite is unavailable:
+# (index.php already handles the redirect logic: login vs dashboard)

@@ -127,6 +127,7 @@ CREATE TABLE document_access_logs (
   action      ENUM('view','download') NOT NULL,
   granted     TINYINT(1) NOT NULL DEFAULT 1,
   ip_address  VARCHAR(45) NULL,
+  user_agent  VARCHAR(255) NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_alog_doc  FOREIGN KEY (document_id) REFERENCES documents(document_id),
   CONSTRAINT fk_alog_user FOREIGN KEY (user_id)     REFERENCES users(user_id),

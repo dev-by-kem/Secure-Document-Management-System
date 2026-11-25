@@ -41,32 +41,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hash   = hash_file('sha256', $_FILES['document_file']['tmp_name']); // integrity checksum (SR-10)
     $stored = bin2hex(random_bytes(16)) . '.' . $check['ext'];            // server-generated name (SR-4)
 
-    if (!move_uploaded_file($_FILES['document_file']['tmp_name'], UPLOAD_DIR . '/' . $stored)) {
+    $status = ((int) $cat['requires_approval'] === 1) ? 'pending' : 'approved';
+
+    $db = db();
+    $db->beginTransaction();
+    try {
+        $stmt = $db->prepare(
+            'INSERT INTO documents (title, description, category_id, uploaded_by, original_filename, stored_filename,
+                                    file_ext, mime_type, file_size, file_hash, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([
+            $title,
+            $desc,
+            $catId,
+            (int) $u['user_id'],
+            mb_substr((string) $_FILES['document_file']['name'], 0, 255),
+            $stored,
+            $check['ext'],
+            (string) $check['mime'],
+            (int) $_FILES['document_file']['size'],
+            $hash,
+            $status,
+        ]);
+        $docId = (int) $db->lastInsertId();
+
+        // Move file only after metadata insert succeeds within the transaction.
+        // If the move fails, we roll back the INSERT so no orphan DB row remains.
+        if (!move_uploaded_file($_FILES['document_file']['tmp_name'], UPLOAD_DIR . '/' . $stored)) {
+            throw new Exception('Saving the uploaded file failed.');
+        }
+
+        $db->commit();
+    } catch (Throwable $e) {
+        $db->rollBack();
+        // Clean up any orphan file that may have been moved before commit failed.
+        if (is_file(UPLOAD_DIR . '/' . $stored)) {
+            @unlink(UPLOAD_DIR . '/' . $stored);
+        }
         flash_set('danger', 'Saving the uploaded file failed. Please try again.');
         redirect('documents/upload.php');
     }
-
-    $status = ((int) $cat['requires_approval'] === 1) ? 'pending' : 'approved';
-
-    $stmt = db()->prepare(
-        'INSERT INTO documents (title, description, category_id, uploaded_by, original_filename, stored_filename,
-                                file_ext, mime_type, file_size, file_hash, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    );
-    $stmt->execute([
-        $title,
-        $desc,
-        $catId,
-        (int) $u['user_id'],
-        mb_substr((string) $_FILES['document_file']['name'], 0, 255),
-        $stored,
-        $check['ext'],
-        (string) $check['mime'],
-        (int) $_FILES['document_file']['size'],
-        $hash,
-        $status,
-    ]);
-    $docId = (int) db()->lastInsertId();
 
     log_activity((int) $u['user_id'], 'UPLOAD_DOCUMENT', 'document', $docId, $title . ' (' . $status . ')');
     flash_set('success', $status === 'pending'

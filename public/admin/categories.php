@@ -115,7 +115,7 @@ require BASE_PATH . '/app/includes/header.php';
         <tr>
           <th>Category Classification</th>
           <th>Documents</th>
-          <th style="min-width:340px">Modify Settings</th>
+          <th data-label="Modify Settings">
           <th class="text-end">Action</th>
         </tr>
       </thead>

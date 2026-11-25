@@ -173,7 +173,7 @@ require BASE_PATH . '/app/includes/header.php';
           <th>User Profile</th>
           <th>Role &amp; Status</th>
           <th>Last Login</th>
-          <th style="min-width:320px">Account Details</th>
+          <th data-label="Account Details">
           <th>Reset Password</th>
           <th class="text-end">Account State</th>
         </tr>

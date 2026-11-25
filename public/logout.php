@@ -1,8 +1,15 @@
 <?php
 require_once __DIR__ . '/../app/bootstrap.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
     do_logout();
-    redirect('login.php');
+    // Session destroyed — be sure cookie is expired and user is logged out
+    // Redirect to login unconditionally; exit to prevent double headers
+    header('Location: ' . url('login.php'));
+    exit;
 }
-redirect(current_user() !== null ? 'dashboard.php' : 'login.php');
+// If we reach here, request was not POST — redirect to login so the
+// login page can show its form rather than dashboard content
+header('Location: ' . url('login.php'));
+exit;

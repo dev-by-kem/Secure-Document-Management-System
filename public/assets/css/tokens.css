@@ -32,6 +32,35 @@
   --sdms-border-subtle: #edf2f7;
   --sdms-border-focus: #064e3b;
 
+  /* Typography — formal, modern, clean (not Times New Roman-like) */
+  --sdms-font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* CvSU Brand & Links (Dark Emerald Green) */
+  --sdms-brand: #064e3b;            /* CvSU Dark Emerald Green (WCAG AAA 10:1 on white) */
+  --sdms-brand-hover: #022c22;      /* Deep forest green */
+  --sdms-brand-active: #065f46;     /* Emerald 800 */
+  --sdms-brand-soft: rgba(6, 78, 59, 0.08);
+  --sdms-brand-subtle: rgba(6, 78, 59, 0.04);
+  --sdms-brand-contrast: #ffffff;
+
+  --sdms-link: #065f46;             /* 8.5:1 contrast on white */
+  --sdms-link-hover: #022c22;
+
+  /* CvSU Accent (Warm Academic Gold / Amber) */
+  --sdms-accent: #b45309;           /* Amber 700 */
+  --sdms-accent-hover: #92400e;     /* Amber 800 */
+  --sdms-accent-soft: rgba(180, 83, 9, 0.10);
+  --sdms-accent-contrast: #ffffff;
+
+  /* Clean Formal Surfaces (White & Shades) */
+  --sdms-page-bg: #f8fafc;          /* Neutral slate 50 - formal canvas */
+  --sdms-surface: #ffffff;          /* Pure white card surface */
+  --sdms-surface-muted: #f1f5f9;    /* Refined slate 100 for table heads & panels */
+  --sdms-surface-hover: #f8fafc;
+  --sdms-border: #e2e8f0;          /* Crisp slate 200 border */
+  --sdms-border-subtle: #edf2f7;
+  --sdms-border-focus: #064e3b;
+
   /* Typography & High-Contrast Ink */
   --sdms-text: #0f172a;             /* Slate 900 - authoritative formal ink */
   --sdms-text-muted: #475569;       /* Slate 600 - 6.2:1 contrast on white */
@@ -72,62 +101,91 @@
   --sdms-space-5: 1.5rem;
   --sdms-space-6: 2rem;
 
+  /* Sidebar width - responsive: full width on narrow screens, 250px on wider */
+  --sdms-sidebar-width: 250px;
+  --sdms-sidebar-collapsed-width: 72px;
+
+/* Responsive sidebar: reduces to collapsed width below 768px */
+@media (max-width: 768px) {
+  :root {
+    --sdms-sidebar-width: var(--sdms-sidebar-collapsed-width);
+  }
+}
+
+  /* Modern animation & easing tokens */
+  --sdms-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --sdms-ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+  --sdms-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --sdms-duration-fast: 150ms;
+  --sdms-duration-base: 250ms;
+  --sdms-duration-slow: 400ms;
+
+  /* Modern surface elevations */
+  --sdms-elev-1: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --sdms-elev-2: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --sdms-elev-3: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+
   color-scheme: light;
 }
 
 [data-bs-theme="dark"] {
-  /* CvSU Brand in Dark Mode (High-contrast emerald) */
-  --sdms-brand: #10b981;            /* Emerald 500 */
-  --sdms-brand-hover: #34d399;      /* Emerald 400 */
-  --sdms-brand-active: #059669;
-  --sdms-brand-soft: rgba(16, 185, 129, 0.16);
-  --sdms-brand-subtle: rgba(16, 185, 129, 0.08);
-  --sdms-brand-contrast: #064e3b;
-  
-  --sdms-link: #34d399;             /* Emerald 400 (8.8:1 on dark) */
-  --sdms-link-hover: #6ee7b7;
+  /* CvSU Brand in Dark Mode (Muted emerald — not neon) */
+  --sdms-brand: #6b9a88;            /* Muted emerald green */
+  --sdms-brand-hover: #8fb3a8;      /* Softer emerald */
+  --sdms-brand-active: #5a7f71;     /* Deep muted emerald */
+  --sdms-brand-soft: rgba(107, 154, 136, 0.16);
+  --sdms-brand-subtle: rgba(107, 154, 136, 0.08);
+  --sdms-brand-contrast: #0b121b;
 
-  /* Accent in Dark Mode */
-  --sdms-accent: #fbbf24;           /* Amber 400 */
-  --sdms-accent-hover: #fcd34d;
-  --sdms-accent-soft: rgba(251, 191, 36, 0.16);
-  --sdms-accent-contrast: #78350f;
+  --sdms-link: #8fb3a8;             /* Muted emerald link */
+  --sdms-link-hover: #bcd6ca;
 
-  /* Surfaces in Dark Mode */
-  --sdms-page-bg: #0b0f17;          /* Slate 950 obsidian */
-  --sdms-surface: #111827;          /* Slate 900 */
-  --sdms-surface-muted: #1e293b;    /* Slate 800 */
-  --sdms-surface-hover: #1e293b;
-  --sdms-border: #334155;          /* Slate 700 */
+  /* Accent in Dark Mode (Muted gold) */
+  --sdms-accent: #c9a227;           /* Muted academic gold */
+  --sdms-accent-hover: #d9b64c;
+  --sdms-accent-soft: rgba(201, 162, 39, 0.16);
+  --sdms-accent-contrast: #3e2712;
+
+  /* Surfaces in Dark Mode (Matte obsidian slate — not neon blue) */
+  --sdms-page-bg: #0b1118;          /* Matte obsidian */
+  --sdms-surface: #121922;          /* Matte slate surface */
+  --sdms-surface-muted: #1a232e;    /* Slightly lighter matte slate */
+  --sdms-surface-hover: #1f2a36;
+  --sdms-border: #2d3a48;           /* Matte slate border */
   --sdms-border-subtle: #1e293b;
-  --sdms-border-focus: #10b981;
+  --sdms-border-focus: #6b9a88;
 
-  /* Text in Dark Mode */
-  --sdms-text: #f8fafc;             /* Slate 50 */
+  /* Text in Dark Mode (Matte, readable, not glowing) */
+  --sdms-text: #e2e8f0;             /* Matte slate 200 */
   --sdms-text-muted: #94a3b8;       /* Slate 400 */
   --sdms-text-subtle: #64748b;
 
   /* Navigation in Dark Mode */
-  --sdms-navbar-bg: #0f172a;
-  --sdms-navbar-border: #1e293b;
-  --sdms-navbar-text: #f8fafc;
+  --sdms-navbar-bg: #121922;
+  --sdms-navbar-border: #2d3a48;
+  --sdms-navbar-text: #e2e8f0;
   --sdms-navbar-muted: #94a3b8;
-  --sdms-topbar-accent: linear-gradient(90deg, #10b981 0%, #059669 75%, #fbbf24 75%, #fbbf24 100%);
+  --sdms-topbar-accent: linear-gradient(90deg, #6b9a88 0%, #5a7f71 75%, #c9a227 75%, #c9a227 100%);
 
-  /* Semantics in Dark Mode */
-  --sdms-success: #4ade80;
-  --sdms-success-soft: rgba(74, 222, 128, 0.16);
-  --sdms-warning: #fbbf24;
-  --sdms-warning-soft: rgba(251, 191, 36, 0.16);
-  --sdms-danger: #f87171;
-  --sdms-danger-soft: rgba(248, 113, 113, 0.16);
-  --sdms-info: #7dd3fc;
-  --sdms-info-soft: rgba(125, 211, 252, 0.16);
+  /* Semantics in Dark Mode (Muted, not neon) */
+  --sdms-success: #6fc08a;          /* Muted green */
+  --sdms-success-soft: rgba(111, 192, 138, 0.16);
+  --sdms-warning: #d9a441;          /* Muted amber */
+  --sdms-warning-soft: rgba(217, 164, 65, 0.16);
+  --sdms-danger: #e0827a;           /* Muted red */
+  --sdms-danger-soft: rgba(224, 130, 122, 0.16);
+  --sdms-info: #8bb8d8;             /* Muted blue */
+  --sdms-info-soft: rgba(139, 184, 216, 0.16);
 
-  /* Shadows in Dark Mode */
-  --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --sdms-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35);
-  --sdms-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
+  /* Shadows in Dark Mode (Matte, soft) */
+  --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --sdms-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.4);
+  --sdms-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.55);
+
+  /* Modern surface elevations in Dark Mode */
+  --sdms-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sdms-elev-2: 0 4px 6px rgba(0, 0, 0, 0.45);
+  --sdms-elev-3: 0 10px 15px rgba(0, 0, 0, 0.5);
 
   color-scheme: dark;
 }

@@ -26,7 +26,7 @@
             // Update icon inside the button if it exists
             var icon = btn.querySelector('i');
             if (icon) {
-                icon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars';
+                icon.className = isDark ? 'bi bi-sun' : 'bi bi-moon';
             }
             // Update text if button has a label span
             var label = btn.querySelector('.theme-label');
@@ -37,8 +37,16 @@
     }
 
     function applyTheme(theme) {
+        // Suppress transitions for an instant theme switch
+        document.documentElement.classList.add('theme-switching');
         document.documentElement.setAttribute('data-bs-theme', theme);
         updateThemeUI(theme);
+        // Allow reflow, then release the transition lock
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                document.documentElement.classList.remove('theme-switching');
+            });
+        });
     }
 
     function storedTheme() {

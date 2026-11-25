@@ -31,6 +31,15 @@ if (!is_file($path)) {
     exit('404 — The stored file is missing. Contact the administrator.');
 }
 
+// Re-verify SHA-256 integrity before serving bytes (SR-10).
+$actualHash = hash_file('sha256', $path);
+if ($actualHash !== $doc['file_hash']) {
+    log_access((int) $doc['document_id'], (int) $u['user_id'], 'download', false);
+    log_activity((int) $u['user_id'], 'CHECKSUM_MISMATCH', 'document', (int) $doc['document_id'], 'expected=' . $doc['file_hash'] . ' actual=' . $actualHash);
+    http_response_code(500);
+    exit('500 — File integrity check failed. The stored file does not match its recorded checksum. Contact the administrator.');
+}
+
 log_access((int) $doc['document_id'], (int) $u['user_id'], 'download', true);
 log_activity((int) $u['user_id'], 'DOWNLOAD_DOCUMENT', 'document', (int) $doc['document_id'], $doc['title']);
 

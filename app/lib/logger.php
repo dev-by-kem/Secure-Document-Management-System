@@ -27,9 +27,9 @@ function log_access(int $documentId, ?int $userId, string $action, bool $granted
 {
     try {
         $stmt = db()->prepare(
-            'INSERT INTO document_access_logs (document_id, user_id, action, granted, ip_address) VALUES (?, ?, ?, ?, ?)'
+            'INSERT INTO document_access_logs (document_id, user_id, action, granted, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)'
         );
-        $stmt->execute([$documentId, $userId, $action === 'download' ? 'download' : 'view', $granted ? 1 : 0, client_ip()]);
+        $stmt->execute([$documentId, $userId, $action === 'download' ? 'download' : 'view', $granted ? 1 : 0, client_ip(), user_agent()]);
     } catch (Throwable $e) {
         error_log('log_access failed: ' . $e->getMessage());
     }

@@ -8,7 +8,7 @@
 body {
   background: var(--sdms-page-bg);
   color: var(--sdms-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--sdms-font-sans);
   font-size: 0.95rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -31,7 +31,7 @@ h3 { font-size: 1.15rem; font-weight: 650; }
 a {
   color: var(--sdms-link);
   text-decoration: none;
-  transition: color 0.15s ease-in-out;
+  transition: color var(--sdms-duration-base) var(--sdms-ease);
 }
 a:hover {
   color: var(--sdms-link-hover);
@@ -69,4 +69,31 @@ a:hover {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Suppress all transitions while switching themes (instant toggle) */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ---------- Subtle Entrance Animations ---------- */
+@keyframes sdms-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sdms-animate {
+  animation: sdms-fade-in var(--sdms-duration-base) var(--sdms-ease-out) both;
+}
+
+/* Page content subtle reveal */
+main > .page-head,
+main > .card,
+main > .search,
+main > .alert {
+  animation: sdms-fade-in var(--sdms-duration-slow) var(--sdms-ease-out) both;
 }

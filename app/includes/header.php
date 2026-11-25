@@ -28,7 +28,7 @@ try {
     document.documentElement.setAttribute('data-bs-theme', t);
 } catch (e) {}
 </script>
-<title><?= e($pageTitle ?? 'SDMS') ?> · SDMS</title>
+<title><?= e($pageTitle ?? 'Secure Document Management System') ?></title>
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap-icons.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.0-cvsu')) ?>">
@@ -36,7 +36,7 @@ try {
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
 <?php require __DIR__ . '/nav.php'; ?>
-<main id="main-content" class="container-xl py-4 py-lg-5" tabindex="-1">
+<main id="main-content" class="sdms-main container-xl py-4 py-lg-5" tabindex="-1">
 <div class="flash-region" aria-live="polite">
 <?php foreach (flash_take() as $f): ?>
   <div class="alert alert-<?= e($f['type']) ?> alert-dismissible fade show d-flex align-items-start gap-2" role="alert">
