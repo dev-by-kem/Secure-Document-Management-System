@@ -14,6 +14,11 @@ $stats = [
     'categories'    => (int) db()->query('SELECT COUNT(*) AS c FROM document_categories')->fetch()['c'],
 ];
 
+$oldestPending = null;
+if ($stats['docs_pending'] > 0) {
+    $oldestPending = db()->query("SELECT MIN(created_at) AS m FROM documents WHERE is_deleted = 0 AND status = 'pending'")->fetch()['m'] ?? null;
+}
+
 $recent = db()->query(
     'SELECT l.log_id, l.action, l.details, l.created_at, u.username, u.full_name, l.ip_address
      FROM activity_logs l LEFT JOIN users u ON u.user_id = l.user_id
@@ -41,7 +46,7 @@ require BASE_PATH . '/app/includes/header.php';
   <div class="alert alert-warning d-flex align-items-center gap-3 mb-4 shadow-sm" role="alert">
     <i class="bi bi-hourglass-split fs-4 text-warning"></i>
     <div class="flex-grow-1">
-      <strong>Action Required:</strong> <?= $stats['docs_pending'] ?> document<?= $stats['docs_pending'] === 1 ? '' : 's' ?> awaiting institutional verification. Unapproved files remain confidential and inaccessible to viewers.
+      <strong>Action Required:</strong> <?= $stats['docs_pending'] ?> document<?= $stats['docs_pending'] === 1 ? '' : 's' ?> awaiting institutional verification<?php if ($oldestPending): ?> (oldest submitted <?= e(format_datetime($oldestPending)) ?>)<?php endif; ?>. Unapproved files remain confidential and inaccessible to viewers.
     </div>
     <a class="btn btn-warning btn-sm text-nowrap fw-bold" href="<?= e(url('admin/approvals.php')) ?>">Review Submissions</a>
   </div>
@@ -122,14 +127,17 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="User Account">
               <div class="user-cell">
                 <?= avatar($r['full_name'] ?? '?') ?>
-                <span class="name"><?= e($r['username'] ?? '—') ?></span>
+                <span class="user-identity">
+                  <span class="name"><?= e($r['full_name'] ?? 'Unknown user') ?></span>
+                  <span class="sub">@<?= e($r['username'] ?? '—') ?></span>
+                </span>
               </div>
             </td>
             <td data-label="Action">
               <span class="pill pill--neutral"><i class="bi bi-shield-check"></i><?= e($r['action']) ?></span>
             </td>
             <td data-label="Event Details" class="small"><?= e($r['details'] ?? '') ?></td>
-            <td data-label="Timestamp" class="small text-nowrap"><?= e($r['created_at']) ?></td>
+            <td data-label="Timestamp" class="small text-nowrap"><?= e(format_datetime($r['created_at'])) ?></td>
             <td data-label="Client IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
           </tr>
         <?php endforeach; ?>

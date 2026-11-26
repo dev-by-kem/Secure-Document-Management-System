@@ -35,18 +35,22 @@ try {
 <title>Sign in · CvSU SDMS</title>
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('assets/css/bootstrap-icons.min.css')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.0-cvsu')) ?>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.5-identity')) ?>">
 </head>
 <body>
 <main class="auth-page">
+  <div class="auth-background" aria-hidden="true"></div>
   <div class="auth-card">
     <div class="auth-header-card">
       <div class="auth-crest">
         <i class="bi bi-shield-check"></i>
       </div>
       <div class="auth-univ-title">Cavite State University · CEIT</div>
-      <h1 class="auth-title">Document Management Portal</h1>
-      <p class="auth-sub">Secure digital repository for academic and administrative files</p>
+      <h1 class="auth-title">Secure Document Management Portal</h1>
+      <p class="auth-sub">Centralized access to trusted academic and administrative documents</p>
     </div>
 
     <div class="card auth-form-card shadow-sm">
@@ -80,10 +84,12 @@ try {
             <div class="input-group">
               <span class="input-group-text bg-transparent text-muted"><i class="bi bi-lock"></i></span>
               <input type="password" class="form-control" id="password" name="password"
-                     autocomplete="current-password" required enterkeyhint="done" aria-describedby="password-toggle-help" placeholder="••••••••">
-              <button type="button" class="btn btn-outline-secondary" data-password-toggle="#password" aria-pressed="false">Show</button>
+                     autocomplete="current-password" required enterkeyhint="done" placeholder="••••••••">
+              <button type="button" class="btn btn-outline-secondary password-toggle-btn" data-password-toggle="#password" aria-pressed="false" aria-label="Show password" title="Show password">
+                <i class="bi bi-eye" aria-hidden="true"></i>
+                <span class="visually-hidden">Show password</span>
+              </button>
             </div>
-            <div id="password-toggle-help" class="form-text">Your password is encrypted with modern bcrypt hashing.</div>
           </div>
           <button type="submit" class="btn btn-primary w-100 py-2">
             <i class="bi bi-box-arrow-in-right me-1"></i> Sign in
@@ -92,53 +98,12 @@ try {
       </div>
     </div>
 
-    <div class="card mt-3 shadow-sm">
-      <div class="card-body p-3">
-        <div class="fw-bold small text-uppercase text-muted letter-spacing-1 mb-2">Portal Access Tiers</div>
-        <div class="role-list">
-          <div class="role-row">
-            <i class="bi bi-person-badge"></i>
-            <div>
-              <div class="t">Staff &amp; Faculty</div>
-              <div class="d">Upload academic materials, assignments, research files, and project documents.</div>
-            </div>
-          </div>
-          <div class="role-row">
-            <i class="bi bi-eye"></i>
-            <div>
-              <div class="t">Student &amp; Viewer</div>
-              <div class="d">Search, view, and download verified documents approved for public release.</div>
-            </div>
-          </div>
-          <div class="role-row">
-            <i class="bi bi-shield-lock"></i>
-            <div>
-              <div class="t">System Administrator</div>
-              <div class="d">Role-based access management, approval reviews, category rules, and system auditing.</div>
-            </div>
-          </div>
-        </div>
-        <?php if (is_localhost()): ?>
-        <details class="mt-3 small border-top pt-2">
-          <summary class="text-muted fw-semibold" style="cursor:pointer;"><i class="bi bi-terminal me-1"></i> Demo accounts (Local Testing Only)</summary>
-          <div class="bg-light p-2 rounded mt-2 border">
-            <ul class="mb-1 ps-3">
-              <li><code>admin</code> / <code>Admin@123</code> — Full Administrative Control</li>
-              <li><code>staff</code> / <code>Staff@123</code> — Upload &amp; Manage Submissions</li>
-              <li><code>viewer</code> / <code>Viewer@123</code> — View &amp; Download Approved Files</li>
-            </ul>
-          </div>
-        </details>
-        <?php endif; ?>
-      </div>
-    </div>
-
     <div class="security-trust-badge">
       <i class="bi bi-shield-check"></i>
-      <span>Cavite State University · ITEC 85 Information Security</span>
+      <span>Protected by Cavite State University information-security controls</span>
     </div>
   </div>
 </main>
-<script src="<?= e(url('assets/js/app.js?v=2.0-cvsu')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=2.4-login-copy')) ?>"></script>
 </body>
 </html>

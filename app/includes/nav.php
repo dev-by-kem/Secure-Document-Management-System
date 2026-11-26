@@ -10,8 +10,8 @@ $isStaff = $u !== null && $u['role_name'] === 'staff';
 $isDocsActive = str_contains($script, '/documents/') || str_contains($script, '/admin/approvals.php') || str_contains($script, '/admin/categories.php');
 $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($script, '/admin/logs.php') || str_contains($script, '/admin/reports.php');
 ?>
-<aside class="sdms-sidebar">
-  <div class="sidebar-brand">
+<aside id="sdmsSidebar" class="sdms-sidebar">
+  <div class="sidebar-brand d-flex align-items-center justify-content-between gap-2">
     <a class="brand" href="<?= e(url('dashboard.php')) ?>">
       <span class="brand-mark"><i class="bi bi-shield-check"></i></span>
       <span class="brand-text">
@@ -19,6 +19,9 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
         <span class="brand-tag d-none d-sm-block">Cavite State University · CEIT</span>
       </span>
     </a>
+    <button type="button" id="mobileNavClose" class="btn-soft d-md-none" aria-label="Close navigation menu">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
   </div>
   <nav class="sidebar-nav" aria-label="Main navigation">
     <ul class="sidebar-nav-list">
@@ -165,7 +168,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
       <button class="sidebar-user-menu-btn" type="button" id="sidebarUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-gear"></i>
       </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="sidebarUserMenu" style="min-width: 220px;">
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu--wide" aria-labelledby="sidebarUserMenu">
         <li>
           <a class="dropdown-item py-2" href="<?= e(url('profile.php')) ?>">
             <i class="bi bi-person-circle me-2"></i> My Account Profile

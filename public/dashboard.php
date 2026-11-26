@@ -26,6 +26,18 @@ $recentStmt = db()->prepare(
 $recentStmt->execute([$u['user_id']]);
 $recentDocs = $recentStmt->fetchAll();
 
+$attentionDocs = [];
+if ($u['role_name'] === 'staff' && ($counts['pending'] > 0 || $counts['rejected'] > 0)) {
+    $attStmt = db()->prepare(
+        "SELECT d.document_id, d.title, d.status, d.review_remarks, d.created_at
+         FROM documents d
+         WHERE d.uploaded_by = ? AND d.is_deleted = 0 AND d.status IN ('rejected', 'pending')
+         ORDER BY FIELD(d.status, 'rejected', 'pending'), d.created_at DESC LIMIT 5"
+    );
+    $attStmt->execute([$u['user_id']]);
+    $attentionDocs = $attStmt->fetchAll();
+}
+
 $pageTitle = 'Dashboard';
 require BASE_PATH . '/app/includes/header.php';
 ?>
@@ -100,10 +112,40 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
 <?php endif; ?>
 
-<div class="card mb-4 shadow-sm card--accent-brand">
-  <div class="card-header bg-transparent py-3">
-    <i class="bi bi-diagram-3 me-2"></i> Document Lifecycle &amp; Security Workflow
+<?php if ($attentionDocs !== []): ?>
+  <div class="card mb-4 shadow-sm card--accent-gold">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div><i class="bi bi-exclamation-diamond me-1"></i> Needs Attention (<?= $counts['rejected'] ?> rejected · <?= $counts['pending'] ?> pending)</div>
+      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/index.php?mine=1')) ?>">View all my uploads <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="list-group list-group-flush">
+      <?php foreach ($attentionDocs as $ad): ?>
+        <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2 py-2 px-3">
+          <div class="min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <a class="fw-semibold text-decoration-none" href="<?= e(url('documents/view.php?id=' . (int) $ad['document_id'])) ?>"><?= e($ad['title']) ?></a>
+              <?= status_badge($ad['status']) ?>
+            </div>
+            <?php if ($ad['status'] === 'rejected' && !empty($ad['review_remarks'])): ?>
+              <div class="small text-danger mt-1">Remarks: <?= e($ad['review_remarks']) ?></div>
+            <?php endif; ?>
+          </div>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/view.php?id=' . (int) $ad['document_id'])) ?>">View</a>
+            <?php if ($ad['status'] === 'rejected'): ?>
+              <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/edit.php?id=' . (int) $ad['document_id'])) ?>">Edit</a>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
   </div>
+<?php endif; ?>
+
+<details class="card mb-4 shadow-sm card--accent-brand">
+  <summary class="card-header bg-transparent py-3" style="cursor:pointer;">
+    <i class="bi bi-diagram-3 me-2"></i> Document Lifecycle &amp; Security Workflow
+  </summary>
   <div class="card-body p-3">
     <div class="row g-2">
       <div class="col-6 col-md-3">
@@ -136,7 +178,7 @@ require BASE_PATH . '/app/includes/header.php';
       </div>
     </div>
   </div>
-</div>
+</details>
 
 <div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
@@ -187,7 +229,7 @@ require BASE_PATH . '/app/includes/header.php';
             </td>
             <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
-            <td data-label="Uploaded On" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+            <td data-label="Uploaded On" class="small text-nowrap"><?= e(format_datetime($d['created_at'])) ?></td>
             <td class="text-end" data-label="Action">
               <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
                 <i class="bi bi-eye"></i>

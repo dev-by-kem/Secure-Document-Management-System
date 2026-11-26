@@ -115,7 +115,7 @@ require BASE_PATH . '/app/includes/header.php';
         <tr>
           <th>Category Classification</th>
           <th>Documents</th>
-          <th data-label="Modify Settings">
+          <th>Modify Settings</th>
           <th class="text-end">Action</th>
         </tr>
       </thead>
@@ -157,11 +157,11 @@ require BASE_PATH . '/app/includes/header.php';
               </form>
             </td>
             <td class="text-end" data-label="Action">
-              <form method="post" action="<?= e(url('admin/categories.php')) ?>">
+              <form method="post" action="<?= e(url('admin/categories.php')) ?>" class="js-confirm" data-confirm-message="Delete category “<?= e($c['category_name']) ?>”? This cannot proceed while documents still use it.">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="category_id" value="<?= (int) $c['category_id'] ?>">
-                <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete category" title="Delete category"
+                <button type="submit" class="btn-icon btn-icon--danger" aria-label="Delete category <?= e($c['category_name']) ?>" title="Delete category"
                         <?= (int) $c['doc_count'] > 0 ? 'disabled title="Cannot delete: category still contains active documents"' : '' ?>>
                   <i class="bi bi-trash3"></i>
                 </button>

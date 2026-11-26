@@ -97,7 +97,7 @@ require BASE_PATH . '/app/includes/header.php';
 </div>
 
 <!-- Decision Filter Tabs -->
-<div class="d-flex flex-wrap gap-2 mb-4 p-2 rounded border bg-white shadow-sm">
+<div class="d-flex flex-wrap gap-2 mb-4 p-2 rounded border bg-body-tertiary shadow-sm">
   <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="btn btn-sm <?= $decision === 'pending' ? 'btn-primary' : 'btn-outline-secondary' ?>">
     <i class="bi bi-hourglass-split me-1"></i> Pending Verification
     <span class="badge <?= $decision === 'pending' ? 'bg-white text-dark' : 'bg-warning text-dark' ?> ms-1"><?= $counts['pending'] ?></span>
@@ -141,7 +141,7 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
 <?php endif; ?>
 
-<?php foreach ($items as $d): ?>
+<?php foreach ($items as $idx => $d): ?>
   <?php
     $accentClass = 'card--accent-gold';
     if ($d['status'] === 'approved') {
@@ -152,42 +152,58 @@ require BASE_PATH . '/app/includes/header.php';
   ?>
   <div class="card mb-3 shadow-sm <?= $accentClass ?>">
     <div class="card-body d-flex flex-wrap gap-3 align-items-center p-3">
-      <span class="doc-ico" style="width:48px;height:48px;font-size:1.35rem;"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
+      <span class="doc-ico doc-ico--lg"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
       <div class="flex-grow-1 min-w-0">
         <div class="d-flex align-items-center gap-2 flex-wrap">
+          <?php if ($decision === 'pending'): ?>
+            <span class="badge bg-body-secondary text-body border">#<?= $idx + 1 ?> of <?= count($items) ?></span>
+          <?php endif; ?>
           <a class="doc-title fs-6 fw-bold" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
           <?= status_badge($d['status']) ?>
         </div>
         <div class="doc-meta mt-1">
           <?= category_chip((int) $d['category_id'], $d['category_name']) ?>
-          <span class="user-cell ms-1"><?= avatar($d['uploader_name']) ?><span><?= e($d['uploader_username']) ?></span></span>
+          <span class="user-cell user-cell--compact ms-1">
+            <?= avatar($d['uploader_name']) ?>
+            <span class="user-identity">
+              <span class="name"><?= e($d['uploader_name']) ?></span>
+              <span class="sub">@<?= e($d['uploader_username']) ?></span>
+            </span>
+          </span>
           <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
-          <span class="dot">Submitted <?= e($d['created_at']) ?></span>
+          <span class="dot">Submitted <?= e(format_datetime($d['created_at'])) ?></span>
           <?php if (!empty($d['reviewed_at'])): ?>
-            <span class="dot">Decided <?= e($d['reviewed_at']) ?> by <strong><?= e($d['reviewer_name'] ?? 'Admin') ?></strong></span>
+            <span class="dot">Decided <?= e(format_datetime($d['reviewed_at'])) ?> by <strong><?= e($d['reviewer_name'] ?? 'Admin') ?></strong></span>
           <?php endif; ?>
         </div>
         <?php if (!empty($d['review_remarks'])): ?>
-          <div class="mt-2 p-2 rounded bg-light border text-danger small">
+          <div class="mt-2 p-2 rounded bg-body-tertiary border text-danger small">
             <strong>Rejection Remarks:</strong> <?= e($d['review_remarks']) ?>
           </div>
         <?php endif; ?>
       </div>
 
       <?php if ($d['status'] === 'pending'): ?>
-        <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
-          <?= csrf_field() ?>
-          <input type="hidden" name="document_id" value="<?= (int) $d['document_id'] ?>">
-          <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
-          <input type="text" class="form-control form-control-sm" style="min-width:240px" id="rm-<?= (int) $d['document_id'] ?>"
-                 name="remarks" placeholder="Remarks (required to reject)" maxlength="255">
-          <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm">
-            <i class="bi bi-check2-circle me-1"></i> Approve
-          </button>
-          <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm">
-            <i class="bi bi-x-circle me-1"></i> Reject
-          </button>
-        </form>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" title="Inspect document"><i class="bi bi-eye me-1"></i> View</a>
+          <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" title="Download file"><i class="bi bi-download me-1"></i> Download</a>
+          <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
+            <?= csrf_field() ?>
+            <input type="hidden" name="document_id" value="<?= (int) $d['document_id'] ?>">
+            <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
+            <textarea class="form-control form-control-sm remarks-input" id="rm-<?= (int) $d['document_id'] ?>"
+                      name="remarks" rows="2" placeholder="Remarks (required to reject)" maxlength="255"></textarea>
+            <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm"
+                    data-confirm-message="Approve and publish “<?= e($d['title']) ?>” to authorized users?">
+              <i class="bi bi-check2-circle me-1"></i> Approve
+            </button>
+            <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm"
+                    data-require-field="#rm-<?= (int) $d['document_id'] ?>"
+                    data-confirm-message="Reject “<?= e($d['title']) ?>”? The uploader will see the rejection remarks.">
+              <i class="bi bi-x-circle me-1"></i> Reject
+            </button>
+          </form>
+        </div>
       <?php else: ?>
         <div class="d-flex gap-2">
           <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-eye me-1"></i> View</a>
@@ -218,7 +234,7 @@ require BASE_PATH . '/app/includes/header.php';
               <td data-label="Document Title"><a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $r['document_id'])) ?>"><?= e($r['title']) ?></a></td>
               <td data-label="Decision"><?= status_badge($r['status']) ?></td>
               <td data-label="Reviewed By"><?= e($r['reviewer_name'] ?? '—') ?></td>
-              <td data-label="Timestamp" class="small text-nowrap"><?= e($r['reviewed_at'] ?? '') ?></td>
+              <td data-label="Timestamp" class="small text-nowrap"><?= e(format_datetime($r['reviewed_at'] ?? '')) ?></td>
               <td data-label="Administrative Remarks" class="small"><?= e($r['review_remarks'] ?? '—') ?></td>
             </tr>
           <?php endforeach; ?>

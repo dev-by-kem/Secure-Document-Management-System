@@ -32,34 +32,9 @@
   --sdms-border-subtle: #edf2f7;
   --sdms-border-focus: #064e3b;
 
-  /* Typography — formal, modern, clean (not Times New Roman-like) */
-  --sdms-font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-
-  /* CvSU Brand & Links (Dark Emerald Green) */
-  --sdms-brand: #064e3b;            /* CvSU Dark Emerald Green (WCAG AAA 10:1 on white) */
-  --sdms-brand-hover: #022c22;      /* Deep forest green */
-  --sdms-brand-active: #065f46;     /* Emerald 800 */
-  --sdms-brand-soft: rgba(6, 78, 59, 0.08);
-  --sdms-brand-subtle: rgba(6, 78, 59, 0.04);
-  --sdms-brand-contrast: #ffffff;
-
-  --sdms-link: #065f46;             /* 8.5:1 contrast on white */
-  --sdms-link-hover: #022c22;
-
-  /* CvSU Accent (Warm Academic Gold / Amber) */
-  --sdms-accent: #b45309;           /* Amber 700 */
-  --sdms-accent-hover: #92400e;     /* Amber 800 */
-  --sdms-accent-soft: rgba(180, 83, 9, 0.10);
-  --sdms-accent-contrast: #ffffff;
-
-  /* Clean Formal Surfaces (White & Shades) */
-  --sdms-page-bg: #f8fafc;          /* Neutral slate 50 - formal canvas */
-  --sdms-surface: #ffffff;          /* Pure white card surface */
-  --sdms-surface-muted: #f1f5f9;    /* Refined slate 100 for table heads & panels */
-  --sdms-surface-hover: #f8fafc;
-  --sdms-border: #e2e8f0;          /* Crisp slate 200 border */
-  --sdms-border-subtle: #edf2f7;
-  --sdms-border-focus: #064e3b;
+  /* Typography — Inter for UI clarity; Geist Mono for technical values */
+  --sdms-font-sans: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --sdms-font-mono: "Geist Mono", "SFMono-Regular", "Cascadia Code", "Roboto Mono", Consolas, "Liberation Mono", monospace;
 
   /* Typography & High-Contrast Ink */
   --sdms-text: #0f172a;             /* Slate 900 - authoritative formal ink */
@@ -101,16 +76,9 @@
   --sdms-space-5: 1.5rem;
   --sdms-space-6: 2rem;
 
-  /* Sidebar width - responsive: full width on narrow screens, 250px on wider */
+  /* Sidebar width */
   --sdms-sidebar-width: 250px;
   --sdms-sidebar-collapsed-width: 72px;
-
-/* Responsive sidebar: reduces to collapsed width below 768px */
-@media (max-width: 768px) {
-  :root {
-    --sdms-sidebar-width: var(--sdms-sidebar-collapsed-width);
-  }
-}
 
   /* Modern animation & easing tokens */
   --sdms-ease: cubic-bezier(0.4, 0, 0.2, 1);

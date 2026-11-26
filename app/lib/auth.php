@@ -69,7 +69,7 @@ function attempt_login(string $username, string $password): array
         return [false, 'Too many failed attempts. Please try again in 15 minutes.'];
     }
 
-    $stmt = db()->prepare('SELECT user_id, password_hash, status FROM users WHERE username = ?');
+    $stmt = db()->prepare('SELECT user_id, password_hash, status, full_name FROM users WHERE username = ?');
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
@@ -102,7 +102,7 @@ function attempt_login(string $username, string $password): array
     session_regenerate_id(true); // defeats session fixation (SR-7)
     $_SESSION['user_id']       = (int) $user['user_id'];
     $_SESSION['last_activity'] = time();
-    return [true, 'Welcome back, ' . $username . '!'];
+    return [true, 'Welcome back, ' . ($user['full_name'] ?: $username) . '!'];
 }
 
 function do_logout(): void

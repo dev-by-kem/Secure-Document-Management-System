@@ -29,6 +29,7 @@ DELETE FROM documents WHERE title IN (
 );
 
 -- 2) Give the demo accounts realistic names (usernames/passwords unchanged)
+UPDATE users SET full_name = 'Andrea Reyes'  WHERE username = 'admin';
 UPDATE users SET full_name = 'Maria Santos'   WHERE username = 'staff';
 UPDATE users SET full_name = 'Juan Dela Cruz' WHERE username = 'viewer';
 

@@ -63,8 +63,8 @@ require BASE_PATH . '/app/includes/header.php';
     <div class="card h-100 shadow-sm card--accent-brand">
       <div class="card-header"><i class="bi bi-file-earmark-text me-1"></i> Document Payload</div>
       <div class="card-body p-4">
-        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded border mb-4">
-          <span class="doc-ico" style="width:56px;height:56px;font-size:1.75rem;"><i class="bi <?= e(file_icon($doc['file_ext'])) ?>"></i></span>
+        <div class="d-flex align-items-center gap-3 p-3 bg-body-tertiary rounded border mb-4">
+          <span class="doc-ico doc-ico--xl"><i class="bi <?= e(file_icon($doc['file_ext'])) ?>"></i></span>
           <div class="min-w-0 flex-grow-1">
             <div class="fs-5 fw-bold text-truncate"><?= e($doc['original_filename']) ?></div>
             <div class="doc-meta mt-1">
@@ -81,7 +81,7 @@ require BASE_PATH . '/app/includes/header.php';
         </div>
 
         <h2 class="h6 fw-bold text-uppercase text-muted letter-spacing-1 mb-2">Abstract &amp; Scope</h2>
-        <div class="p-3 bg-white rounded border mb-3">
+        <div class="p-3 bg-body-tertiary rounded border mb-3">
           <?php if ($doc['description'] !== null && $doc['description'] !== ''): ?>
             <p class="mb-0 text-secondary" style="white-space: pre-line;"><?= e($doc['description']) ?></p>
           <?php else: ?>
@@ -121,23 +121,23 @@ require BASE_PATH . '/app/includes/header.php';
         </div>
         <div class="mb-3">
           <span class="text-muted small d-block">Upload Timestamp</span>
-          <div class="small fw-semibold mt-1"><?= e($doc['created_at']) ?></div>
+          <div class="small fw-semibold mt-1"><?= e(format_datetime($doc['created_at'])) ?></div>
         </div>
         <?php if ($doc['status'] !== 'pending' && $doc['reviewer_name']): ?>
-          <div class="mb-3 p-2 bg-light rounded border">
+          <div class="mb-3 p-2 bg-body-tertiary rounded border">
             <span class="text-muted small d-block">Institutional Reviewer</span>
             <div class="user-cell mt-1">
               <?= avatar($doc['reviewer_name']) ?>
               <div>
                 <div class="name"><?= e($doc['reviewer_name']) ?></div>
-                <div class="small text-muted"><?= e($doc['reviewed_at'] ?? '') ?></div>
+                <div class="small text-muted"><?= e(format_datetime($doc['reviewed_at'] ?? '')) ?></div>
               </div>
             </div>
           </div>
         <?php endif; ?>
         <div class="pt-2 border-top">
           <span class="text-muted small d-block mb-1">Cryptographic Hash (SHA-256)</span>
-          <code class="small text-break bg-light p-2 rounded d-block border font-monospace text-secondary"><?= e($doc['file_hash']) ?></code>
+          <code class="small text-break bg-body-tertiary p-2 rounded d-block border font-monospace text-secondary"><?= e($doc['file_hash']) ?></code>
           <div class="form-text mt-1">Guarantees data integrity against unauthorized alteration.</div>
         </div>
       </div>

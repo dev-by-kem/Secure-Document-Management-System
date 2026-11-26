@@ -19,15 +19,38 @@ if ($to !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to))     { $where[] = 'l.
 if ($actionFilter !== '') { $where[] = 'l.action LIKE ?'; $params[] = '%' . $actionFilter . '%'; }
 if ($userFilter !== '' && ctype_digit($userFilter)) { $where[] = 'l.user_id = ?'; $params[] = (int) $userFilter; }
 
+$perPage = 25;
+$page    = max(1, (int) query_param('page', '1'));
+$whereSql = $where ? ' WHERE ' . implode(' AND ', $where) : '';
+
+$countTable = $tab === 'activity' ? 'activity_logs l' : 'document_access_logs l';
+$countStmt  = db()->prepare("SELECT COUNT(*) AS c FROM $countTable" . $whereSql);
+$countStmt->execute($params);
+$totalRows  = (int) $countStmt->fetch()['c'];
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+$offset = ($page - 1) * $perPage;
+
 $table = $tab === 'activity'
     ? 'SELECT l.*, u.username, u.full_name FROM activity_logs l LEFT JOIN users u ON u.user_id = l.user_id'
     : 'SELECT l.*, u.username, u.full_name, d.title AS document_title FROM document_access_logs l
        LEFT JOIN users u ON u.user_id = l.user_id
        LEFT JOIN documents d ON d.document_id = l.document_id';
-$sql = $table . ($where ? ' WHERE ' . implode(' AND ', $where) : '') . ' ORDER BY l.created_at DESC LIMIT 200';
+$tieBreaker = $tab === 'activity' ? 'l.log_id DESC' : 'l.access_id DESC';
+$sql = $table . $whereSql . ' ORDER BY l.created_at DESC, ' . $tieBreaker . ' LIMIT ' . $perPage . ' OFFSET ' . $offset;
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll();
+
+$filterQuery = [
+    'tab'     => $tab,
+    'user_id' => $userFilter,
+    'action'  => $actionFilter,
+    'from'    => $from,
+    'to'      => $to,
+];
 
 $users = db()->query('SELECT user_id, username FROM users ORDER BY username')->fetchAll();
 
@@ -116,7 +139,7 @@ require BASE_PATH . '/app/includes/header.php';
     <div>
       <i class="bi bi-journal-text me-1"></i>
       <?= $tab === 'activity' ? 'System Operational Activity' : 'Document Confidentiality Access Log' ?>
-      (<?= count($rows) ?> records)
+      (<?= $totalRows ?> records)
     </div>
     <span class="small text-muted">Immutable storage (InnoDB)</span>
   </div>
@@ -130,23 +153,26 @@ require BASE_PATH . '/app/includes/header.php';
             <th>Action Code</th>
             <th>Target Entity</th>
             <th>Security Event Details</th>
-            <th>Origin IP</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if ($rows === []): ?>
-            <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No audit records match the current filter criteria.</div></td></tr>
-          <?php endif; ?>
-          <?php foreach ($rows as $r): ?>
-            <tr>
-              <td data-label="Timestamp" class="text-nowrap small"><?= e($r['created_at']) ?></td>
-              <td data-label="User Account">
-                <div class="user-cell">
-                  <?= avatar($r['full_name'] ?? '?') ?>
-                  <span class="name"><?= e($r['username'] ?? 'Anonymous/Guest') ?></span>
-                </div>
-              </td>
-              <td data-label="Action Code">
+          <th>Origin IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($rows === []): ?>
+          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No audit records match the current filter criteria.</div></td></tr>
+        <?php endif; ?>
+        <?php foreach ($rows as $r): ?>
+          <tr>
+            <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
+            <td data-label="User Account">
+              <div class="user-cell">
+                <?= avatar($r['full_name'] ?? '?') ?>
+                <span class="user-identity">
+                  <span class="name"><?= e($r['full_name'] ?? 'Anonymous/Guest') ?></span>
+                  <span class="sub">@<?= e($r['username'] ?? 'guest') ?></span>
+                </span>
+              </div>
+            </td>
+            <td data-label="Action Code">
                 <span class="pill pill--neutral font-monospace"><i class="bi <?= e(action_icon($r['action'])) ?>"></i><?= e($r['action']) ?></span>
               </td>
               <td data-label="Target Entity" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
@@ -165,23 +191,26 @@ require BASE_PATH . '/app/includes/header.php';
             <th>Document Target</th>
             <th>Action</th>
             <th>Authorization Result</th>
-            <th>Origin IP</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if ($rows === []): ?>
-            <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No access records found.</div></td></tr>
-          <?php endif; ?>
-          <?php foreach ($rows as $r): ?>
-            <tr>
-              <td data-label="Timestamp" class="text-nowrap small"><?= e($r['created_at']) ?></td>
-              <td data-label="User Account">
-                <div class="user-cell">
-                  <?= avatar($r['full_name'] ?? '?') ?>
-                  <span class="name"><?= e($r['username'] ?? 'Anonymous/Guest') ?></span>
-                </div>
-              </td>
-              <td data-label="Document Target">
+          <th>Origin IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($rows === []): ?>
+          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No access records found.</div></td></tr>
+        <?php endif; ?>
+        <?php foreach ($rows as $r): ?>
+          <tr>
+            <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
+            <td data-label="User Account">
+              <div class="user-cell">
+                <?= avatar($r['full_name'] ?? '?') ?>
+                <span class="user-identity">
+                  <span class="name"><?= e($r['full_name'] ?? 'Anonymous/Guest') ?></span>
+                  <span class="sub">@<?= e($r['username'] ?? 'guest') ?></span>
+                </span>
+              </div>
+            </td>
+            <td data-label="Document Target">
                 <div class="fw-semibold"><?= e($r['document_title'] ?? ('Document #' . (int) $r['document_id'])) ?></div>
               </td>
               <td data-label="Action" class="font-monospace small text-uppercase"><?= e($r['action']) ?></td>
@@ -198,5 +227,5 @@ require BASE_PATH . '/app/includes/header.php';
     <?php endif; ?>
   </div>
 </div>
-<p class="text-muted small mt-2"><i class="bi bi-info-circle me-1"></i>Displaying newest up to 200 log entries matching active criteria.</p>
+<?= render_pagination($page, $totalPages, $totalRows, $perPage, 'admin/logs.php', $filterQuery) ?>
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

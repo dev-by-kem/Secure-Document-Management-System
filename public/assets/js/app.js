@@ -92,7 +92,17 @@
         var show = input.type === 'password';
         input.type = show ? 'text' : 'password';
         btn.setAttribute('aria-pressed', String(show));
-        btn.textContent = show ? 'Hide' : 'Show';
+        var label = show ? 'Hide password' : 'Show password';
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+        var icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+        var hiddenLabel = btn.querySelector('.visually-hidden');
+        if (hiddenLabel) {
+            hiddenLabel.textContent = label;
+        }
     });
 
     /* ---- Document Details Drawer Expansion (Document Directory) ----- */
@@ -112,7 +122,9 @@
 
         if (isExpanded) {
             drawer.classList.add('d-none');
-            toggle.setAttribute('aria-expanded', 'false');
+            document.querySelectorAll('.js-doc-toggle[data-doc-drawer="' + targetId + '"]').forEach(function (btn) {
+                btn.setAttribute('aria-expanded', 'false');
+            });
             if (parentRow) {
                 parentRow.classList.remove('doc-row--expanded');
                 var icon = parentRow.querySelector('.doc-chevron');
@@ -123,7 +135,9 @@
             }
         } else {
             drawer.classList.remove('d-none');
-            toggle.setAttribute('aria-expanded', 'true');
+            document.querySelectorAll('.js-doc-toggle[data-doc-drawer="' + targetId + '"]').forEach(function (btn) {
+                btn.setAttribute('aria-expanded', 'true');
+            });
             if (parentRow) {
                 parentRow.classList.add('doc-row--expanded');
                 var icon = parentRow.querySelector('.doc-chevron');
@@ -135,19 +149,41 @@
         }
     });
 
-    /* ---- Native confirmation dialog for all .js-confirm forms ----- */
-    var dialog  = document.getElementById('confirm-dialog');
-    var message = document.getElementById('confirm-dialog-message');
-    var pending = null;
+    /* ---- Native confirmation dialog for all .js-confirm forms or submitters ----- */
+    var dialog           = document.getElementById('confirm-dialog');
+    var message          = document.getElementById('confirm-dialog-message');
+    var pending          = null;
+    var pendingSubmitter = null;
 
     document.addEventListener('submit', function (ev) {
-        var form = ev.target;
-        if (!form || !form.classList || !form.classList.contains('js-confirm')) { return; }
+        var form      = ev.target;
+        var submitter = ev.submitter || null;
+        if (!form) { return; }
+
+        if (submitter && submitter.hasAttribute('data-require-field')) {
+            var reqField = document.querySelector(submitter.getAttribute('data-require-field'));
+            if (reqField && !reqField.value.trim()) {
+                ev.preventDefault();
+                reqField.setCustomValidity('Please enter rejection remarks before rejecting.');
+                reqField.reportValidity();
+                reqField.focus();
+                reqField.addEventListener('input', function clearMsg() {
+                    reqField.setCustomValidity('');
+                    reqField.removeEventListener('input', clearMsg);
+                });
+                return;
+            }
+        }
+
+        var confirmMsg = (submitter && submitter.getAttribute('data-confirm-message'))
+            || (form.classList && form.classList.contains('js-confirm') ? form.getAttribute('data-confirm-message') : null);
+        if (!confirmMsg && !(form.classList && form.classList.contains('js-confirm'))) { return; }
+
         if (dialog && typeof dialog.showModal === 'function') {
             ev.preventDefault();
-            pending = form;
-            message.textContent = form.getAttribute('data-confirm-message')
-                || 'Are you sure? This cannot be undone from the interface.';
+            pending          = form;
+            pendingSubmitter = submitter;
+            message.textContent = confirmMsg || 'Are you sure? This cannot be undone from the interface.';
             dialog.showModal();
         }
     });
@@ -155,12 +191,28 @@
     if (dialog) {
         dialog.addEventListener('close', function () {
             if (dialog.returnValue === 'confirm' && pending) {
+                if (pendingSubmitter && pendingSubmitter.name) {
+                    var hidden = document.createElement('input');
+                    hidden.type  = 'hidden';
+                    hidden.name  = pendingSubmitter.name;
+                    hidden.value = pendingSubmitter.value;
+                    pending.appendChild(hidden);
+                }
                 pending.submit();
             }
             dialog.returnValue = '';
-            pending = null;
+            pending          = null;
+            pendingSubmitter = null;
         });
     }
+
+    /* ---- Focus first server-invalid control on page load ----- */
+    document.addEventListener('DOMContentLoaded', function () {
+        var firstInvalid = document.querySelector('[aria-invalid="true"]');
+        if (firstInvalid && typeof firstInvalid.focus === 'function') {
+            firstInvalid.focus();
+        }
+    });
 
     /* ---- Print Report Button Handler (FR-29) ----- */
     document.addEventListener('click', function (ev) {
@@ -180,6 +232,12 @@
         if (dropzone && fileInput) {
             dropzone.addEventListener('click', function () {
                 fileInput.click();
+            });
+            dropzone.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fileInput.click();
+                }
             });
 
             fileInput.addEventListener('change', function () {
@@ -230,4 +288,120 @@
         if (bytes >= 1024)    { return (bytes / 1024).toFixed(1) + ' KB'; }
         return bytes + ' B';
     }
+
+    /* ---- Mobile Off-Canvas Navigation Drawer ----- */
+    document.addEventListener('DOMContentLoaded', function () {
+        var sidebar  = document.getElementById('sdmsSidebar');
+        var openBtn  = document.getElementById('mobileNavOpen');
+        var closeBtn = document.getElementById('mobileNavClose');
+        var backdrop = document.getElementById('mobileNavBackdrop');
+        var mobileBar = document.querySelector('.sdms-mobile-bar');
+        var mainEl   = document.getElementById('main-content');
+        var footerEl = document.querySelector('footer');
+        if (!sidebar || !openBtn || !backdrop) { return; }
+
+        var mq = window.matchMedia('(max-width: 768px)');
+
+        function setBackgroundInert(state) {
+            if (mainEl) { mainEl.inert = state; }
+            if (footerEl) { footerEl.inert = state; }
+            if (mobileBar) { mobileBar.inert = state; }
+        }
+
+        function openDrawer() {
+            if (!mq.matches) { return; }
+            sidebar.classList.add('is-open');
+            sidebar.setAttribute('role', 'dialog');
+            sidebar.setAttribute('aria-modal', 'true');
+            sidebar.setAttribute('aria-label', 'Navigation menu');
+            backdrop.hidden = false;
+            requestAnimationFrame(function () {
+                backdrop.classList.add('is-open');
+            });
+            openBtn.setAttribute('aria-expanded', 'true');
+            setBackgroundInert(true);
+            if (closeBtn) { closeBtn.focus(); }
+        }
+
+        function closeDrawer(restoreFocus) {
+            if (!sidebar.classList.contains('is-open')) { return; }
+            sidebar.classList.remove('is-open');
+            sidebar.removeAttribute('role');
+            sidebar.removeAttribute('aria-modal');
+            sidebar.removeAttribute('aria-label');
+            backdrop.classList.remove('is-open');
+            backdrop.hidden = true;
+            openBtn.setAttribute('aria-expanded', 'false');
+            setBackgroundInert(false);
+            if (restoreFocus !== false) { openBtn.focus(); }
+        }
+
+        openBtn.addEventListener('click', openDrawer);
+        if (closeBtn) { closeBtn.addEventListener('click', function () { closeDrawer(true); }); }
+        backdrop.addEventListener('click', function () { closeDrawer(true); });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+                closeDrawer(true);
+            }
+        });
+
+        sidebar.addEventListener('click', function (e) {
+            var link = e.target.closest ? e.target.closest('a.sidebar-link:not([data-bs-toggle]), a.sidebar-sub-link') : null;
+            if (link && mq.matches) {
+                closeDrawer(false);
+            }
+        });
+
+        if (mq.addEventListener) {
+            mq.addEventListener('change', function (e) {
+                if (!e.matches) { closeDrawer(false); }
+            });
+        }
+    });
+
+    /* ---- Login Campus Background Parallax (Optional Enhancement) ----- */
+    document.addEventListener('DOMContentLoaded', function () {
+        var page = document.querySelector('.auth-page');
+        var background = page ? page.querySelector('.auth-background') : null;
+        var motionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+        var pointerQuery = window.matchMedia ? window.matchMedia('(pointer: fine)') : null;
+        if (!page || !background || !pointerQuery || !pointerQuery.matches || (motionQuery && motionQuery.matches)) {
+            return;
+        }
+
+        var frame = null;
+        var targetX = 0;
+        var targetY = 0;
+        var currentX = 0;
+        var currentY = 0;
+
+        function render() {
+            currentX += (targetX - currentX) * 0.12;
+            currentY += (targetY - currentY) * 0.12;
+            page.style.setProperty('--auth-parallax-x', currentX.toFixed(2) + 'px');
+            page.style.setProperty('--auth-parallax-y', currentY.toFixed(2) + 'px');
+            if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+                frame = window.requestAnimationFrame(render);
+            } else {
+                frame = null;
+            }
+        }
+
+        page.addEventListener('pointermove', function (event) {
+            if (event.pointerType && event.pointerType !== 'mouse') { return; }
+            var bounds = page.getBoundingClientRect();
+            var x = (event.clientX - bounds.left) / bounds.width - 0.5;
+            var y = (event.clientY - bounds.top) / bounds.height - 0.5;
+            targetX = x * 12;
+            targetY = y * 8;
+            if (!frame) { frame = window.requestAnimationFrame(render); }
+        });
+
+        page.addEventListener('pointerleave', function () {
+            targetX = 0;
+            targetY = 0;
+            if (!frame) { frame = window.requestAnimationFrame(render); }
+        });
+    });
 })();

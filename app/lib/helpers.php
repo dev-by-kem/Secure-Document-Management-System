@@ -114,3 +114,68 @@ function file_icon(string $ext): string
     ];
     return $map[strtolower($ext)] ?? 'bi-file-earmark';
 }
+
+/** Standardize local timestamp display across the UI. */
+function format_datetime(?string $dt): string
+{
+    if ($dt === null || trim($dt) === '') {
+        return '—';
+    }
+    $ts = strtotime($dt);
+    if ($ts === false) {
+        return $dt;
+    }
+    return date('M j, Y · g:i A', $ts);
+}
+
+/** Render accessible pagination + result summary while preserving active filters. */
+function render_pagination(int $page, int $totalPages, int $totalRows, int $perPage, string $path, array $queryParams = []): string
+{
+    if ($totalRows <= 0) {
+        return '';
+    }
+    $start = ($page - 1) * $perPage + 1;
+    $end   = min($totalRows, $page * $perPage);
+    $summary = '<div class="small text-muted">Showing <strong>' . $start . '–' . $end . '</strong> of <strong>' . $totalRows . '</strong></div>';
+
+    if ($totalPages <= 1) {
+        return '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 px-1">' . $summary . '</div>';
+    }
+
+    $buildUrl = static function (int $p) use ($path, $queryParams): string {
+        $params = array_filter($queryParams, static fn ($v) => $v !== '' && $v !== null);
+        $params['page'] = $p;
+        return url($path) . '?' . http_build_query($params);
+    };
+
+    $items = '';
+    $prevDisabled = $page <= 1 ? ' disabled' : '';
+    $items .= '<li class="page-item' . $prevDisabled . '"><a class="page-link" href="' . ($page > 1 ? e($buildUrl($page - 1)) : '#') . '" aria-label="Previous page">Prev</a></li>';
+
+    $windowStart = max(1, $page - 2);
+    $windowEnd   = min($totalPages, $page + 2);
+    if ($windowStart > 1) {
+        $items .= '<li class="page-item"><a class="page-link" href="' . e($buildUrl(1)) . '">1</a></li>';
+        if ($windowStart > 2) {
+            $items .= '<li class="page-item disabled"><span class="page-link">…</span></li>';
+        }
+    }
+    for ($i = $windowStart; $i <= $windowEnd; $i++) {
+        $active = $i === $page ? ' active" aria-current="page' : '';
+        $items .= '<li class="page-item' . ($i === $page ? ' active' : '') . '"><a class="page-link" href="' . e($buildUrl($i)) . '"' . ($i === $page ? ' aria-current="page"' : '') . '>' . $i . '</a></li>';
+    }
+    if ($windowEnd < $totalPages) {
+        if ($windowEnd < $totalPages - 1) {
+            $items .= '<li class="page-item disabled"><span class="page-link">…</span></li>';
+        }
+        $items .= '<li class="page-item"><a class="page-link" href="' . e($buildUrl($totalPages)) . '">' . $totalPages . '</a></li>';
+    }
+
+    $nextDisabled = $page >= $totalPages ? ' disabled' : '';
+    $items .= '<li class="page-item' . $nextDisabled . '"><a class="page-link" href="' . ($page < $totalPages ? e($buildUrl($page + 1)) : '#') . '" aria-label="Next page">Next</a></li>';
+
+    return '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 px-1">'
+         . $summary
+         . '<nav aria-label="Pagination"><ul class="pagination pagination-sm mb-0">' . $items . '</ul></nav>'
+         . '</div>';
+}

@@ -16,6 +16,13 @@ body {
   accent-color: var(--sdms-brand);
 }
 
+/* Technical values stay visually distinct and easy to scan. */
+code, kbd, samp, pre, .font-monospace, .technical-id, .technical-hash {
+  font-family: var(--sdms-font-mono) !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: var(--sdms-text);
   font-weight: 700;

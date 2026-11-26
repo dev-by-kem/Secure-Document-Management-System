@@ -3,11 +3,23 @@ require_once __DIR__ . '/../../app/bootstrap.php';
 require_login();
 
 $u = current_user();
+$perPage = 25;
+$page    = max(1, (int) query_param('page', '1'));
+
+$countStmt = db()->prepare('SELECT COUNT(*) AS c FROM documents WHERE uploaded_by = ? AND is_deleted = 0');
+$countStmt->execute([$u['user_id']]);
+$totalRows  = (int) $countStmt->fetch()['c'];
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+$offset = ($page - 1) * $perPage;
+
 $stmt = db()->prepare(
     'SELECT d.document_id, d.title, d.status, d.created_at, d.file_ext, d.file_size, c.category_id, c.category_name
      FROM documents d JOIN document_categories c ON c.category_id = d.category_id
      WHERE d.uploaded_by = ? AND d.is_deleted = 0
-     ORDER BY d.created_at DESC LIMIT 200'
+     ORDER BY d.created_at DESC, d.document_id DESC LIMIT ' . $perPage . ' OFFSET ' . $offset
 );
 $stmt->execute([$u['user_id']]);
 $docs = $stmt->fetchAll();
@@ -29,7 +41,7 @@ require BASE_PATH . '/app/includes/header.php';
 
 <div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <div><i class="bi bi-clock-history me-1"></i> Submission History (<?= count($docs) ?> files)</div>
+    <div><i class="bi bi-clock-history me-1"></i> Submission History (<?= $totalRows ?> files)</div>
   </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="My uploads table" tabindex="0">
     <table class="table table-hover sdms-card-table">
@@ -68,7 +80,7 @@ require BASE_PATH . '/app/includes/header.php';
             </td>
             <td data-label="Classification"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
             <td data-label="Review Status"><?= status_badge($d['status']) ?></td>
-            <td data-label="Uploaded Timestamp" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+            <td data-label="Uploaded Timestamp" class="small text-nowrap"><?= e(format_datetime($d['created_at'])) ?></td>
             <td class="text-end" data-label="Actions">
               <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
                 <i class="bi bi-eye"></i>
@@ -83,4 +95,5 @@ require BASE_PATH . '/app/includes/header.php';
     </table>
   </div>
 </div>
+<?= render_pagination($page, $totalPages, $totalRows, $perPage, 'documents/history.php') ?>
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

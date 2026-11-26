@@ -135,7 +135,7 @@ require BASE_PATH . '/app/includes/header.php';
               <td data-label="Uploader"><?= e($d['uploader_name']) ?></td>
               <td data-label="Status"><?= status_badge($d['status']) ?></td>
               <td data-label="File Size" class="text-nowrap"><?= e(bytes_for_humans((int) $d['file_size'])) ?></td>
-              <td data-label="Created Date" class="small text-nowrap"><?= e($d['created_at']) ?></td>
+              <td data-label="Created Date" class="small text-nowrap"><?= e(format_datetime($d['created_at'])) ?></td>
               <td class="text-end" data-label="Downloads">
                 <span class="pill pill--neutral"><i class="bi bi-download"></i><?= (int) $d['downloads'] ?></span>
               </td>

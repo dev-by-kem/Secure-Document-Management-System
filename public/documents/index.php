@@ -45,17 +45,53 @@ if ($to !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
     $params[] = $to . ' 23:59:59';
 }
 
+$sortMap = [
+    'newest'     => 'd.created_at DESC, d.document_id DESC',
+    'oldest'     => 'd.created_at ASC, d.document_id ASC',
+    'title_asc'  => 'd.title ASC, d.document_id DESC',
+    'title_desc' => 'd.title DESC, d.document_id DESC',
+    'status'     => 'd.status ASC, d.created_at DESC, d.document_id DESC',
+];
+$sort = query_param('sort', 'newest');
+if (!isset($sortMap[$sort])) {
+    $sort = 'newest';
+}
+
+$perPage = 25;
+$page    = max(1, (int) query_param('page', '1'));
+$whereSql = $where ? ' WHERE ' . implode(' AND ', $where) : '';
+
+$countStmt = db()->prepare('SELECT COUNT(*) AS c FROM documents d' . $whereSql);
+$countStmt->execute($params);
+$totalRows  = (int) $countStmt->fetch()['c'];
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+$offset = ($page - 1) * $perPage;
+
 $sql = 'SELECT d.*, c.category_name, up.full_name AS uploader_name, up.username AS uploader_username
         FROM documents d
         JOIN document_categories c ON c.category_id = d.category_id
         JOIN users up ON up.user_id = d.uploaded_by'
-      . ($where ? ' WHERE ' . implode(' AND ', $where) : '')
-      . ' ORDER BY d.created_at DESC LIMIT 200';
+      . $whereSql
+      . ' ORDER BY ' . $sortMap[$sort]
+      . ' LIMIT ' . $perPage . ' OFFSET ' . $offset;
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $docs = $stmt->fetchAll();
 
 $categories = db()->query('SELECT category_id, category_name FROM document_categories ORDER BY category_name')->fetchAll();
+$filterQuery = [
+    'q'           => $q,
+    'category_id' => $cat,
+    'status'      => $status,
+    'from'        => $from,
+    'to'          => $to,
+    'mine'        => $mine ? '1' : '',
+    'sort'        => $sort !== 'newest' ? $sort : '',
+    'deleted'     => ($u['role_name'] === 'admin' && query_param('deleted') === '1') ? '1' : '',
+];
 
 $pageTitle = 'Documents';
 require BASE_PATH . '/app/includes/header.php';
@@ -101,20 +137,34 @@ require BASE_PATH . '/app/includes/header.php';
           <?php endforeach; ?>
         </select>
       </div>
-      <div class="col-md-2">
+      <div class="col-6 col-md-2">
         <label for="from" class="form-label">From Date</label>
         <input type="date" class="form-control" id="from" name="from" value="<?= e($from) ?>">
       </div>
-      <div class="col-md-3 d-flex gap-2 align-items-center">
+      <div class="col-6 col-md-2">
+        <label for="to" class="form-label">To Date</label>
+        <input type="date" class="form-control" id="to" name="to" value="<?= e($to) ?>">
+      </div>
+      <div class="col-6 col-md-2">
+        <label for="sort" class="form-label">Sort By</label>
+        <select class="form-select" id="sort" name="sort">
+          <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Newest first</option>
+          <option value="oldest" <?= $sort === 'oldest' ? 'selected' : '' ?>>Oldest first</option>
+          <option value="title_asc" <?= $sort === 'title_asc' ? 'selected' : '' ?>>Title (A–Z)</option>
+          <option value="title_desc" <?= $sort === 'title_desc' ? 'selected' : '' ?>>Title (Z–A)</option>
+          <option value="status" <?= $sort === 'status' ? 'selected' : '' ?>>Status</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-auto d-flex flex-wrap gap-2 align-items-center ms-md-auto">
         <?php if ($u['role_name'] !== 'viewer'): ?>
-        <div class="form-check me-2">
+        <div class="form-check me-1">
           <input class="form-check-input" type="checkbox" id="mine" name="mine" value="1" <?= $mine ? 'checked' : '' ?>>
           <label class="form-check-label small fw-semibold" for="mine">Only mine</label>
         </div>
         <?php endif; ?>
-        <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i> Search</button>
-        <?php if ($q !== '' || $cat !== '' || $status !== '' || $mine || $from !== '' || $to !== ''): ?>
-          <a href="<?= e(url('documents/index.php')) ?>" class="btn btn-outline-secondary" title="Reset filters"><i class="bi bi-x-lg"></i></a>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i> Search</button>
+        <?php if ($q !== '' || $cat !== '' || $status !== '' || $mine || $from !== '' || $to !== '' || $sort !== 'newest'): ?>
+          <a href="<?= e(url('documents/index.php')) ?>" class="btn btn-outline-secondary" aria-label="Reset filters" title="Reset filters"><i class="bi bi-x-lg me-1"></i>Reset</a>
         <?php endif; ?>
       </div>
     </div>
@@ -124,7 +174,7 @@ require BASE_PATH . '/app/includes/header.php';
 
 <?php if ($u['role_name'] === 'admin'): ?>
   <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-    <div class="small text-muted">Showing up to 200 records matching active filters.</div>
+    <div class="small text-muted"><?= $totalRows ?> record<?= $totalRows === 1 ? '' : 's' ?> matching active filters.</div>
     <div class="small">
       <i class="bi bi-trash3 me-1 text-danger"></i> Admin Mode: 
       <?php if (query_param('deleted') === '1'): ?>
@@ -167,12 +217,12 @@ require BASE_PATH . '/app/includes/header.php';
           <tr class="doc-row <?= (int) $d['is_deleted'] === 1 ? 'table-light opacity-75' : '' ?>">
             <td data-label="Document Title">
               <div class="doc-cell align-items-center">
-                <button type="button" class="btn btn-sm btn-icon border-0 js-doc-toggle text-muted p-0 me-1" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false" style="width:24px;height:24px;">
+                <button type="button" class="btn btn-sm btn-icon border-0 js-doc-toggle text-muted p-0 me-1 doc-toggle-btn" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false">
                   <i class="bi bi-chevron-right doc-chevron"></i>
                 </button>
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div class="min-w-0">
-                  <a class="doc-title-link js-doc-toggle text-decoration-none" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" role="button" aria-expanded="false"><?= e($d['title']) ?></a>
+                  <a class="doc-title-link" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
                   <?php if ((int) $d['is_deleted'] === 1): ?>
                     <span class="badge bg-danger ms-1">Deleted</span>
                   <?php endif; ?>
@@ -183,14 +233,17 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="Uploaded By">
               <div class="user-cell">
                 <?= avatar($d['uploader_name']) ?>
-                <span class="name"><?= e($d['uploader_username']) ?></span>
+                <span class="user-identity">
+                  <span class="name"><?= e($d['uploader_name']) ?></span>
+                  <span class="sub">@<?= e($d['uploader_username']) ?></span>
+                </span>
                 <?php if ($isOwner): ?><span class="pill pill--neutral ms-1">You</span><?php endif; ?>
               </div>
             </td>
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
             <td class="text-end" data-label="Actions">
               <div class="action-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" title="Toggle Details">
+                <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Details for <?= e($d['title']) ?>" aria-expanded="false" title="Toggle Details">
                   <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Details
                 </button>
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
@@ -209,27 +262,33 @@ require BASE_PATH . '/app/includes/header.php';
                   <div class="col-lg-8">
                     <div class="drawer-meta-card mb-3">
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="fw-bold mb-0 text-cvsu-emerald"><i class="bi bi-card-text me-1"></i> Summary / Abstract</h6>
-                        <span class="badge bg-light text-muted border font-monospace"><?= strtoupper(e($d['file_ext'])) ?> · <?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+                        <h6 class="fw-bold mb-0"><i class="bi bi-card-text me-1"></i> Summary / Abstract</h6>
+                        <span class="badge bg-body-tertiary text-muted border font-monospace"><?= strtoupper(e($d['file_ext'])) ?> · <?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
                       </div>
                       <div class="text-muted small mb-0"><?= !empty($d['description']) ? nl2br(e($d['description'])) : '<em>No summary or abstract provided for this institutional file.</em>' ?></div>
                     </div>
                     <div class="row g-2">
                       <div class="col-sm-6">
-                        <div class="p-2 border rounded bg-white">
+                        <div class="drawer-meta-card p-2">
                           <span class="text-muted small d-block">Uploaded by:</span>
-                          <span class="user-cell mt-1"><?= avatar($d['uploader_name']) ?> <span class="fw-semibold small"><?= e($d['uploader_name']) ?> (<?= e($d['uploader_username']) ?>)</span></span>
+                          <span class="user-cell mt-1">
+                            <?= avatar($d['uploader_name']) ?>
+                            <span class="user-identity">
+                              <span class="name small"><?= e($d['uploader_name']) ?></span>
+                              <span class="sub">@<?= e($d['uploader_username']) ?></span>
+                            </span>
+                          </span>
                         </div>
                       </div>
                       <div class="col-sm-6">
-                        <div class="p-2 border rounded bg-white">
+                        <div class="drawer-meta-card p-2">
                           <span class="text-muted small d-block">Submission Date:</span>
-                          <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted"></i><?= e($d['created_at']) ?></span>
+                          <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted"></i><?= e(format_datetime($d['created_at'])) ?></span>
                         </div>
                       </div>
                       <?php if (!empty($d['file_hash'])): ?>
                       <div class="col-12">
-                        <div class="p-2 border rounded bg-white">
+                        <div class="drawer-meta-card p-2">
                           <span class="text-muted small d-block"><i class="bi bi-shield-check me-1 text-success"></i> SHA-256 Integrity Checksum:</span>
                           <span class="small font-monospace text-break text-muted"><?= e($d['file_hash']) ?></span>
                         </div>
@@ -243,7 +302,7 @@ require BASE_PATH . '/app/includes/header.php';
                       <div class="mb-2"><?= status_badge($d['status']) ?></div>
                       <div class="small text-muted">Category: <span class="text-body fw-semibold"><?= e($d['category_name']) ?></span></div>
                       <?php if (!empty($d['review_remarks'])): ?>
-                        <div class="mt-2 p-2 bg-light rounded small text-danger">
+                        <div class="mt-2 p-2 bg-body-tertiary rounded border small text-danger">
                           <strong>Review Remarks:</strong> <?= e($d['review_remarks']) ?>
                         </div>
                       <?php endif; ?>
@@ -272,4 +331,5 @@ require BASE_PATH . '/app/includes/header.php';
     </table>
   </div>
 </div>
+<?= render_pagination($page, $totalPages, $totalRows, $perPage, 'documents/index.php', $filterQuery) ?>
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

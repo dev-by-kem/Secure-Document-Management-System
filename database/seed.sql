@@ -26,7 +26,7 @@ INSERT INTO roles (role_name, description) VALUES
 
 -- Demo accounts, one per role
 INSERT INTO users (username, email, password_hash, full_name, role_id) VALUES
-('admin',  'admin@sdms.local',  '$2y$10$0gKEkizajYuVjGFKSf2m5eZRarJCjkvMYWzs2Bij96WPTGW7ZcK1S', 'System Administrator', 1),
+('admin',  'admin@sdms.local',  '$2y$10$0gKEkizajYuVjGFKSf2m5eZRarJCjkvMYWzs2Bij96WPTGW7ZcK1S', 'Andrea Reyes',         1),
 ('staff',  'staff@sdms.local',  '$2y$10$ca9VghP9Byg93CVpO.8ovO0Fod4Kz.0kP1VTFhDSUqftIdXdrUlr6', 'Maria Santos',         2),
 ('viewer', 'viewer@sdms.local', '$2y$10$X9FNluOHpLsz4UqRJT.BC.7y3jz.LhN7u1BcrDcPVxGwLEJBqd1k6', 'Juan Dela Cruz',       3);
 

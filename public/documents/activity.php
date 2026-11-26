@@ -14,13 +14,32 @@ if ($from !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) { $where[] = 'l.
 if ($to !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to))     { $where[] = 'l.created_at <= ?'; $params[] = $to . ' 23:59:59'; }
 if ($actionFilter !== '') { $where[] = 'l.action LIKE ?'; $params[] = '%' . $actionFilter . '%'; }
 
+$perPage = 25;
+$page    = max(1, (int) query_param('page', '1'));
+$whereSql = implode(' AND ', $where);
+
+$countStmt = db()->prepare('SELECT COUNT(*) AS c FROM activity_logs l WHERE ' . $whereSql);
+$countStmt->execute($params);
+$totalRows  = (int) $countStmt->fetch()['c'];
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+$offset = ($page - 1) * $perPage;
+
 $sql = 'SELECT l.log_id, l.action, l.entity_type, l.entity_id, l.details, l.ip_address, l.user_agent, l.created_at
          FROM activity_logs l
-         WHERE ' . implode(' AND ', $where) . '
-         ORDER BY l.created_at DESC LIMIT 200';
+         WHERE ' . $whereSql . '
+         ORDER BY l.created_at DESC, l.log_id DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll();
+
+$filterQuery = [
+    'action' => $actionFilter,
+    'from'   => $from,
+    'to'     => $to,
+];
 
 $pageTitle = 'My activity log';
 require BASE_PATH . '/app/includes/header.php';
@@ -65,7 +84,7 @@ require BASE_PATH . '/app/includes/header.php';
 <div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
     <div>
-      <i class="bi bi-activity me-1"></i> Your Activity (<?= count($rows) ?> records)
+      <i class="bi bi-activity me-1"></i> Your Activity (<?= $totalRows ?> records)
     </div>
     <span class="small text-muted">Append-only audit trail — read only</span>
   </div>
@@ -90,19 +109,19 @@ require BASE_PATH . '/app/includes/header.php';
       <tbody>
         <?php foreach ($rows as $r): ?>
           <tr>
-            <td data-label="Timestamp" class="text-nowrap small"><?= e($r['created_at']) ?></td>
+            <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
             <td data-label="Action Code">
               <span class="pill pill--neutral font-monospace"><i class="bi bi-activity"></i><?= e($r['action']) ?></span>
             </td>
             <td data-label="Target Entity" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
             <td data-label="Security Event Details" class="small"><?= e($r['details'] ?? '—') ?></td>
             <td data-label="Origin IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
-            <td data-label="User Agent" class="small text-muted font-monospace" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= e($r['user_agent'] ?? '—') ?></td>
+            <td data-label="User Agent" class="small text-muted font-monospace ua-truncate" title="<?= e($r['user_agent'] ?? '') ?>"><?= e($r['user_agent'] ?? '—') ?></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
   </div>
 </div>
-<p class="text-muted small mt-2"><i class="bi bi-info-circle me-1"></i>Displaying newest up to 200 log entries matching active criteria.</p>
+<?= render_pagination($page, $totalPages, $totalRows, $perPage, 'documents/activity.php', $filterQuery) ?>
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

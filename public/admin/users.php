@@ -106,9 +106,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('admin/users.php');
 }
 
-$users = db()->query(
-    'SELECT u.*, r.role_name FROM users u JOIN roles r ON r.role_id = u.role_id ORDER BY u.username'
-)->fetchAll();
+$uq = query_param('q');
+$ustatus = query_param('status');
+$uWhere = [];
+$uParams = [];
+if ($uq !== '') {
+    $uWhere[] = '(u.username LIKE ? OR u.full_name LIKE ? OR u.email LIKE ?)';
+    $uParams[] = '%' . $uq . '%';
+    $uParams[] = '%' . $uq . '%';
+    $uParams[] = '%' . $uq . '%';
+}
+if (in_array($ustatus, ['active', 'inactive'], true)) {
+    $uWhere[] = 'u.status = ?';
+    $uParams[] = $ustatus;
+}
+
+$uSql = 'SELECT u.*, r.role_name FROM users u JOIN roles r ON r.role_id = u.role_id'
+      . ($uWhere ? ' WHERE ' . implode(' AND ', $uWhere) : '')
+      . ' ORDER BY u.username';
+$uStmt = db()->prepare($uSql);
+$uStmt->execute($uParams);
+$users = $uStmt->fetchAll();
 $roles = db()->query('SELECT role_id, role_name FROM roles ORDER BY role_id')->fetchAll();
 
 $pageTitle = 'Manage users';
@@ -162,9 +180,34 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
 </div>
 
+<search>
+<form method="get" action="<?= e(url('admin/users.php')) ?>" class="card mb-4 shadow-sm">
+  <div class="card-body p-3 row g-2 align-items-end">
+    <div class="col-md-5">
+      <label for="uq" class="form-label">Search Users</label>
+      <input type="search" class="form-control" id="uq" name="q" value="<?= e($uq) ?>" placeholder="Username, full name, or email…">
+    </div>
+    <div class="col-md-3">
+      <label for="ustatus" class="form-label">Account Status</label>
+      <select class="form-select" id="ustatus" name="status">
+        <option value="">All Statuses</option>
+        <option value="active" <?= $ustatus === 'active' ? 'selected' : '' ?>>Active</option>
+        <option value="inactive" <?= $ustatus === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+      </select>
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i> Filter</button>
+      <?php if ($uq !== '' || $ustatus !== ''): ?>
+        <a href="<?= e(url('admin/users.php')) ?>" class="btn btn-outline-secondary">Reset</a>
+      <?php endif; ?>
+    </div>
+  </div>
+</form>
+</search>
+
 <div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <div><i class="bi bi-people me-1"></i> Active User Directory (<?= count($users) ?> accounts)</div>
+    <div><i class="bi bi-people me-1"></i> User Directory (<?= count($users) ?> account<?= count($users) === 1 ? '' : 's' ?>)</div>
   </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Users table" tabindex="0">
     <table class="table table-hover sdms-card-table">
@@ -173,7 +216,7 @@ require BASE_PATH . '/app/includes/header.php';
           <th>User Profile</th>
           <th>Role &amp; Status</th>
           <th>Last Login</th>
-          <th data-label="Account Details">
+          <th>Account Details</th>
           <th>Reset Password</th>
           <th class="text-end">Account State</th>
         </tr>
@@ -199,7 +242,7 @@ require BASE_PATH . '/app/includes/header.php';
                 </span>
               </div>
             </td>
-            <td data-label="Last Login" class="small text-nowrap"><?= e($row['last_login'] ?? 'Never logged in') ?></td>
+            <td data-label="Last Login" class="small text-nowrap"><?= $row['last_login'] ? e(format_datetime($row['last_login'])) : 'Never logged in' ?></td>
             <td data-label="Account Details">
               <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row gx-1 gy-1 align-items-center">
                 <?= csrf_field() ?>
@@ -227,17 +270,17 @@ require BASE_PATH . '/app/includes/header.php';
               </form>
             </td>
             <td data-label="Reset Password">
-              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="d-flex gap-1 align-items-center">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="d-flex gap-1 align-items-center js-confirm" data-confirm-message="Reset password for “<?= e($row['username']) ?>”? Their current password will stop working.">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="reset_password">
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
                 <label class="visually-hidden" for="pw-<?= (int) $row['user_id'] ?>">New password</label>
                 <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="Min 8 chars" autocomplete="new-password" minlength="8" required>
-                <button type="submit" class="btn-icon" aria-label="Reset password" title="Reset password"><i class="bi bi-key"></i></button>
+                <button type="submit" class="btn-icon" aria-label="Reset password for <?= e($row['username']) ?>" title="Reset password"><i class="bi bi-key"></i></button>
               </form>
             </td>
             <td class="text-end" data-label="Account State">
-              <form method="post" action="<?= e(url('admin/users.php')) ?>">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="js-confirm" data-confirm-message="<?= $row['status'] === 'active' ? 'Deactivate “' . e($row['username']) . '”? The user will be unable to sign in.' : 'Activate “' . e($row['username']) . '”? The user will regain access.' ?>">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="toggle_status">
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
