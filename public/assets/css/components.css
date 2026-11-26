@@ -96,6 +96,15 @@
   border-color: rgba(52, 211, 153, 0.3);
 }
 
+/* CvSU logo image inside brand mark and auth crest */
+.brand-mark img,
+.auth-crest img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .brand-text { line-height: 1.15; }
 .brand-name {
   display: block;

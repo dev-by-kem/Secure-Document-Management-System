@@ -44,7 +44,7 @@ try {
     <i class="bi bi-list fs-5" aria-hidden="true"></i>
   </button>
   <a class="brand" href="<?= e(url('dashboard.php')) ?>">
-    <span class="brand-mark"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+    <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo" aria-hidden="true"></span>
     <span class="brand-text">
       <span class="brand-name">CvSU · SDMS</span>
     </span>

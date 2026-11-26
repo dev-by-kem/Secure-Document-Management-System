@@ -46,7 +46,7 @@ try {
   <div class="auth-card">
     <div class="auth-header-card">
       <div class="auth-crest">
-        <i class="bi bi-shield-check"></i>
+        <img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo">
       </div>
       <div class="auth-univ-title">Cavite State University · CEIT</div>
       <h1 class="auth-title">Secure Document Management Portal</h1>

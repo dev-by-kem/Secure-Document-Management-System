@@ -13,7 +13,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
 <aside id="sdmsSidebar" class="sdms-sidebar">
   <div class="sidebar-brand d-flex align-items-center justify-content-between gap-2">
     <a class="brand" href="<?= e(url('dashboard.php')) ?>">
-      <span class="brand-mark"><i class="bi bi-shield-check"></i></span>
+      <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo"></span>
       <span class="brand-text">
         <span class="brand-name">CvSU · SDMS</span>
         <span class="brand-tag d-none d-sm-block">Cavite State University · CEIT</span>
