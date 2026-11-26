@@ -269,7 +269,7 @@ require BASE_PATH . '/app/includes/header.php';
                 </div>
               </form>
             </td>
-            <td data-label="Reset Password" class="d-flex justify-content-center align-items-center">
+            <td data-label="Reset Password" class="text-center">
               <button type="button" class="btn btn-sm btn-outline-warning js-reset-password"
                       data-user-id="<?= (int) $row['user_id'] ?>"
                       data-user="<?= e($row['username']) ?>"
