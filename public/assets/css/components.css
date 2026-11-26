@@ -833,6 +833,17 @@
   gap: 0.35rem;
 }
 
+.documents-table {
+  width: 100%;
+  table-layout: fixed;
+}
+.documents-table th:nth-child(1), .documents-table td:nth-child(1) { width: 32%; }
+.documents-table th:nth-child(2), .documents-table td:nth-child(2) { width: 16%; }
+.documents-table th:nth-child(3), .documents-table td:nth-child(3) { width: 20%; }
+.documents-table th:nth-child(4), .documents-table td:nth-child(4) { width: 14%; }
+.documents-table th:nth-child(5), .documents-table td:nth-child(5) { width: 18%; }
+.documents-table td { overflow-wrap: anywhere; }
+
 /* ---------- Expandable Document Details Drawer ---------- */
 .doc-row--expanded {
   background-color: var(--sdms-brand-soft) !important;
@@ -852,6 +863,60 @@
   border-radius: var(--sdms-radius);
   padding: 0.85rem 1rem;
 }
+
+/* Approval queue cards keep document context separate from review controls. */
+.approval-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 1.05fr);
+  gap: 1rem;
+  align-items: start;
+}
+.approval-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.approval-summary-copy { min-width: 0; }
+.approval-actions {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.approval-view-actions,
+.approval-decision-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.approval-decision-form {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+  gap: 0.5rem;
+  align-items: start;
+}
+.approval-decision-form .remarks-input {
+  min-width: 0;
+  resize: vertical;
+}
+.approval-actions--simple {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+/* Account details use explicit tracks so the role selector cannot collide with its neighbors. */
+.account-details-form {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(11rem, 1.25fr) minmax(8.5rem, auto) auto;
+  gap: 0.35rem;
+  align-items: center;
+}
+.account-detail-field { min-width: 0; }
+.account-detail-field .form-control,
+.account-detail-field .form-select { width: 100%; min-width: 0; }
+.account-detail-field--save { display: flex; justify-content: flex-end; }
 
 /* ---------- Forms & Inputs ---------- */
 .form-label {
@@ -1262,6 +1327,19 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
     border-bottom: 1px solid var(--sdms-border);
     margin-bottom: 0.35rem;
   }
+  .account-details-cell { display: block !important; }
+  .account-details-cell::before { display: block; margin-bottom: 0.4rem; }
+  .account-details-form { grid-template-columns: 1fr; width: 100%; }
+  .account-detail-field--save { justify-content: flex-start; }
+}
+
+@media (max-width: 1000px) {
+  .approval-card-body { grid-template-columns: 1fr; }
+  .approval-actions--simple { justify-content: flex-start; }
+}
+
+@media (max-width: 760px) {
+  .approval-decision-form { grid-template-columns: 1fr; }
 }
 
 /* ---------- Left Sidebar Navigation ---------- */

@@ -35,7 +35,7 @@ try {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.7-sidebar')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.8-ui-polish')) ?>">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>

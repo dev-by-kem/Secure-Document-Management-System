@@ -188,7 +188,7 @@ require BASE_PATH . '/app/includes/header.php';
 
 <div class="card shadow-sm">
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Documents table" tabindex="0">
-    <table class="table table-hover sdms-card-table">
+    <table class="table table-hover sdms-card-table documents-table">
       <thead>
         <tr>
           <th>Document Title</th>
@@ -217,9 +217,6 @@ require BASE_PATH . '/app/includes/header.php';
           <tr class="doc-row <?= (int) $d['is_deleted'] === 1 ? 'table-light opacity-75' : '' ?>">
             <td data-label="Document Title">
               <div class="doc-cell align-items-center">
-                <button type="button" class="btn btn-sm btn-icon border-0 js-doc-toggle text-muted p-0 me-1 doc-toggle-btn" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false">
-                  <i class="bi bi-chevron-right doc-chevron"></i>
-                </button>
                 <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div class="min-w-0">
                   <a class="doc-title-link" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
@@ -243,7 +240,7 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="Status"><?= status_badge($d['status']) ?></td>
             <td class="text-end" data-label="Actions">
               <div class="action-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Details for <?= e($d['title']) ?>" aria-expanded="false" title="Toggle Details">
+                <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false" title="Toggle details">
                   <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Details
                 </button>
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>

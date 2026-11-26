@@ -243,20 +243,20 @@ require BASE_PATH . '/app/includes/header.php';
               </div>
             </td>
             <td data-label="Last Login" class="small text-nowrap"><?= $row['last_login'] ? e(format_datetime($row['last_login'])) : 'Never logged in' ?></td>
-            <td data-label="Account Details">
-              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="row gx-1 gy-1 align-items-center">
+            <td data-label="Account Details" class="account-details-cell">
+              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="account-details-form">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
-                <div class="col-12 col-md-auto flex-grow-1">
+                <div class="account-detail-field account-detail-field--name">
                   <label class="visually-hidden" for="fn-<?= (int) $row['user_id'] ?>">Full name</label>
                   <input type="text" class="form-control form-control-sm" id="fn-<?= (int) $row['user_id'] ?>" name="full_name" value="<?= e($row['full_name']) ?>" required title="Full Name">
                 </div>
-                <div class="col-12 col-md-auto flex-grow-1">
+                <div class="account-detail-field account-detail-field--email">
                   <label class="visually-hidden" for="em-<?= (int) $row['user_id'] ?>">Email</label>
                   <input type="email" class="form-control form-control-sm" id="em-<?= (int) $row['user_id'] ?>" name="email" value="<?= e($row['email']) ?>" required title="Email Address">
                 </div>
-                <div class="col-auto">
+                <div class="account-detail-field account-detail-field--role">
                   <label class="visually-hidden" for="rl-<?= (int) $row['user_id'] ?>">Role</label>
                   <select class="form-select form-select-sm" id="rl-<?= (int) $row['user_id'] ?>" name="role_id" <?= $isSelf ? 'disabled title="You cannot alter your own administrative role"' : '' ?>>
                     <?php foreach ($roles as $r): ?>
@@ -264,7 +264,7 @@ require BASE_PATH . '/app/includes/header.php';
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="col-auto">
+                <div class="account-detail-field account-detail-field--save">
                   <button type="submit" class="btn-icon" aria-label="Save user" title="Save changes"><i class="bi bi-check2"></i></button>
                 </div>
               </form>

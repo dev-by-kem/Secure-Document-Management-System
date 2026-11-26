@@ -151,9 +151,10 @@ require BASE_PATH . '/app/includes/header.php';
     }
   ?>
   <div class="card mb-3 shadow-sm <?= $accentClass ?>">
-    <div class="card-body d-flex flex-wrap gap-3 align-items-center p-3">
-      <span class="doc-ico doc-ico--lg"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
-      <div class="flex-grow-1 min-w-0">
+    <div class="card-body approval-card-body p-3">
+      <div class="approval-summary">
+        <span class="doc-ico doc-ico--lg"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
+        <div class="approval-summary-copy">
         <div class="d-flex align-items-center gap-2 flex-wrap">
           <?php if ($decision === 'pending'): ?>
             <span class="badge bg-body-secondary text-body border">#<?= $idx + 1 ?> of <?= count($items) ?></span>
@@ -181,31 +182,36 @@ require BASE_PATH . '/app/includes/header.php';
             <strong>Rejection Remarks:</strong> <?= e($d['review_remarks']) ?>
           </div>
         <?php endif; ?>
+        </div>
       </div>
 
       <?php if ($d['status'] === 'pending'): ?>
-        <div class="d-flex flex-wrap gap-2 align-items-center">
-          <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" title="Inspect document"><i class="bi bi-eye me-1"></i> View</a>
-          <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" title="Download file"><i class="bi bi-download me-1"></i> Download</a>
-          <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="approval-actions">
+          <div class="approval-view-actions">
+            <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" title="Inspect document"><i class="bi bi-eye me-1"></i> View</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" title="Download file"><i class="bi bi-download me-1"></i> Download</a>
+          </div>
+          <form method="post" action="<?= e(url('admin/approvals.php')) ?>" class="approval-decision-form">
             <?= csrf_field() ?>
             <input type="hidden" name="document_id" value="<?= (int) $d['document_id'] ?>">
             <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
             <textarea class="form-control form-control-sm remarks-input" id="rm-<?= (int) $d['document_id'] ?>"
                       name="remarks" rows="2" placeholder="Remarks (required to reject)" maxlength="255"></textarea>
-            <button type="submit" name="action" value="approve" class="btn btn-outline-success btn-sm"
-                    data-confirm-message="Approve and publish “<?= e($d['title']) ?>” to authorized users?">
-              <i class="bi bi-check2-circle me-1" aria-hidden="true"></i> Approve
-            </button>
-            <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm"
-                    data-require-field="#rm-<?= (int) $d['document_id'] ?>"
-                    data-confirm-message="Reject “<?= e($d['title']) ?>”? The uploader will see the rejection remarks.">
-              <i class="bi bi-x-circle me-1"></i> Reject
-            </button>
+            <div class="approval-decision-buttons">
+              <button type="submit" name="action" value="approve" class="btn btn-outline-success btn-sm"
+                      data-confirm-message="Approve and publish “<?= e($d['title']) ?>” to authorized users?">
+                <i class="bi bi-check2-circle me-1" aria-hidden="true"></i> Approve
+              </button>
+              <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm"
+                      data-require-field="#rm-<?= (int) $d['document_id'] ?>"
+                      data-confirm-message="Reject “<?= e($d['title']) ?>”? The uploader will see the rejection remarks.">
+                <i class="bi bi-x-circle me-1"></i> Reject
+              </button>
+            </div>
           </form>
         </div>
       <?php else: ?>
-        <div class="d-flex gap-2">
+        <div class="approval-actions approval-actions--simple">
           <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-eye me-1"></i> View</a>
           <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download</a>
         </div>
