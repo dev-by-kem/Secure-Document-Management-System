@@ -270,14 +270,11 @@ require BASE_PATH . '/app/includes/header.php';
               </form>
             </td>
             <td data-label="Reset Password">
-              <form method="post" action="<?= e(url('admin/users.php')) ?>" class="d-flex gap-1 align-items-center js-confirm" data-confirm-message="Reset password for “<?= e($row['username']) ?>”? Their current password will stop working.">
-                <?= csrf_field() ?>
-                <input type="hidden" name="action" value="reset_password">
-                <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
-                <label class="visually-hidden" for="pw-<?= (int) $row['user_id'] ?>">New password</label>
-                <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="Min 8 chars" autocomplete="new-password" minlength="8" required>
-                <button type="submit" class="btn-icon btn-icon--warning" aria-label="Reset password for <?= e($row['full_name']) ?>" title="Reset password"><i class="bi bi-key" aria-hidden="true"></i></button>
-              </form>
+              <button type="button" class="btn btn-sm btn-outline-warning js-reset-password"
+                      data-user-id="<?= (int) $row['user_id'] ?>"
+                      data-user="<?= e($row['username']) ?>"
+                      aria-label="Reset password for <?= e($row['full_name']) ?>"
+                      title="Reset password"><i class="bi bi-key" aria-hidden="true"></i></button>
             </td>
             <td class="text-end" data-label="Account State">
               <form method="post" action="<?= e(url('admin/users.php')) ?>" class="js-confirm" data-confirm-message="<?= $row['status'] === 'active' ? 'Deactivate “' . e($row['username']) . '”? The user will be unable to sign in.' : 'Activate “' . e($row['username']) . '”? The user will regain access.' ?>">
@@ -296,4 +293,26 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
 </div>
 <p class="text-muted small mt-2"><i class="bi bi-shield-check me-1 text-success"></i>Security Guard (SR-9): The system prevents deactivating the last active administrator and prevents self-demotion or self-lockout.</p>
+
+<!-- Reset password dialog: opened by a row button; password is entered here and submitted via POST. -->
+<dialog id="reset-password-dialog" class="sdms-dialog" aria-labelledby="reset-password-dialog-title">
+  <form method="post" action="<?= e(url('admin/users.php')) ?>" id="reset-password-form">
+    <?= csrf_field() ?>
+    <input type="hidden" name="action" value="reset_password">
+    <input type="hidden" name="user_id" id="reset-user-id" value="">
+    <h2 id="reset-password-dialog-title" class="h5 mb-3">Reset Password</h2>
+    <p class="mb-3">Enter a new password for <strong id="reset-password-target"></strong></p>
+    <div class="mb-3">
+      <label for="reset-new-password" class="form-label">New password</label>
+      <input type="password" class="form-control" id="reset-new-password" name="new_password"
+             minlength="8" required autocomplete="new-password" placeholder="••••••••">
+      <div class="form-text">Must be at least 8 characters. Hashed via bcrypt.</div>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-outline-secondary js-reset-cancel">Cancel</button>
+      <button type="submit" class="btn btn-warning">Reset Password</button>
+    </div>
+  </form>
+</dialog>
+
 <?php require BASE_PATH . '/app/includes/footer.php'; ?>

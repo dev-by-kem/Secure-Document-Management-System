@@ -206,6 +206,29 @@
         });
     }
 
+    /* ---- Reset Password Dialog (User Accounts) ----- */
+    var resetDialog   = document.getElementById('reset-password-dialog');
+    var resetUserId   = document.getElementById('reset-user-id');
+    var resetTarget   = document.getElementById('reset-password-target');
+    var resetInput    = document.getElementById('reset-new-password');
+
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest('.js-reset-password');
+        if (!btn || !resetDialog) { return; }
+        ev.preventDefault();
+        resetUserId.value = btn.getAttribute('data-user-id') || '';
+        resetTarget.textContent = btn.getAttribute('data-user') || '';
+        resetInput.value = '';
+        resetDialog.showModal();
+        resetInput.focus();
+    });
+
+    document.addEventListener('click', function (ev) {
+        if (!ev.target.closest('.js-reset-cancel') || !resetDialog) { return; }
+        ev.preventDefault();
+        resetDialog.close();
+    });
+
     /* ---- Focus first server-invalid control on page load ----- */
     document.addEventListener('DOMContentLoaded', function () {
         var firstInvalid = document.querySelector('[aria-invalid="true"]');
