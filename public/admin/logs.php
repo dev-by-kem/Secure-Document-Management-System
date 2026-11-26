@@ -52,23 +52,7 @@ $filterQuery = [
     'to'      => $to,
 ];
 
-$users = db()->query('SELECT user_id, username FROM users ORDER BY username')->fetchAll();
-
-$actionIcons = [
-    'LOGIN' => 'bi-box-arrow-in-right', 'LOGOUT' => 'bi-box-arrow-right', 'UPLOAD' => 'bi-cloud-arrow-up',
-    'DOWNLOAD' => 'bi-download', 'DELETE' => 'bi-trash3', 'APPROVE' => 'bi-check2-circle', 'REJECT' => 'bi-x-circle',
-    'CREATE' => 'bi-plus-circle', 'UPDATE' => 'bi-pencil', 'ACCESS_DENIED' => 'bi-slash-circle',
-];
-function action_icon(string $action): string
-{
-    foreach (['LOGIN', 'LOGOUT', 'UPLOAD', 'DOWNLOAD', 'DELETE', 'APPROVE', 'REJECT', 'CREATE', 'UPDATE', 'ACCESS_DENIED'] as $k) {
-        if (str_starts_with($action, $k)) {
-            global $actionIcons;
-            return $actionIcons[$k];
-        }
-    }
-    return 'bi-activity';
-}
+$users = db()->query('SELECT user_id, username, full_name FROM users ORDER BY full_name, username')->fetchAll();
 
 $pageTitle = 'Logs';
 require BASE_PATH . '/app/includes/header.php';
@@ -101,11 +85,11 @@ require BASE_PATH . '/app/includes/header.php';
   <div class="card-body p-3 row g-2 align-items-end">
     <input type="hidden" name="tab" value="<?= e($tab) ?>">
     <div class="col-md-3">
-      <label for="user_id" class="form-label">User Account</label>
+      <label for="user_id" class="form-label">User</label>
       <select class="form-select" id="user_id" name="user_id">
         <option value="">All Users</option>
         <?php foreach ($users as $usr): ?>
-          <option value="<?= (int) $usr['user_id'] ?>" <?= $userFilter === (string) $usr['user_id'] ? 'selected' : '' ?>><?= e($usr['username']) ?></option>
+          <option value="<?= (int) $usr['user_id'] ?>" <?= $userFilter === (string) $usr['user_id'] ? 'selected' : '' ?>><?= e($usr['full_name']) ?> (@<?= e($usr['username']) ?>)</option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -149,21 +133,21 @@ require BASE_PATH . '/app/includes/header.php';
         <thead>
           <tr>
             <th>Timestamp</th>
-            <th>User Account</th>
-            <th>Action Code</th>
-            <th>Target Entity</th>
-            <th>Security Event Details</th>
-          <th>Origin IP</th>
+            <th>User</th>
+            <th>Activity</th>
+            <th>Affected item</th>
+            <th>Details</th>
+            <th>Source IP address</th>
         </tr>
       </thead>
       <tbody>
         <?php if ($rows === []): ?>
-          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No audit records match the current filter criteria.</div></td></tr>
+          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox" aria-hidden="true"></i>No audit records match the current filter criteria.</div></td></tr>
         <?php endif; ?>
         <?php foreach ($rows as $r): ?>
           <tr>
             <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
-            <td data-label="User Account">
+            <td data-label="User">
               <div class="user-cell">
                 <?= avatar($r['full_name'] ?? '?') ?>
                 <span class="user-identity">
@@ -172,12 +156,13 @@ require BASE_PATH . '/app/includes/header.php';
                 </span>
               </div>
             </td>
-            <td data-label="Action Code">
-                <span class="pill pill--neutral font-monospace"><i class="bi <?= e(action_icon($r['action'])) ?>"></i><?= e($r['action']) ?></span>
+            <td data-label="Activity">
+                <?= action_badge($r['action']) ?>
+                <code class="d-block small text-muted mt-1"><?= e($r['action']) ?></code>
               </td>
-              <td data-label="Target Entity" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
-              <td data-label="Security Event Details" class="small"><?= e($r['details'] ?? '—') ?></td>
-              <td data-label="Origin IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
+              <td data-label="Affected item" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
+              <td data-label="Details" class="small"><?= e($r['details'] ?? '—') ?></td>
+              <td data-label="Source IP address" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -187,21 +172,24 @@ require BASE_PATH . '/app/includes/header.php';
         <thead>
           <tr>
             <th>Timestamp</th>
-            <th>User Account</th>
-            <th>Document Target</th>
-            <th>Action</th>
-            <th>Authorization Result</th>
-          <th>Origin IP</th>
+            <th>User</th>
+            <th>Document</th>
+            <th>Activity</th>
+            <th>Access result</th>
+            <th>Source IP address</th>
         </tr>
       </thead>
       <tbody>
         <?php if ($rows === []): ?>
-          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox"></i>No access records found.</div></td></tr>
+          <tr><td colspan="6"><div class="empty"><i class="bi bi-inbox" aria-hidden="true"></i>No access records found.</div></td></tr>
         <?php endif; ?>
         <?php foreach ($rows as $r): ?>
+          <?php
+            $accessActionCode = $r['action'] === 'download' ? 'DOWNLOAD_DOCUMENT' : ($r['action'] === 'view' ? 'VIEW_DOCUMENT' : strtoupper($r['action']));
+          ?>
           <tr>
             <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
-            <td data-label="User Account">
+            <td data-label="User">
               <div class="user-cell">
                 <?= avatar($r['full_name'] ?? '?') ?>
                 <span class="user-identity">
@@ -210,16 +198,19 @@ require BASE_PATH . '/app/includes/header.php';
                 </span>
               </div>
             </td>
-            <td data-label="Document Target">
+            <td data-label="Document">
                 <div class="fw-semibold"><?= e($r['document_title'] ?? ('Document #' . (int) $r['document_id'])) ?></div>
               </td>
-              <td data-label="Action" class="font-monospace small text-uppercase"><?= e($r['action']) ?></td>
-              <td data-label="Authorization Result">
-                <?= (int) $r['granted'] === 1
-                  ? '<span class="pill pill--approved"><i class="bi bi-check2"></i>Granted</span>'
-                  : '<span class="pill pill--rejected"><i class="bi bi-shield-x"></i>DENIED</span>' ?>
+              <td data-label="Activity">
+                <?= action_badge($accessActionCode) ?>
+                <code class="d-block small text-muted mt-1"><?= e($r['action']) ?></code>
               </td>
-              <td data-label="Origin IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
+              <td data-label="Access result">
+                <?= (int) $r['granted'] === 1
+                  ? '<span class="pill pill--approved"><i class="bi bi-check2" aria-hidden="true"></i>Granted</span>'
+                  : '<span class="pill pill--rejected"><i class="bi bi-shield-x" aria-hidden="true"></i>Denied</span>' ?>
+              </td>
+              <td data-label="Source IP address" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

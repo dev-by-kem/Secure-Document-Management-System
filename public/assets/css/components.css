@@ -318,6 +318,11 @@
   color: var(--sdms-danger);
   border-color: var(--sdms-danger);
 }
+.btn-icon--warning:hover {
+  background: var(--sdms-warning-soft);
+  color: var(--sdms-warning);
+  border-color: var(--sdms-warning);
+}
 
 .btn-outline-secondary {
   --bs-btn-color: var(--sdms-text);
@@ -345,6 +350,26 @@
   --bs-btn-hover-bg: var(--sdms-danger);
   --bs-btn-hover-border-color: var(--sdms-danger);
   --bs-btn-hover-color: #ffffff;
+}
+.btn-outline-success {
+  --bs-btn-color: var(--sdms-success);
+  --bs-btn-border-color: rgba(21, 128, 61, 0.35);
+  --bs-btn-hover-bg: var(--sdms-success);
+  --bs-btn-hover-border-color: var(--sdms-success);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-active-bg: var(--sdms-success);
+  --bs-btn-active-border-color: var(--sdms-success);
+  --bs-btn-active-color: #ffffff;
+}
+.btn-outline-warning {
+  --bs-btn-color: var(--sdms-warning);
+  --bs-btn-border-color: rgba(180, 83, 9, 0.35);
+  --bs-btn-hover-bg: var(--sdms-warning-soft);
+  --bs-btn-hover-border-color: var(--sdms-warning);
+  --bs-btn-hover-color: var(--sdms-warning);
+  --bs-btn-active-bg: var(--sdms-warning-soft);
+  --bs-btn-active-border-color: var(--sdms-warning);
+  --bs-btn-active-color: var(--sdms-warning);
 }
 .btn-warning {
   background-color: var(--sdms-accent);
@@ -621,9 +646,20 @@
   border: 1px solid rgba(185, 28, 28, 0.25);
 }
 .pill--neutral {
-  background: var(--sdms-surface-muted);
-  color: var(--sdms-text-muted);
+  background: var(--sdms-neutral-soft);
+  color: var(--sdms-neutral);
   border: 1px solid var(--sdms-border);
+}
+.pill--info {
+  background: var(--sdms-info-soft);
+  color: var(--sdms-info);
+  border: 1px solid rgba(3, 105, 161, 0.25);
+}
+.pill--deleted {
+  background: var(--sdms-neutral-soft);
+  color: var(--sdms-text-muted);
+  border: 1px dashed var(--sdms-border);
+  text-decoration: line-through;
 }
 
 .role-chip {
@@ -632,11 +668,10 @@
   gap: 0.3rem;
   padding: 0.22rem 0.6rem;
   border-radius: var(--sdms-radius-sm);
-  font-size: 0.74rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 650;
   white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
 }
 .role-admin {
   background: var(--sdms-brand-soft);

@@ -121,9 +121,9 @@ require BASE_PATH . '/app/includes/header.php';
     <div class="card-body">
       <div class="empty">
         <?php if ($decision === 'pending'): ?>
-          <i class="bi bi-check2-circle text-success fs-1"></i>
-          <strong class="d-block mt-2">Queue is clear!</strong>
-          All submitted documents have been reviewed. New staff submissions requiring moderation will appear here.
+          <i class="bi bi-check2-circle text-success fs-1" aria-hidden="true"></i>
+          <strong class="d-block mt-2">All caught up.</strong>
+          There are no documents waiting for approval.
         <?php elseif ($decision === 'approved'): ?>
           <i class="bi bi-folder-check text-success fs-1"></i>
           <strong class="d-block mt-2">No approved documents found.</strong>
@@ -193,9 +193,9 @@ require BASE_PATH . '/app/includes/header.php';
             <label class="visually-hidden" for="rm-<?= (int) $d['document_id'] ?>">Rejection remarks</label>
             <textarea class="form-control form-control-sm remarks-input" id="rm-<?= (int) $d['document_id'] ?>"
                       name="remarks" rows="2" placeholder="Remarks (required to reject)" maxlength="255"></textarea>
-            <button type="submit" name="action" value="approve" class="btn btn-primary btn-sm"
+            <button type="submit" name="action" value="approve" class="btn btn-outline-success btn-sm"
                     data-confirm-message="Approve and publish “<?= e($d['title']) ?>” to authorized users?">
-              <i class="bi bi-check2-circle me-1"></i> Approve
+              <i class="bi bi-check2-circle me-1" aria-hidden="true"></i> Approve
             </button>
             <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm"
                     data-require-field="#rm-<?= (int) $d['document_id'] ?>"

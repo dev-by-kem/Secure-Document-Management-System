@@ -22,7 +22,7 @@ if ($go) {
 }
 
 $sql = 'SELECT d.document_id, d.title, d.status, d.file_size, d.file_ext, d.created_at, c.category_id, c.category_name,
-               up.full_name AS uploader_name,
+               up.full_name AS uploader_name, up.username AS uploader_username,
                (SELECT COUNT(*) FROM document_access_logs al
                  WHERE al.document_id = d.document_id AND al.action = "download" AND al.granted = 1) AS downloads
         FROM documents d
@@ -47,7 +47,7 @@ require BASE_PATH . '/app/includes/header.php';
   <div style="font-size: 9pt;">College of Engineering and Information Technology · Department of Information Technology</div>
   <div style="font-size: 12pt; font-weight: bold; margin-top: 10px;">SECURE DOCUMENT MANAGEMENT SYSTEM (SDMS)</div>
   <div style="font-size: 10pt; font-style: italic;">Official Institutional Document Summary &amp; Access Audit Report</div>
-  <div style="font-size: 8pt; color: #555; margin-top: 5px;">Generated: <?= e(date('F j, Y · g:i A')) ?> by Administrator (<?= e($u['username']) ?>)</div>
+  <div style="font-size: 8pt; color: #555; margin-top: 5px;">Generated: <?= e(date('F j, Y · g:i A')) ?> by <?= e($u['full_name']) ?> (@<?= e($u['username']) ?>)</div>
 </div>
 
 <div class="page-head">
@@ -104,7 +104,7 @@ require BASE_PATH . '/app/includes/header.php';
       <div>
         <i class="bi bi-bar-chart me-1"></i> Summary Results — <strong><?= count($docs) ?></strong> document record(s)
       </div>
-      <span class="small text-muted">Generated <?= e(date('Y-m-d H:i')) ?> by <?= e($u['username']) ?></span>
+      <span class="small text-muted">Generated <?= e(format_datetime(date('Y-m-d H:i:s'))) ?> by <?= e($u['full_name']) ?> (@<?= e($u['username']) ?>)</span>
     </div>
     <div class="table-responsive sdms-table-wrap" role="region" aria-label="Report results table" tabindex="0">
       <table class="table table-hover sdms-card-table">
@@ -132,7 +132,15 @@ require BASE_PATH . '/app/includes/header.php';
                 </div>
               </td>
               <td data-label="Category"><?= category_chip((int) $d['category_id'], $d['category_name']) ?></td>
-              <td data-label="Uploader"><?= e($d['uploader_name']) ?></td>
+              <td data-label="Uploader">
+                <div class="user-cell user-cell--compact">
+                  <?= avatar($d['uploader_name']) ?>
+                  <span class="user-identity">
+                    <span class="name"><?= e($d['uploader_name']) ?></span>
+                    <span class="sub">@<?= e($d['uploader_username']) ?></span>
+                  </span>
+                </div>
+              </td>
               <td data-label="Status"><?= status_badge($d['status']) ?></td>
               <td data-label="File Size" class="text-nowrap"><?= e(bytes_for_humans((int) $d['file_size'])) ?></td>
               <td data-label="Created Date" class="small text-nowrap"><?= e(format_datetime($d['created_at'])) ?></td>

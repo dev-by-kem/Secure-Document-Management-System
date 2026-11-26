@@ -43,7 +43,7 @@ require BASE_PATH . '/app/includes/header.php';
 ?>
 <div class="page-head">
   <div>
-    <h1>Welcome, <?= e($u['username']) ?></h1>
+    <h1>Welcome, <?= e($u['full_name']) ?></h1>
     <p class="page-sub">Cavite State University Document Hub — submit academic files, track approvals, and retrieve verified materials.</p>
   </div>
   <div class="page-actions">

@@ -125,9 +125,9 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="Category Classification">
               <?= category_chip((int) $c['category_id'], $c['category_name']) ?>
               <?php if ((int) $c['requires_approval'] === 1): ?>
-                <span class="pill pill--pending ms-1"><i class="bi bi-shield-lock"></i>moderated</span>
+                <span class="pill pill--pending ms-1"><i class="bi bi-shield-lock" aria-hidden="true"></i>Moderated</span>
               <?php else: ?>
-                <span class="pill pill--approved ms-1"><i class="bi bi-check2"></i>instant</span>
+                <span class="pill pill--approved ms-1"><i class="bi bi-check2" aria-hidden="true"></i>Instant</span>
               <?php endif; ?>
               <div class="small text-muted mt-1"><?= e($c['description'] ?? 'No description specified.') ?></div>
             </td>

@@ -57,6 +57,8 @@
   --sdms-danger-soft: rgba(185, 28, 28, 0.10);
   --sdms-info: #0369a1;             /* Sky 700 */
   --sdms-info-soft: rgba(3, 105, 161, 0.10);
+  --sdms-neutral: #475569;          /* Slate 600 */
+  --sdms-neutral-soft: rgba(71, 85, 105, 0.10);
 
   /* Form & Component Metrics */
   --sdms-radius-sm: 6px;
@@ -144,6 +146,8 @@
   --sdms-danger-soft: rgba(224, 130, 122, 0.16);
   --sdms-info: #8bb8d8;             /* Muted blue */
   --sdms-info-soft: rgba(139, 184, 216, 0.16);
+  --sdms-neutral: #94a3b8;          /* Slate 400 */
+  --sdms-neutral-soft: rgba(148, 163, 184, 0.16);
 
   /* Shadows in Dark Mode (Matte, soft) */
   --sdms-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);

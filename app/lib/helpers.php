@@ -58,19 +58,67 @@ function bytes_for_humans(int $bytes): string
 function status_badge(string $status): string
 {
     $map = [
-        'pending'  => ['pill--pending', 'bi-hourglass-split'],
-        'approved' => ['pill--approved', 'bi-check2-circle'],
-        'rejected' => ['pill--rejected', 'bi-x-circle'],
+        'pending'  => ['Pending review', 'pill--pending', 'bi-hourglass-split'],
+        'approved' => ['Approved', 'pill--approved', 'bi-check2-circle'],
+        'rejected' => ['Rejected', 'pill--rejected', 'bi-x-circle'],
+        'draft'    => ['Draft', 'pill--neutral', 'bi-file-earmark'],
+        'deleted'  => ['Deleted', 'pill--deleted', 'bi-trash3'],
     ];
-    [$class, $icon] = $map[$status] ?? ['pill--neutral', 'bi-circle'];
-    return '<span class="pill ' . $class . '"><i class="bi ' . $icon . '"></i>' . e(ucfirst($status)) . '</span>';
+    [$label, $class, $icon] = $map[$status] ?? [ucfirst($status), 'pill--neutral', 'bi-circle'];
+    return '<span class="pill ' . $class . '"><i class="bi ' . $icon . '" aria-hidden="true"></i>' . e($label) . '</span>';
+}
+
+/** Human-readable, semantic badge for audit and activity action codes. */
+function action_badge(string $action): string
+{
+    $map = [
+        'LOGIN_SUCCESS'         => ['Login successful', 'pill--approved', 'bi-box-arrow-in-right'],
+        'LOGIN_FAILED'          => ['Login failed', 'pill--rejected', 'bi-shield-x'],
+        'LOGIN_DENIED_INACTIVE' => ['Login blocked', 'pill--rejected', 'bi-person-slash'],
+        'LOGIN_THROTTLED'       => ['Login temporarily limited', 'pill--pending', 'bi-hourglass-split'],
+        'LOGOUT'                => ['Signed out', 'pill--neutral', 'bi-box-arrow-right'],
+        'UPLOAD_DOCUMENT'       => ['Document uploaded', 'pill--info', 'bi-cloud-arrow-up'],
+        'DOWNLOAD_DOCUMENT'     => ['Document downloaded', 'pill--info', 'bi-download'],
+        'VIEW_DOCUMENT'         => ['Document viewed', 'pill--info', 'bi-eye'],
+        'EDIT_DOCUMENT'         => ['Document updated', 'pill--info', 'bi-pencil-square'],
+        'UPDATE_DOCUMENT'       => ['Document updated', 'pill--info', 'bi-pencil-square'],
+        'APPROVE_DOCUMENT'      => ['Document approved', 'pill--approved', 'bi-check-circle'],
+        'REJECT_DOCUMENT'       => ['Document rejected', 'pill--rejected', 'bi-x-circle'],
+        'DELETE_DOCUMENT'       => ['Document deleted', 'pill--rejected', 'bi-trash3'],
+        'CREATE_USER'           => ['User created', 'pill--approved', 'bi-person-plus'],
+        'UPDATE_USER'           => ['User updated', 'pill--info', 'bi-person-gear'],
+        'ACTIVATE_USER'         => ['User activated', 'pill--approved', 'bi-person-check'],
+        'DEACTIVATE_USER'       => ['User deactivated', 'pill--pending', 'bi-person-dash'],
+        'RESET_PASSWORD'        => ['Password reset', 'pill--pending', 'bi-key'],
+        'CHANGE_PASSWORD'       => ['Password changed', 'pill--info', 'bi-key'],
+        'CREATE_CATEGORY'       => ['Category created', 'pill--approved', 'bi-folder-plus'],
+        'UPDATE_CATEGORY'       => ['Category updated', 'pill--info', 'bi-tags'],
+        'DELETE_CATEGORY'       => ['Category deleted', 'pill--rejected', 'bi-trash3'],
+        'REPORT_GENERATED'      => ['Report generated', 'pill--info', 'bi-bar-chart'],
+        'ACCESS_DENIED'         => ['Access denied', 'pill--rejected', 'bi-slash-circle'],
+        'CHECKSUM_MISMATCH'     => ['File integrity check failed', 'pill--rejected', 'bi-shield-exclamation'],
+    ];
+    [$label, $class, $icon] = $map[$action] ?? ['System activity', 'pill--neutral', 'bi-activity'];
+    return '<span class="pill ' . $class . '" data-action-code="' . e($action) . '" title="' . e($action) . '">'
+         . '<i class="bi ' . $icon . '" aria-hidden="true"></i>' . e($label) . '</span>';
 }
 
 /** Colored label for a document category (6 rotating hues, theme-aware). */
 function category_chip(?int $categoryId, string $name): string
 {
     $tint = 'cat-tint-' . ((int) $categoryId % 6);
-    return '<span class="chip ' . $tint . '"><i class="bi bi-folder2"></i>' . e($name) . '</span>';
+    return '<span class="chip ' . $tint . '"><i class="bi bi-folder2" aria-hidden="true"></i>' . e($name) . '</span>';
+}
+
+/** Human-readable title-cased label for a system role. */
+function role_label(string $role): string
+{
+    $map = [
+        'admin'  => 'Administrator',
+        'staff'  => 'Staff',
+        'viewer' => 'Viewer',
+    ];
+    return $map[strtolower($role)] ?? ucfirst($role);
 }
 
 /** Colored label for a user role. */
@@ -82,7 +130,7 @@ function role_chip(string $role): string
         'viewer' => ['role-viewer', 'bi-eye'],
     ];
     [$class, $icon] = $map[$role] ?? ['role-viewer', 'bi-person'];
-    return '<span class="role-chip ' . $class . '"><i class="bi ' . $icon . '"></i>' . e(ucfirst($role)) . '</span>';
+    return '<span class="role-chip ' . $class . '"><i class="bi ' . $icon . '" aria-hidden="true"></i>' . e(role_label($role)) . '</span>';
 }
 
 /** Two-letter initials for avatar circles. */
@@ -99,7 +147,7 @@ function initials(string $name): string
 
 function avatar(string $name, string $extraClass = ''): string
 {
-    return '<span class="avatar ' . e($extraClass) . '">' . e(initials($name)) . '</span>';
+    return '<span class="avatar ' . e($extraClass) . '" aria-hidden="true">' . e(initials($name)) . '</span>';
 }
 
 /** Bootstrap-Icons class for a file extension. */

@@ -54,14 +54,14 @@ require BASE_PATH . '/app/includes/header.php';
           </li>
           <li class="list-group-item d-flex justify-content-between px-0 py-2">
             <span class="text-muted">Last Recorded Login</span>
-            <span class="small font-monospace"><?= e($u['last_login'] ?? '—') ?></span>
+            <span class="small"><?= e(format_datetime($u['last_login'] ?? null)) ?></span>
           </li>
           <li class="list-group-item d-flex justify-content-between px-0 py-2">
             <span class="text-muted">Member Since</span>
-            <span class="small font-monospace"><?= e($u['created_at']) ?></span>
+            <span class="small"><?= e(format_datetime($u['created_at'])) ?></span>
           </li>
         </ul>
-        <div class="mt-4 p-3 bg-light rounded border">
+        <div class="mt-4 p-3 bg-body-tertiary rounded border">
           <div class="d-flex align-items-center gap-2 small text-muted">
             <i class="bi bi-shield-check text-success fs-5"></i>
             <div>

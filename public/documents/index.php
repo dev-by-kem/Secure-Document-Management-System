@@ -202,9 +202,9 @@ require BASE_PATH . '/app/includes/header.php';
         <?php if ($docs === []): ?>
           <tr><td colspan="5">
             <div class="empty">
-              <i class="bi bi-folder-x"></i>
-              <strong>No documents match your query.</strong><br>
-              Try adjusting your search criteria<?php if (in_array($u['role_name'], ['admin', 'staff'], true)): ?>, or submit a new upload<?php endif; ?>.
+              <i class="bi bi-folder-x" aria-hidden="true"></i>
+              <strong>No documents match your filters.</strong><br>
+              Try clearing a filter or searching by title, category, or uploader.
             </div>
           </td></tr>
         <?php endif; ?>
@@ -224,7 +224,7 @@ require BASE_PATH . '/app/includes/header.php';
                 <div class="min-w-0">
                   <a class="doc-title-link" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
                   <?php if ((int) $d['is_deleted'] === 1): ?>
-                    <span class="badge bg-danger ms-1">Deleted</span>
+                    <span class="pill pill--deleted ms-1"><i class="bi bi-trash3" aria-hidden="true"></i>Deleted</span>
                   <?php endif; ?>
                 </div>
               </div>
@@ -247,7 +247,7 @@ require BASE_PATH . '/app/includes/header.php';
                   <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Details
                 </button>
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
-                  <a class="btn-icon" href="<?= e(url('admin/approvals.php?decision=pending')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning"></i></a>
+                  <a class="btn-icon btn-icon--warning" href="<?= e(url('admin/approvals.php?decision=pending')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning" aria-hidden="true"></i></a>
                 <?php endif; ?>
                 <?php if ($canView): ?>
                   <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download"></i></a>

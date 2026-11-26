@@ -114,17 +114,17 @@ require BASE_PATH . '/app/includes/header.php';
     <table class="table table-hover sdms-card-table">
       <thead>
         <tr>
-          <th>User Account</th>
-          <th>Action</th>
-          <th>Event Details</th>
+          <th>User</th>
+          <th>Activity</th>
+          <th>Details</th>
           <th>Timestamp</th>
-          <th>Client IP</th>
+          <th>Source IP address</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($recent as $r): ?>
           <tr>
-            <td data-label="User Account">
+            <td data-label="User">
               <div class="user-cell">
                 <?= avatar($r['full_name'] ?? '?') ?>
                 <span class="user-identity">
@@ -133,12 +133,12 @@ require BASE_PATH . '/app/includes/header.php';
                 </span>
               </div>
             </td>
-            <td data-label="Action">
-              <span class="pill pill--neutral"><i class="bi bi-shield-check"></i><?= e($r['action']) ?></span>
+            <td data-label="Activity">
+              <?= action_badge($r['action']) ?>
             </td>
-            <td data-label="Event Details" class="small"><?= e($r['details'] ?? '') ?></td>
+            <td data-label="Details" class="small"><?= e($r['details'] ?? '') ?></td>
             <td data-label="Timestamp" class="small text-nowrap"><?= e(format_datetime($r['created_at'])) ?></td>
-            <td data-label="Client IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
+            <td data-label="Source IP address" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
           </tr>
         <?php endforeach; ?>
       </tbody>

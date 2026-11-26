@@ -89,33 +89,36 @@ require BASE_PATH . '/app/includes/header.php';
     <span class="small text-muted">Append-only audit trail — read only</span>
   </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="My activity log table" tabindex="0">
-    <?php if ($rows === []): ?>
-      <div class="empty p-3 text-center">
-        <i class="bi bi-inbox text-muted fs-2"></i>
-        <p class="mb-0"><strong>No activity records found.</strong></p>
-      </div>
-    <?php endif; ?>
     <table class="table table-hover sdms-card-table">
       <thead>
         <tr>
           <th>Timestamp</th>
-          <th>Action Code</th>
-          <th>Target Entity</th>
-          <th>Security Event Details</th>
-          <th>Origin IP</th>
+          <th>Activity</th>
+          <th>Affected item</th>
+          <th>Details</th>
+          <th>Source IP address</th>
           <th>User Agent</th>
         </tr>
       </thead>
       <tbody>
+        <?php if ($rows === []): ?>
+          <tr><td colspan="6">
+            <div class="empty">
+              <i class="bi bi-inbox" aria-hidden="true"></i>
+              <strong>No activity records found.</strong><br>
+              Try clearing your filters to view older account events.
+            </div>
+          </td></tr>
+        <?php endif; ?>
         <?php foreach ($rows as $r): ?>
           <tr>
             <td data-label="Timestamp" class="text-nowrap small"><?= e(format_datetime($r['created_at'])) ?></td>
-            <td data-label="Action Code">
-              <span class="pill pill--neutral font-monospace"><i class="bi bi-activity"></i><?= e($r['action']) ?></span>
+            <td data-label="Activity">
+              <?= action_badge($r['action']) ?>
             </td>
-            <td data-label="Target Entity" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
-            <td data-label="Security Event Details" class="small"><?= e($r['details'] ?? '—') ?></td>
-            <td data-label="Origin IP" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
+            <td data-label="Affected item" class="small text-muted font-monospace"><?= e($r['entity_type'] ?? 'system') ?><?= $r['entity_id'] !== null ? ' #' . (int) $r['entity_id'] : '' ?></td>
+            <td data-label="Details" class="small"><?= e($r['details'] ?? '—') ?></td>
+            <td data-label="Source IP address" class="small text-muted font-monospace"><?= e($r['ip_address'] ?? '') ?></td>
             <td data-label="User Agent" class="small text-muted font-monospace ua-truncate" title="<?= e($r['user_agent'] ?? '') ?>"><?= e($r['user_agent'] ?? '—') ?></td>
           </tr>
         <?php endforeach; ?>

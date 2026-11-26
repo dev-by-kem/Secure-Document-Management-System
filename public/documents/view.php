@@ -5,7 +5,8 @@ require_login();
 $u   = current_user();
 $doc = null;
 $docStmt = db()->prepare(
-    'SELECT d.*, c.category_name, c.requires_approval, up.full_name AS uploader_name, up.username AS uploader_username, rv.full_name AS reviewer_name
+    'SELECT d.*, c.category_name, c.requires_approval, up.full_name AS uploader_name, up.username AS uploader_username,
+            rv.full_name AS reviewer_name, rv.username AS reviewer_username
      FROM documents d
      JOIN document_categories c ON c.category_id = d.category_id
      JOIN users up ON up.user_id = d.uploaded_by
@@ -80,7 +81,7 @@ require BASE_PATH . '/app/includes/header.php';
           </div>
         </div>
 
-        <h2 class="h6 fw-bold text-uppercase text-muted letter-spacing-1 mb-2">Abstract &amp; Scope</h2>
+        <h2 class="h6 fw-bold text-muted mb-2">Abstract &amp; Scope</h2>
         <div class="p-3 bg-body-tertiary rounded border mb-3">
           <?php if ($doc['description'] !== null && $doc['description'] !== ''): ?>
             <p class="mb-0 text-secondary" style="white-space: pre-line;"><?= e($doc['description']) ?></p>
@@ -128,8 +129,11 @@ require BASE_PATH . '/app/includes/header.php';
             <span class="text-muted small d-block">Institutional Reviewer</span>
             <div class="user-cell mt-1">
               <?= avatar($doc['reviewer_name']) ?>
-              <div>
+              <div class="user-identity">
                 <div class="name"><?= e($doc['reviewer_name']) ?></div>
+                <?php if (!empty($doc['reviewer_username'])): ?>
+                  <div class="sub">@<?= e($doc['reviewer_username']) ?></div>
+                <?php endif; ?>
                 <div class="small text-muted"><?= e(format_datetime($doc['reviewed_at'] ?? '')) ?></div>
               </div>
             </div>

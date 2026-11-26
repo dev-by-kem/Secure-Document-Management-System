@@ -153,7 +153,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
       <div class="sidebar-user-info">
         <div class="sidebar-user-name"><?= e($u['full_name']) ?></div>
         <div class="sidebar-user-handle">@<?= e($u['username']) ?></div>
-        <div class="sidebar-user-role"><?= e(ucfirst($u['role_name'])) ?></div>
+        <div class="sidebar-user-role"><?= e(role_label($u['role_name'])) ?></div>
       </div>
     </div>
 

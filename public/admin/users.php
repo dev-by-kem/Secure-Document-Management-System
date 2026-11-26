@@ -164,7 +164,7 @@ require BASE_PATH . '/app/includes/header.php';
         <label for="nu-role" class="form-label">Role <span class="text-danger">*</span></label>
         <select class="form-select" id="nu-role" name="role_id" required>
           <?php foreach ($roles as $r): ?>
-            <option value="<?= (int) $r['role_id'] ?>"><?= e(ucfirst($r['role_name'])) ?></option>
+            <option value="<?= (int) $r['role_id'] ?>"><?= e(role_label($r['role_name'])) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -213,12 +213,12 @@ require BASE_PATH . '/app/includes/header.php';
     <table class="table table-hover sdms-card-table">
       <thead>
         <tr>
-          <th>User Profile</th>
+          <th>User</th>
           <th>Role &amp; Status</th>
           <th>Last Login</th>
           <th>Account Details</th>
           <th>Reset Password</th>
-          <th class="text-end">Account State</th>
+          <th class="text-end">Access</th>
         </tr>
       </thead>
       <tbody>
@@ -260,7 +260,7 @@ require BASE_PATH . '/app/includes/header.php';
                   <label class="visually-hidden" for="rl-<?= (int) $row['user_id'] ?>">Role</label>
                   <select class="form-select form-select-sm" id="rl-<?= (int) $row['user_id'] ?>" name="role_id" <?= $isSelf ? 'disabled title="You cannot alter your own administrative role"' : '' ?>>
                     <?php foreach ($roles as $r): ?>
-                      <option value="<?= (int) $r['role_id'] ?>" <?= (int) $r['role_id'] === (int) $row['role_id'] ? 'selected' : '' ?>><?= e(ucfirst($r['role_name'])) ?></option>
+                      <option value="<?= (int) $r['role_id'] ?>" <?= (int) $r['role_id'] === (int) $row['role_id'] ? 'selected' : '' ?>><?= e(role_label($r['role_name'])) ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
@@ -276,7 +276,7 @@ require BASE_PATH . '/app/includes/header.php';
                 <input type="hidden" name="user_id" value="<?= (int) $row['user_id'] ?>">
                 <label class="visually-hidden" for="pw-<?= (int) $row['user_id'] ?>">New password</label>
                 <input type="password" class="form-control form-control-sm" id="pw-<?= (int) $row['user_id'] ?>" name="new_password" placeholder="Min 8 chars" autocomplete="new-password" minlength="8" required>
-                <button type="submit" class="btn-icon" aria-label="Reset password for <?= e($row['username']) ?>" title="Reset password"><i class="bi bi-key"></i></button>
+                <button type="submit" class="btn-icon btn-icon--warning" aria-label="Reset password for <?= e($row['full_name']) ?>" title="Reset password"><i class="bi bi-key" aria-hidden="true"></i></button>
               </form>
             </td>
             <td class="text-end" data-label="Account State">
