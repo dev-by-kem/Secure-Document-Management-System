@@ -27,6 +27,6 @@
 </dialog>
 
 <script src="<?= e(url('assets/js/bootstrap.bundle.min.js')) ?>"></script>
-<script src="<?= e(url('assets/js/app.js?v=2.0-cvsu')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=2.1-reset-dialog')) ?>"></script>
 </body>
 </html>

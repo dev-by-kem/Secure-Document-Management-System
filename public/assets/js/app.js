@@ -207,26 +207,32 @@
     }
 
     /* ---- Reset Password Dialog (User Accounts) ----- */
-    var resetDialog   = document.getElementById('reset-password-dialog');
-    var resetUserId   = document.getElementById('reset-user-id');
-    var resetTarget   = document.getElementById('reset-password-target');
-    var resetInput    = document.getElementById('reset-new-password');
-
     document.addEventListener('click', function (ev) {
         var btn = ev.target.closest('.js-reset-password');
-        if (!btn || !resetDialog) { return; }
+        if (!btn) { return; }
+        var dialog     = document.getElementById('reset-password-dialog');
+        var userIdInput = document.getElementById('reset-user-id');
+        var targetInput = document.getElementById('reset-password-target');
+        var passwordInput = document.getElementById('reset-new-password');
+        if (!dialog || !userIdInput || !targetInput || !passwordInput) { return; }
         ev.preventDefault();
-        resetUserId.value = btn.getAttribute('data-user-id') || '';
-        resetTarget.textContent = btn.getAttribute('data-user') || '';
-        resetInput.value = '';
-        resetDialog.showModal();
-        resetInput.focus();
+        try {
+            userIdInput.value    = btn.getAttribute('data-user-id') || '';
+            targetInput.textContent = btn.getAttribute('data-user') || '';
+            passwordInput.value = '';
+            dialog.showModal();
+            passwordInput.focus();
+        } catch (err) {
+            try { dialog.show(); } catch (e2) {}
+        }
     });
 
     document.addEventListener('click', function (ev) {
-        if (!ev.target.closest('.js-reset-cancel') || !resetDialog) { return; }
+        if (!ev.target.closest('.js-reset-cancel')) { return; }
+        var dialog = document.getElementById('reset-password-dialog');
+        if (!dialog) { return; }
         ev.preventDefault();
-        resetDialog.close();
+        dialog.close();
     });
 
     /* ---- Focus first server-invalid control on page load ----- */
