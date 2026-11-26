@@ -1,5 +1,5 @@
 </main>
-<footer class="container-xl py-4 mt-5 text-muted small d-print-none border-top">
+<footer class="sdms-footer container-xl py-4 mt-5 text-muted small d-print-none border-top">
   <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-center text-md-start">
     <div>
       <div class="fw-bold text-body">Cavite State University · Don Severino delas Alas Campus</div>

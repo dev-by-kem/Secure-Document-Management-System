@@ -1293,6 +1293,14 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
   padding-inline: clamp(1rem, 2.5vw, 2.25rem);
 }
 
+/* The sidebar is fixed and paints above document flow; keep the footer in the content column. */
+.sdms-footer {
+  margin-inline-start: var(--sdms-sidebar-width);
+  width: calc(100% - var(--sdms-sidebar-width));
+  max-width: none;
+  padding-inline: clamp(1rem, 2.5vw, 2.25rem);
+}
+
 /* Mobile top bar & off-canvas drawer */
 .sdms-mobile-bar {
   display: none;
@@ -1311,6 +1319,10 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
 
 @media (max-width: 768px) {
   .sdms-main {
+    width: 100%;
+    margin-inline-start: 0;
+  }
+  .sdms-footer {
     width: 100%;
     margin-inline-start: 0;
   }
@@ -1672,7 +1684,8 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
   .sdms-sidebar, .navbar, .btn, form, footer, .alert, .d-print-none, .page-actions, #themeToggle, .filter-toolbar {
     display: none !important;
   }
-  .sdms-main { margin-inline-start: 0; }
+  .sdms-main,
+  .sdms-footer { margin-inline-start: 0; }
   body {
     background: #ffffff !important;
     color: #000000 !important;
