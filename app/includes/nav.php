@@ -157,38 +157,42 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
       </div>
     </div>
 
-    <!-- Theme Toggle -->
-    <button type="button" id="themeToggle" class="sidebar-theme-toggle" aria-pressed="false"
-            aria-label="Switch between light and dark theme" title="Switch theme">
-      <i class="bi bi-moon-stars"></i>
-    </button>
-
-    <!-- User Dropdown (Account, Sign Out) -->
-    <div class="dropdown sidebar-user-dropdown">
-      <button class="sidebar-user-menu-btn" type="button" id="sidebarUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-gear"></i>
+    <div class="sidebar-user-actions">
+      <!-- Theme Toggle -->
+      <button type="button" id="themeToggle" class="sidebar-theme-toggle" aria-pressed="false"
+              aria-label="Switch between light and dark theme" title="Switch theme">
+        <i class="bi bi-moon-stars" aria-hidden="true"></i>
+        <span class="theme-label">Dark Theme</span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu--wide" aria-labelledby="sidebarUserMenu">
-        <li>
-          <a class="dropdown-item py-2" href="<?= e(url('profile.php')) ?>">
-            <i class="bi bi-person-circle me-2"></i> My Account Profile
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item py-2 js-theme-toggle" href="#">
-            <i class="bi bi-circle-half me-2"></i> <span class="theme-label">Toggle Dark Mode</span>
-          </a>
-        </li>
-        <li><hr class="dropdown-divider"></li>
-        <li>
-          <form method="post" action="<?= e(url('logout.php')) ?>" class="m-0">
-            <?= csrf_field() ?>
-            <button type="submit" class="dropdown-item text-danger py-2 w-100 text-start">
-              <i class="bi bi-box-arrow-right me-2 text-danger"></i> Sign Out
-            </button>
-          </form>
-        </li>
-      </ul>
+
+      <!-- User Dropdown (Account, Sign Out) -->
+      <div class="dropup sidebar-user-dropdown">
+        <button class="sidebar-user-menu-btn" type="button" id="sidebarUserMenu" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account settings and sign out">
+          <i class="bi bi-gear" aria-hidden="true"></i>
+          <span>Account</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu--wide" aria-labelledby="sidebarUserMenu">
+          <li>
+            <a class="dropdown-item py-2" href="<?= e(url('profile.php')) ?>">
+              <i class="bi bi-person-circle me-2"></i> My Account Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 js-theme-toggle" href="#">
+              <i class="bi bi-circle-half me-2"></i> <span class="theme-label">Toggle Dark Mode</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="<?= e(url('logout.php')) ?>" class="m-0">
+              <?= csrf_field() ?>
+              <button type="submit" class="dropdown-item text-danger py-2 w-100 text-start">
+                <i class="bi bi-box-arrow-right me-2 text-danger"></i> Sign Out
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   <?php endif; ?>
