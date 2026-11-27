@@ -17,7 +17,7 @@ if (!$doc) {
     exit('404 — Document not found.');
 }
 
-if (!can_access_document($u, $doc)) {
+if (!can_download_document($u, $doc)) {
     log_access((int) $doc['document_id'], (int) $u['user_id'], 'download', false);
     log_activity((int) $u['user_id'], 'ACCESS_DENIED', 'document', (int) $doc['document_id'], 'download attempt');
     http_response_code(403);

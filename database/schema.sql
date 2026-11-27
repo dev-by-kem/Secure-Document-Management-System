@@ -34,7 +34,7 @@ CREATE TABLE roles (
   role_id     TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   role_name   ENUM('admin','staff','viewer') NOT NULL UNIQUE,
   description VARCHAR(100) NOT NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- users — everyone who logs in (SR-1 hash only, SR-9 status, SR-3 role)
@@ -52,7 +52,7 @@ CREATE TABLE users (
   created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(role_id)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- document_categories — managed by the admin (FR-27);
@@ -64,7 +64,7 @@ CREATE TABLE document_categories (
   description       VARCHAR(255) NULL,
   requires_approval TINYINT(1) NOT NULL DEFAULT 0,
   created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- documents — metadata only; file bytes live in storage/uploads/
@@ -96,7 +96,7 @@ CREATE TABLE documents (
   INDEX idx_docs_category (category_id),
   INDEX idx_docs_uploader (uploaded_by),
   INDEX idx_docs_title    (title)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- activity_logs — append-only audit trail (SR-8)
@@ -115,7 +115,7 @@ CREATE TABLE activity_logs (
   INDEX idx_logs_created (created_at),
   INDEX idx_logs_action  (action),
   INDEX idx_logs_user    (user_id)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- document_access_logs — who viewed/downloaded what, incl. denied tries
@@ -133,7 +133,7 @@ CREATE TABLE document_access_logs (
   CONSTRAINT fk_alog_user FOREIGN KEY (user_id)     REFERENCES users(user_id),
   INDEX idx_alog_doc     (document_id),
   INDEX idx_alog_created (created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
 -- login_attempts — optional, for login throttling (SR-2 enhancement)
@@ -145,4 +145,4 @@ CREATE TABLE login_attempts (
   success        TINYINT(1)   NOT NULL DEFAULT 0,
   created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_attempt (username_tried, created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

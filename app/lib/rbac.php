@@ -33,3 +33,16 @@ function can_access_document(array $user, array $doc): bool
     }
     return $doc['status'] === 'approved';
 }
+
+/**
+ * Download policy (docs/01-REQUIREMENTS.md §2):
+ * Same as view access, except rejected documents are view-only for the owner
+ * (only admins may download rejected documents).
+ */
+function can_download_document(array $user, array $doc): bool
+{
+    if ($doc['status'] === 'rejected' && $user['role_name'] !== 'admin') {
+        return false;
+    }
+    return can_access_document($user, $doc);
+}

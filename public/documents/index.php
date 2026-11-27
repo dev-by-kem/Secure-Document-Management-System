@@ -210,9 +210,10 @@ require BASE_PATH . '/app/includes/header.php';
         <?php endif; ?>
         <?php foreach ($docs as $d): ?>
           <?php
-              $isOwner  = (int) $d['uploaded_by'] === (int) $u['user_id'];
-              $canView  = can_access_document($u, $d);
-              $canEdit  = $isOwner || $u['role_name'] === 'admin';
+              $isOwner     = (int) $d['uploaded_by'] === (int) $u['user_id'];
+              $canView     = can_access_document($u, $d);
+              $canDownload = can_download_document($u, $d);
+              $canEdit     = $isOwner || $u['role_name'] === 'admin';
           ?>
           <tr class="doc-row <?= (int) $d['is_deleted'] === 1 ? 'table-light opacity-75' : '' ?>">
             <td data-label="Document Title">
@@ -246,7 +247,7 @@ require BASE_PATH . '/app/includes/header.php';
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
                   <a class="btn-icon btn-icon--warning" href="<?= e(url('admin/approvals.php?decision=pending')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning" aria-hidden="true"></i></a>
                 <?php endif; ?>
-                <?php if ($canView): ?>
+                <?php if ($canDownload): ?>
                   <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download"></i></a>
                 <?php endif; ?>
               </div>
@@ -307,6 +308,8 @@ require BASE_PATH . '/app/includes/header.php';
                     <div class="d-flex flex-wrap gap-2 justify-content-end">
                       <?php if ($canView): ?>
                         <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-file-earmark-text me-1"></i> View Full Page</a>
+                      <?php endif; ?>
+                      <?php if ($canDownload): ?>
                         <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download File</a>
                       <?php endif; ?>
                       <?php if ($canEdit && (int) $d['is_deleted'] === 0): ?>

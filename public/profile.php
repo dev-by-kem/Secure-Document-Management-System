@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new     = $_POST['new_password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
     if (!password_verify($current, $u['password_hash'])) {
+        log_activity((int) $u['user_id'], 'CHANGE_PASSWORD_FAILED', 'user', (int) $u['user_id'], 'incorrect current password');
         flash_set('danger', 'Your current password is incorrect.');
     } elseif (!is_valid_password($new)) {
         flash_set('danger', 'The new password must be at least 8 characters long.');

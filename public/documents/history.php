@@ -85,9 +85,11 @@ require BASE_PATH . '/app/includes/header.php';
               <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
                 <i class="bi bi-eye"></i>
               </a>
-              <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download file">
-                <i class="bi bi-download"></i>
-              </a>
+              <?php if (can_download_document($u, $d)): ?>
+                <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download file">
+                  <i class="bi bi-download"></i>
+                </a>
+              <?php endif; ?>
             </td>
           </tr>
         <?php endforeach; ?>

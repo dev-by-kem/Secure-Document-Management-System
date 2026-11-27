@@ -42,7 +42,7 @@ require BASE_PATH . '/app/includes/header.php';
     <?php if ($u['role_name'] === 'admin' || (int) $doc['uploaded_by'] === (int) $u['user_id']): ?>
       <a class="btn btn-outline-secondary" href="<?= e(url('documents/edit.php?id=' . (int) $doc['document_id'])) ?>"><i class="bi bi-pencil me-1"></i> Edit details</a>
     <?php endif; ?>
-    <?php if (can_access_document($u, $doc)): ?>
+    <?php if (can_download_document($u, $doc)): ?>
       <a class="btn btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $doc['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download file</a>
     <?php endif; ?>
   </div>
@@ -75,7 +75,7 @@ require BASE_PATH . '/app/includes/header.php';
             </div>
           </div>
           <div>
-            <?php if (can_access_document($u, $doc)): ?>
+            <?php if (can_download_document($u, $doc)): ?>
               <a class="btn btn-primary btn-sm" href="<?= e(url('documents/download.php?id=' . (int) $doc['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download</a>
             <?php endif; ?>
           </div>

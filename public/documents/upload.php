@@ -5,6 +5,11 @@ require_role(['admin', 'staff']);
 $u = current_user();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (empty($_POST) && empty($_FILES) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+        log_activity((int) $u['user_id'], 'UPLOAD_REJECTED', 'document', null, 'exceeded server post_max_size');
+        flash_set('danger', 'The uploaded file exceeds the server maximum upload size (' . (int) $GLOBALS['CONFIG']['upload_max_mb'] . ' MB limit).');
+        redirect('documents/upload.php');
+    }
     csrf_check();
 
     $title       = post('title');
@@ -35,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$check['ok']) {
         $errors = array_merge($errors, $check['errors']);
         $fieldErrors['document_file'] = implode(' ', $check['errors']);
+        log_activity((int) $u['user_id'], 'UPLOAD_REJECTED', 'document', null, implode(' ', $check['errors']));
     }
 
     if ($errors !== []) {
