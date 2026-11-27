@@ -177,11 +177,6 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
               <i class="bi bi-person-circle me-2"></i> My Account Profile
             </a>
           </li>
-          <li>
-            <a class="dropdown-item py-2 js-theme-toggle" href="#">
-              <i class="bi bi-circle-half me-2"></i> <span class="theme-label">Toggle Dark Mode</span>
-            </a>
-          </li>
           <li><hr class="dropdown-divider"></li>
           <li>
             <form method="post" action="<?= e(url('logout.php')) ?>" class="m-0">
