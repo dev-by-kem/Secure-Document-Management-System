@@ -17,3 +17,9 @@ RedirectMatch 404 ^/(app|database|docs|logs|scripts|storage|tests)(/.*)?$
 <FilesMatch "\.(sql|md|log|ya?ml|json|sample|ps1|bak|ini|sh)$">
     Require all denied
 </FilesMatch>
+
+# Redirect bare root (/) to public/ so the site opens directly without typing /public/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ %{REQUEST_URI}public/ [R=302,L]
+</IfModule>

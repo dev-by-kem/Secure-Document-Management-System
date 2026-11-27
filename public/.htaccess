@@ -3,7 +3,6 @@
 # This enables clean URLs and ensures the navbar/sidebar is rendered properly.
 
 <IfModule mod_rewrite.c>
-    Options +SymLinksIfOwnerMatch
     RewriteEngine On
 
     # Don't rewrite requests for existing files/directories

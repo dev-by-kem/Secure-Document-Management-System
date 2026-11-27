@@ -98,21 +98,21 @@ require BASE_PATH . '/app/includes/header.php';
 
 <!-- Decision Filter Tabs -->
 <div class="d-flex flex-wrap gap-2 mb-4 p-2 rounded border bg-body-tertiary shadow-sm">
-  <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="btn btn-sm <?= $decision === 'pending' ? 'btn-primary' : 'btn-outline-secondary' ?>">
-    <i class="bi bi-hourglass-split me-1"></i> Pending Verification
-    <span class="badge <?= $decision === 'pending' ? 'bg-white text-dark' : 'bg-warning text-dark' ?> ms-1"><?= $counts['pending'] ?></span>
+  <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="btn btn-sm approval-tab-btn <?= $decision === 'pending' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-hourglass-split"></i><span>Pending Verification</span>
+    <span class="badge approval-tab-count <?= $decision === 'pending' ? 'bg-white text-dark' : 'bg-warning text-dark' ?>"><?= $counts['pending'] ?></span>
   </a>
-  <a href="<?= e(url('admin/approvals.php?decision=approved')) ?>" class="btn btn-sm <?= $decision === 'approved' ? 'btn-primary' : 'btn-outline-secondary' ?>">
-    <i class="bi bi-check2-circle me-1"></i> Approved Documents
-    <span class="badge <?= $decision === 'approved' ? 'bg-white text-dark' : 'bg-success text-white' ?> ms-1"><?= $counts['approved'] ?></span>
+  <a href="<?= e(url('admin/approvals.php?decision=approved')) ?>" class="btn btn-sm approval-tab-btn <?= $decision === 'approved' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-check2-circle"></i><span>Approved Documents</span>
+    <span class="badge approval-tab-count <?= $decision === 'approved' ? 'bg-white text-dark' : 'bg-success text-white' ?>"><?= $counts['approved'] ?></span>
   </a>
-  <a href="<?= e(url('admin/approvals.php?decision=rejected')) ?>" class="btn btn-sm <?= $decision === 'rejected' ? 'btn-primary' : 'btn-outline-secondary' ?>">
-    <i class="bi bi-x-circle me-1"></i> Rejected Submissions
-    <span class="badge <?= $decision === 'rejected' ? 'bg-white text-dark' : 'bg-danger text-white' ?> ms-1"><?= $counts['rejected'] ?></span>
+  <a href="<?= e(url('admin/approvals.php?decision=rejected')) ?>" class="btn btn-sm approval-tab-btn <?= $decision === 'rejected' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-x-circle"></i><span>Rejected Submissions</span>
+    <span class="badge approval-tab-count <?= $decision === 'rejected' ? 'bg-white text-dark' : 'bg-danger text-white' ?>"><?= $counts['rejected'] ?></span>
   </a>
-  <a href="<?= e(url('admin/approvals.php?decision=all')) ?>" class="btn btn-sm <?= $decision === 'all' ? 'btn-primary' : 'btn-outline-secondary' ?>">
-    <i class="bi bi-collection me-1"></i> All Records
-    <span class="badge <?= $decision === 'all' ? 'bg-white text-dark' : 'bg-secondary text-white' ?> ms-1"><?= $counts['all'] ?></span>
+  <a href="<?= e(url('admin/approvals.php?decision=all')) ?>" class="btn btn-sm approval-tab-btn <?= $decision === 'all' ? 'btn-primary' : 'btn-outline-secondary' ?>">
+    <i class="bi bi-collection"></i><span>All Records</span>
+    <span class="badge approval-tab-count <?= $decision === 'all' ? 'bg-white text-dark' : 'bg-secondary text-white' ?>"><?= $counts['all'] ?></span>
   </a>
 </div>
 
@@ -162,20 +162,25 @@ require BASE_PATH . '/app/includes/header.php';
           <a class="doc-title fs-6 fw-bold" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
           <?= status_badge($d['status']) ?>
         </div>
-        <div class="doc-meta mt-1">
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-2 small text-muted">
           <?= category_chip((int) $d['category_id'], $d['category_name']) ?>
-          <span class="user-cell user-cell--compact ms-1">
+          <span aria-hidden="true">·</span>
+          <span><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
+          <span aria-hidden="true">·</span>
+          <span>Submitted <?= e(format_datetime($d['created_at'])) ?></span>
+          <?php if (!empty($d['reviewed_at'])): ?>
+            <span aria-hidden="true">·</span>
+            <span>Decided <?= e(format_datetime($d['reviewed_at'])) ?> by <strong><?= e($d['reviewer_name'] ?? 'Admin') ?></strong></span>
+          <?php endif; ?>
+        </div>
+        <div class="mt-2">
+          <span class="user-cell user-cell--compact">
             <?= avatar($d['uploader_name']) ?>
             <span class="user-identity">
               <span class="name"><?= e($d['uploader_name']) ?></span>
               <span class="sub">@<?= e($d['uploader_username']) ?></span>
             </span>
           </span>
-          <span class="dot"><?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
-          <span class="dot">Submitted <?= e(format_datetime($d['created_at'])) ?></span>
-          <?php if (!empty($d['reviewed_at'])): ?>
-            <span class="dot">Decided <?= e(format_datetime($d['reviewed_at'])) ?> by <strong><?= e($d['reviewer_name'] ?? 'Admin') ?></strong></span>
-          <?php endif; ?>
         </div>
         <?php if (!empty($d['review_remarks'])): ?>
           <div class="mt-2 p-2 rounded bg-body-tertiary border text-danger small">
