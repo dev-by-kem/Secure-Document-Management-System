@@ -205,7 +205,7 @@ require BASE_PATH . '/app/includes/header.php';
 </form>
 </search>
 
-<div class="card card--table shadow-sm">
+<div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
     <div><i class="bi bi-people me-1"></i> User Directory (<?= count($users) ?> account<?= count($users) === 1 ? '' : 's' ?>)</div>
   </div>

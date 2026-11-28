@@ -48,9 +48,9 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
   <div class="page-actions">
     <?php if ($u['role_name'] === 'staff'): ?>
-      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i> Upload document</a>
+      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload document</a>
     <?php endif; ?>
-    <a class="btn btn-outline-secondary" href="<?= e(url('documents/index.php')) ?>"><i class="bi bi-folder2-open me-1" aria-hidden="true"></i> Browse documents</a>
+    <a class="btn btn-outline-secondary" href="<?= e(url('documents/index.php')) ?>"><i class="bi bi-folder2-open me-1"></i> Browse documents</a>
   </div>
 </div>
 
@@ -58,56 +58,56 @@ require BASE_PATH . '/app/includes/header.php';
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('documents/index.php?mine=1')) ?>" class="stat-card stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-files" aria-hidden="true"></i></span>
+        <span class="stat-icon"><i class="bi bi-files"></i></span>
         <div>
           <div class="stat-value"><?= $total ?></div>
           <div class="stat-label">My documents</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('documents/index.php?mine=1&status=pending')) ?>" class="stat-card stat-card--pending stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
+        <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
         <div>
           <div class="stat-value"><?= $counts['pending'] ?></div>
           <div class="stat-label">Pending review</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('documents/index.php?status=approved')) ?>" class="stat-card stat-card--approved stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></span>
+        <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
         <div>
           <div class="stat-value"><?= $counts['approved'] ?></div>
           <div class="stat-label">Approved</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('documents/index.php?mine=1&status=rejected')) ?>" class="stat-card stat-card--rejected stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-x-circle" aria-hidden="true"></i></span>
+        <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
         <div>
           <div class="stat-value"><?= $counts['rejected'] ?></div>
           <div class="stat-label">Rejected</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
+      <i class="bi bi-arrow-right stat-card-arrow"></i>
     </a>
   </div>
 </div>
 
 <?php if ($u['role_name'] !== 'staff'): ?>
   <div class="alert alert-info d-flex align-items-center gap-3 mb-4 shadow-sm" role="alert">
-    <i class="bi bi-info-circle-fill fs-5 text-primary" aria-hidden="true"></i>
+    <i class="bi bi-info-circle-fill fs-5 text-primary"></i>
     <div>You are signed in as a <strong>Viewer</strong>. You can browse, search, and download all officially approved documents. File submissions are authorized for staff and faculty accounts.</div>
   </div>
 <?php endif; ?>
@@ -115,8 +115,8 @@ require BASE_PATH . '/app/includes/header.php';
 <?php if ($attentionDocs !== []): ?>
   <div class="card mb-4 shadow-sm card--accent-gold">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <div><i class="bi bi-exclamation-diamond me-1" aria-hidden="true"></i> Needs Attention (<?= $counts['rejected'] ?> rejected · <?= $counts['pending'] ?> pending)</div>
-      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/index.php?mine=1')) ?>">View all my uploads <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+      <div><i class="bi bi-exclamation-diamond me-1"></i> Needs Attention (<?= $counts['rejected'] ?> rejected · <?= $counts['pending'] ?> pending)</div>
+      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/index.php?mine=1')) ?>">View all my uploads <i class="bi bi-arrow-right"></i></a>
     </div>
     <div class="list-group list-group-flush">
       <?php foreach ($attentionDocs as $ad): ?>
@@ -144,34 +144,34 @@ require BASE_PATH . '/app/includes/header.php';
 
 <details class="card mb-4 shadow-sm card--accent-brand">
   <summary class="card-header bg-transparent py-3" style="cursor:pointer;">
-    <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i> Document Lifecycle &amp; Security Workflow
+    <i class="bi bi-diagram-3 me-2"></i> Document Lifecycle &amp; Security Workflow
   </summary>
   <div class="card-body p-3">
     <div class="row g-2">
       <div class="col-6 col-md-3">
         <div class="workflow-step">
-          <div class="workflow-step-badge workflow-step-badge--1"><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i></div>
+          <div class="workflow-step-badge workflow-step-badge--1"><i class="bi bi-cloud-arrow-up"></i></div>
           <div class="fw-bold small text-body">1. Submission</div>
           <div class="small text-muted">Uploaded with title, category, and SHA-256 integrity hash.</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="workflow-step">
-          <div class="workflow-step-badge workflow-step-badge--2"><i class="bi bi-shield-check" aria-hidden="true"></i></div>
+          <div class="workflow-step-badge workflow-step-badge--2"><i class="bi bi-shield-check"></i></div>
           <div class="fw-bold small text-body">2. Verification</div>
           <div class="small text-muted">Administrators evaluate content against university guidelines.</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="workflow-step">
-          <div class="workflow-step-badge workflow-step-badge--3"><i class="bi bi-check2-circle" aria-hidden="true"></i></div>
+          <div class="workflow-step-badge workflow-step-badge--3"><i class="bi bi-check2-circle"></i></div>
           <div class="fw-bold small text-body">3. Publication</div>
           <div class="small text-muted">Approved documents are released to authorized institutional users.</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="workflow-step">
-          <div class="workflow-step-badge workflow-step-badge--4"><i class="bi bi-download" aria-hidden="true"></i></div>
+          <div class="workflow-step-badge workflow-step-badge--4"><i class="bi bi-download"></i></div>
           <div class="fw-bold small text-body">4. Secure Access</div>
           <div class="small text-muted">Gated download endpoint records every access for audit logging.</div>
         </div>
@@ -182,9 +182,9 @@ require BASE_PATH . '/app/includes/header.php';
 
 <div class="card shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <div><i class="bi bi-clock-history me-1" aria-hidden="true"></i> Recent Uploads</div>
+    <div><i class="bi bi-clock-history me-1"></i> Recent Uploads</div>
     <?php if ($u['role_name'] === 'staff'): ?>
-      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/history.php')) ?>">View full history <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+      <a class="small text-decoration-none fw-semibold" href="<?= e(url('documents/history.php')) ?>">View full history <i class="bi bi-arrow-right"></i></a>
     <?php endif; ?>
   </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recent uploads table" tabindex="0">
@@ -202,11 +202,11 @@ require BASE_PATH . '/app/includes/header.php';
         <?php if ($recentDocs === []): ?>
           <tr><td colspan="5">
             <div class="empty">
-              <i class="bi bi-inbox" aria-hidden="true"></i>
+              <i class="bi bi-inbox"></i>
               <strong>No uploads on record yet.</strong><br>
               <?php if ($u['role_name'] === 'staff'): ?>
                 Submit your first document to populate your dashboard history.
-                <div class="mt-3"><a class="btn btn-primary btn-sm" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i> Upload a document</a></div>
+                <div class="mt-3"><a class="btn btn-primary btn-sm" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload a document</a></div>
               <?php else: ?>
                 Approved academic materials from faculty will appear in <a href="<?= e(url('documents/index.php')) ?>">Documents</a>.
               <?php endif; ?>
@@ -217,7 +217,7 @@ require BASE_PATH . '/app/includes/header.php';
           <tr>
             <td data-label="Document Title">
               <div class="doc-cell">
-                <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>" aria-hidden="true"></i></span>
+                <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div>
                   <a class="doc-title" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
                   <div class="doc-meta">
@@ -232,7 +232,7 @@ require BASE_PATH . '/app/includes/header.php';
             <td data-label="Uploaded On" class="small text-nowrap"><?= e(format_datetime($d['created_at'])) ?></td>
             <td class="text-end" data-label="Action">
               <a class="btn-icon" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>" aria-label="View document" title="View details">
-                <i class="bi bi-eye" aria-hidden="true"></i>
+                <i class="bi bi-eye"></i>
               </a>
             </td>
           </tr>

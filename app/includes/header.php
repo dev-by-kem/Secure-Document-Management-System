@@ -20,8 +20,6 @@ $flashIcons = [
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1118" media="(prefers-color-scheme: dark)">
 <script>
 /* FOUC prevention ONLY (docs/08 concept 2): apply the saved or system theme
    before the first paint. Everything else about theming lives in app.js. */
@@ -37,7 +35,7 @@ try {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=3.0-final-polish')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.8-ui-polish')) ?>">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -46,7 +44,7 @@ try {
     <i class="bi bi-list fs-5" aria-hidden="true"></i>
   </button>
   <a class="brand" href="<?= e(url('dashboard.php')) ?>">
-    <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo" width="40" height="40" aria-hidden="true"></span>
+    <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo" aria-hidden="true"></span>
     <span class="brand-text">
       <span class="brand-name">CvSU · SDMS</span>
     </span>
@@ -58,7 +56,7 @@ try {
 <div class="flash-region" aria-live="polite">
 <?php foreach (flash_take() as $f): ?>
   <div class="alert alert-<?= e($f['type']) ?> alert-dismissible fade show d-flex align-items-start gap-2" role="alert">
-    <i class="bi <?= e($flashIcons[$f['type']] ?? 'bi-info-circle') ?> mt-1" aria-hidden="true"></i>
+    <i class="bi <?= e($flashIcons[$f['type']] ?? 'bi-info-circle') ?> mt-1"></i>
     <div><?= e($f['msg']) ?></div>
     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>

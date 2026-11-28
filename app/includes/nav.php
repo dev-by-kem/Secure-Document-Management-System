@@ -13,7 +13,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
 <aside id="sdmsSidebar" class="sdms-sidebar">
   <div class="sidebar-brand d-flex align-items-center justify-content-between gap-2">
     <a class="brand" href="<?= e(url('dashboard.php')) ?>">
-      <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo" width="40" height="40" aria-hidden="true"></span>
+      <span class="brand-mark"><img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo"></span>
       <span class="brand-text">
         <span class="brand-name">CvSU · SDMS</span>
         <span class="brand-tag d-none d-sm-block">Cavite State University · CEIT</span>
@@ -29,62 +29,59 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
           <!-- Admin Navigation -->
           <li class="sidebar-item">
             <a class="sidebar-link<?= $active('/admin/dashboard.php') ?>" href="<?= e(url('admin/dashboard.php')) ?>">
-              <span class="sidebar-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <span class="sidebar-icon"><i class="bi bi-speedometer2"></i></span>
               <span class="sidebar-label">Dashboard</span>
             </a>
           </li>
           <li class="sidebar-item<?= $isDocsActive ? ' active' : '' ?>">
-            <button type="button" class="sidebar-link" data-bs-toggle="collapse" data-bs-target="#adminDocsCollapse" aria-expanded="<?= $isDocsActive ? 'true' : 'false' ?>">
-              <span class="sidebar-icon"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+            <a class="sidebar-link" href="#" data-bs-toggle="collapse" data-bs-target="#adminDocsCollapse" aria-expanded="<?= $isDocsActive ? 'true' : 'false' ?>">
+              <span class="sidebar-icon"><i class="bi bi-folder2-open"></i></span>
               <span class="sidebar-label">Documents</span>
-              <span class="sidebar-arrow"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
-            </button>
+              <span class="sidebar-arrow"><i class="bi bi-chevron-down"></i></span>
+            </a>
             <ul class="sidebar-submenu collapse<?= $isDocsActive ? ' show' : '' ?>" id="adminDocsCollapse">
               <li>
                 <a class="sidebar-sub-link<?= $active('/documents/index.php') ?>" href="<?= e(url('documents/index.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-grid" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-grid"></i></span>
                   <span class="sidebar-sub-label">Browse Directory</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/admin/approvals.php') ?>" href="<?= e(url('admin/approvals.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-check2-square" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-check2-square"></i></span>
                   <span class="sidebar-sub-label">Approval Queue</span>
-                  <?php if ($pendingCount > 0): ?>
-                    <span class="count-bubble ms-auto" aria-label="<?= (int) $pendingCount ?> awaiting review"><?= (int) $pendingCount ?></span>
-                  <?php endif; ?>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/admin/categories.php') ?>" href="<?= e(url('admin/categories.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-tags" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-tags"></i></span>
                   <span class="sidebar-sub-label">Categories &amp; Policy</span>
                 </a>
               </li>
             </ul>
           </li>
           <li class="sidebar-item<?= $isAdminActive ? ' active' : '' ?>">
-            <button type="button" class="sidebar-link" data-bs-toggle="collapse" data-bs-target="#adminCollapse" aria-expanded="<?= $isAdminActive ? 'true' : 'false' ?>">
-              <span class="sidebar-icon"><i class="bi bi-gear-wide-connected" aria-hidden="true"></i></span>
+            <a class="sidebar-link" href="#" data-bs-toggle="collapse" data-bs-target="#adminCollapse" aria-expanded="<?= $isAdminActive ? 'true' : 'false' ?>">
+              <span class="sidebar-icon"><i class="bi bi-gear-wide-connected"></i></span>
               <span class="sidebar-label">Administration</span>
-              <span class="sidebar-arrow"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
-            </button>
+              <span class="sidebar-arrow"><i class="bi bi-chevron-down"></i></span>
+            </a>
             <ul class="sidebar-submenu collapse<?= $isAdminActive ? ' show' : '' ?>" id="adminCollapse">
               <li>
                 <a class="sidebar-sub-link<?= $active('/admin/users.php') ?>" href="<?= e(url('admin/users.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-people"></i></span>
                   <span class="sidebar-sub-label">User Accounts</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/admin/logs.php') ?>" href="<?= e(url('admin/logs.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-clock-history"></i></span>
                   <span class="sidebar-sub-label">Audit Trail &amp; Logs</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/admin/reports.php') ?>" href="<?= e(url('admin/reports.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-bar-chart" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-bar-chart"></i></span>
                   <span class="sidebar-sub-label">Document Reports</span>
                 </a>
               </li>
@@ -94,38 +91,38 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
           <!-- Staff Navigation -->
           <li class="sidebar-item">
             <a class="sidebar-link<?= $active('/dashboard.php') && !$active('/admin/') ? ' active' : '' ?>" href="<?= e(url('dashboard.php')) ?>">
-              <span class="sidebar-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <span class="sidebar-icon"><i class="bi bi-speedometer2"></i></span>
               <span class="sidebar-label">Dashboard</span>
             </a>
           </li>
           <li class="sidebar-item<?= $isDocsActive ? ' active' : '' ?>">
-            <button type="button" class="sidebar-link" data-bs-toggle="collapse" data-bs-target="#staffDocsCollapse" aria-expanded="<?= $isDocsActive ? 'true' : 'false' ?>">
-              <span class="sidebar-icon"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+            <a class="sidebar-link" href="#" data-bs-toggle="collapse" data-bs-target="#staffDocsCollapse" aria-expanded="<?= $isDocsActive ? 'true' : 'false' ?>">
+              <span class="sidebar-icon"><i class="bi bi-folder2-open"></i></span>
               <span class="sidebar-label">Documents</span>
-              <span class="sidebar-arrow"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
-            </button>
+              <span class="sidebar-arrow"><i class="bi bi-chevron-down"></i></span>
+            </a>
             <ul class="sidebar-submenu collapse<?= $isDocsActive ? ' show' : '' ?>" id="staffDocsCollapse">
               <li>
                 <a class="sidebar-sub-link<?= $active('/documents/index.php') ?>" href="<?= e(url('documents/index.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-grid" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-grid"></i></span>
                   <span class="sidebar-sub-label">Browse Directory</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/documents/upload.php') ?>" href="<?= e(url('documents/upload.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-cloud-arrow-up"></i></span>
                   <span class="sidebar-sub-label">Upload Document</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/documents/history.php') ?>" href="<?= e(url('documents/history.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-clock-history"></i></span>
                   <span class="sidebar-sub-label">My Upload History</span>
                 </a>
               </li>
               <li>
                 <a class="sidebar-sub-link<?= $active('/documents/activity.php') ?>" href="<?= e(url('documents/activity.php')) ?>">
-                  <span class="sidebar-sub-icon"><i class="bi bi-activity" aria-hidden="true"></i></span>
+                  <span class="sidebar-sub-icon"><i class="bi bi-activity"></i></span>
                   <span class="sidebar-sub-label">My Activity Log</span>
                 </a>
               </li>
@@ -135,13 +132,13 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
           <!-- Viewer Navigation -->
           <li class="sidebar-item">
             <a class="sidebar-link<?= $active('/dashboard.php') ?>" href="<?= e(url('dashboard.php')) ?>">
-              <span class="sidebar-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <span class="sidebar-icon"><i class="bi bi-speedometer2"></i></span>
               <span class="sidebar-label">Dashboard</span>
             </a>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link<?= $active('/documents/') ?>" href="<?= e(url('documents/index.php')) ?>">
-              <span class="sidebar-icon"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+              <span class="sidebar-icon"><i class="bi bi-folder2-open"></i></span>
               <span class="sidebar-label">Documents</span>
             </a>
           </li>
@@ -177,7 +174,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
         <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu--wide" aria-labelledby="sidebarUserMenu">
           <li>
             <a class="dropdown-item py-2" href="<?= e(url('profile.php')) ?>">
-              <i class="bi bi-person-circle me-2" aria-hidden="true"></i> My Account Profile
+              <i class="bi bi-person-circle me-2"></i> My Account Profile
             </a>
           </li>
           <li><hr class="dropdown-divider"></li>
@@ -185,7 +182,7 @@ $isAdminActive = str_contains($script, '/admin/users.php') || str_contains($scri
             <form method="post" action="<?= e(url('logout.php')) ?>" class="m-0">
               <?= csrf_field() ?>
               <button type="submit" class="dropdown-item text-danger py-2 w-100 text-start">
-                <i class="bi bi-box-arrow-right me-2 text-danger" aria-hidden="true"></i> Sign Out
+                <i class="bi bi-box-arrow-right me-2 text-danger"></i> Sign Out
               </button>
             </form>
           </li>

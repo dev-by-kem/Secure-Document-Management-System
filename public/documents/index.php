@@ -103,7 +103,7 @@ require BASE_PATH . '/app/includes/header.php';
   </div>
   <div class="page-actions">
     <?php if (in_array($u['role_name'], ['admin', 'staff'], true)): ?>
-      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1" aria-hidden="true"></i> Upload a document</a>
+      <a class="btn btn-primary" href="<?= e(url('documents/upload.php')) ?>"><i class="bi bi-cloud-arrow-up me-1"></i> Upload a document</a>
     <?php endif; ?>
   </div>
 </div>
@@ -115,7 +115,7 @@ require BASE_PATH . '/app/includes/header.php';
       <div class="col-md-3">
         <label for="q" class="form-label">Search Query</label>
         <div class="input-group">
-          <span class="input-group-text bg-transparent text-muted"><i class="bi bi-search" aria-hidden="true"></i></span>
+          <span class="input-group-text bg-transparent text-muted"><i class="bi bi-search"></i></span>
           <input type="search" class="form-control" id="q" name="q" value="<?= e($q) ?>" placeholder="Title or description…">
         </div>
       </div>
@@ -162,9 +162,9 @@ require BASE_PATH . '/app/includes/header.php';
           <label class="form-check-label small fw-semibold" for="mine">Only mine</label>
         </div>
         <?php endif; ?>
-        <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1" aria-hidden="true"></i> Search</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i> Search</button>
         <?php if ($q !== '' || $cat !== '' || $status !== '' || $mine || $from !== '' || $to !== '' || $sort !== 'newest'): ?>
-          <a href="<?= e(url('documents/index.php')) ?>" class="btn btn-outline-secondary" aria-label="Reset filters" title="Reset filters"><i class="bi bi-x-lg me-1" aria-hidden="true"></i>Reset</a>
+          <a href="<?= e(url('documents/index.php')) ?>" class="btn btn-outline-secondary" aria-label="Reset filters" title="Reset filters"><i class="bi bi-x-lg me-1"></i>Reset</a>
         <?php endif; ?>
       </div>
     </div>
@@ -176,7 +176,7 @@ require BASE_PATH . '/app/includes/header.php';
   <div class="d-flex justify-content-between align-items-center mb-2 px-1">
     <div class="small text-muted"><?= $totalRows ?> record<?= $totalRows === 1 ? '' : 's' ?> matching active filters.</div>
     <div class="small">
-      <i class="bi bi-trash3 me-1 text-danger" aria-hidden="true"></i> Admin Mode:
+      <i class="bi bi-trash3 me-1 text-danger"></i> Admin Mode: 
       <?php if (query_param('deleted') === '1'): ?>
         <a href="<?= e(url('documents/index.php')) ?>" class="fw-bold">Hide deleted files</a>
       <?php else: ?>
@@ -218,7 +218,7 @@ require BASE_PATH . '/app/includes/header.php';
           <tr class="doc-row <?= (int) $d['is_deleted'] === 1 ? 'table-light opacity-75' : '' ?>">
             <td data-label="Document Title">
               <div class="doc-cell align-items-center">
-                <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>" aria-hidden="true"></i></span>
+                <span class="doc-ico"><i class="bi <?= e(file_icon($d['file_ext'])) ?>"></i></span>
                 <div class="min-w-0">
                   <a class="doc-title-link" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><?= e($d['title']) ?></a>
                   <?php if ((int) $d['is_deleted'] === 1): ?>
@@ -242,13 +242,13 @@ require BASE_PATH . '/app/includes/header.php';
             <td class="text-end" data-label="Actions">
               <div class="action-group">
                 <button type="button" class="btn btn-sm btn-outline-secondary js-doc-toggle py-1 px-2" data-doc-drawer="doc-drawer-<?= (int) $d['document_id'] ?>" aria-controls="doc-drawer-<?= (int) $d['document_id'] ?>" aria-label="Toggle details for <?= e($d['title']) ?>" aria-expanded="false" title="Toggle details">
-                  <i class="bi bi-layout-text-sidebar-reverse me-1" aria-hidden="true"></i> Details
+                  <i class="bi bi-layout-text-sidebar-reverse me-1"></i> Details
                 </button>
                 <?php if ($u['role_name'] === 'admin' && $d['status'] === 'pending'): ?>
                   <a class="btn-icon btn-icon--warning" href="<?= e(url('admin/approvals.php?decision=pending')) ?>" aria-label="Review document" title="Review Submission"><i class="bi bi-check2-square text-warning" aria-hidden="true"></i></a>
                 <?php endif; ?>
                 <?php if ($canDownload): ?>
-                  <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download" aria-hidden="true"></i></a>
+                  <a class="btn-icon" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>" aria-label="Download document" title="Download File"><i class="bi bi-download"></i></a>
                 <?php endif; ?>
               </div>
             </td>
@@ -260,7 +260,7 @@ require BASE_PATH . '/app/includes/header.php';
                   <div class="col-lg-8">
                     <div class="drawer-meta-card mb-3">
                       <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="fw-bold mb-0"><i class="bi bi-card-text me-1" aria-hidden="true"></i> Summary / Abstract</h6>
+                        <h6 class="fw-bold mb-0"><i class="bi bi-card-text me-1"></i> Summary / Abstract</h6>
                         <span class="badge bg-body-tertiary text-muted border font-monospace"><?= strtoupper(e($d['file_ext'])) ?> · <?= e(bytes_for_humans((int) $d['file_size'])) ?></span>
                       </div>
                       <div class="text-muted small mb-0"><?= !empty($d['description']) ? nl2br(e($d['description'])) : '<em>No summary or abstract provided for this institutional file.</em>' ?></div>
@@ -281,13 +281,13 @@ require BASE_PATH . '/app/includes/header.php';
                       <div class="col-sm-6">
                         <div class="drawer-meta-card p-2">
                           <span class="text-muted small d-block">Submission Date:</span>
-                          <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted" aria-hidden="true"></i><?= e(format_datetime($d['created_at'])) ?></span>
+                          <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted"></i><?= e(format_datetime($d['created_at'])) ?></span>
                         </div>
                       </div>
                       <?php if (!empty($d['file_hash'])): ?>
                       <div class="col-12">
                         <div class="drawer-meta-card p-2">
-                          <span class="text-muted small d-block"><i class="bi bi-shield-check me-1 text-success" aria-hidden="true"></i> SHA-256 Integrity Checksum:</span>
+                          <span class="text-muted small d-block"><i class="bi bi-shield-check me-1 text-success"></i> SHA-256 Integrity Checksum:</span>
                           <span class="small font-monospace text-break text-muted"><?= e($d['file_hash']) ?></span>
                         </div>
                       </div>
@@ -296,7 +296,7 @@ require BASE_PATH . '/app/includes/header.php';
                   </div>
                   <div class="col-lg-4 d-flex flex-column justify-content-between">
                     <div class="drawer-meta-card mb-3">
-                      <h6 class="fw-bold mb-2"><i class="bi bi-shield-check me-1" aria-hidden="true"></i> Review Status &amp; Metadata</h6>
+                      <h6 class="fw-bold mb-2"><i class="bi bi-shield-check me-1"></i> Review Status &amp; Metadata</h6>
                       <div class="mb-2"><?= status_badge($d['status']) ?></div>
                       <div class="small text-muted">Category: <span class="text-body fw-semibold"><?= e($d['category_name']) ?></span></div>
                       <?php if (!empty($d['review_remarks'])): ?>
@@ -307,17 +307,17 @@ require BASE_PATH . '/app/includes/header.php';
                     </div>
                     <div class="d-flex flex-wrap gap-2 justify-content-end">
                       <?php if ($canView): ?>
-                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i> View Full Page</a>
+                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('documents/view.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-file-earmark-text me-1"></i> View Full Page</a>
                       <?php endif; ?>
                       <?php if ($canDownload): ?>
-                        <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1" aria-hidden="true"></i> Download File</a>
+                        <a class="btn btn-sm btn-primary" href="<?= e(url('documents/download.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-download me-1"></i> Download File</a>
                       <?php endif; ?>
                       <?php if ($canEdit && (int) $d['is_deleted'] === 0): ?>
-                        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-pencil me-1" aria-hidden="true"></i> Edit</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('documents/edit.php?id=' . (int) $d['document_id'])) ?>"><i class="bi bi-pencil me-1"></i> Edit</a>
                         <form class="d-inline js-confirm" method="post" action="<?= e(url('documents/delete.php')) ?>" data-confirm-message="Delete document “<?= e($d['title']) ?>”? It remains recoverable by an administrator.">
                           <?= csrf_field() ?>
                           <input type="hidden" name="id" value="<?= (int) $d['document_id'] ?>">
-                          <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3 me-1" aria-hidden="true"></i> Delete</button>
+                          <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3 me-1"></i> Delete</button>
                         </form>
                       <?php endif; ?>
                     </div>
