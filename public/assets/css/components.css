@@ -387,6 +387,9 @@
   box-shadow: var(--sdms-elev-2);
   border-color: var(--sdms-border-subtle);
 }
+/* Keep a wide, internally scrollable table from expanding the page. Layout
+   containment leaves focus rings and vertical content unclipped. */
+.card--table { contain: layout; }
 .card-header {
   background: transparent;
   border-bottom: 1px solid var(--sdms-border);
@@ -1490,6 +1493,12 @@ input[type="password"]::-ms-clear {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
   padding: 0.55rem 0.75rem;
   color: var(--sdms-navbar-muted);
   text-decoration: none;

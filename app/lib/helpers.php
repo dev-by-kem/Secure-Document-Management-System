@@ -199,8 +199,12 @@ function render_pagination(int $page, int $totalPages, int $totalRows, int $perP
     };
 
     $items = '';
-    $prevDisabled = $page <= 1 ? ' disabled' : '';
-    $items .= '<li class="page-item' . $prevDisabled . '"><a class="page-link" href="' . ($page > 1 ? e($buildUrl($page - 1)) : '#') . '" aria-label="Previous page">Prev</a></li>';
+    $prevDisabled = $page <= 1;
+    $items .= '<li class="page-item' . ($prevDisabled ? ' disabled' : '') . '">'
+        . ($prevDisabled
+            ? '<span class="page-link" aria-disabled="true">Prev</span>'
+            : '<a class="page-link" href="' . e($buildUrl($page - 1)) . '" aria-label="Previous page">Prev</a>')
+        . '</li>';
 
     $windowStart = max(1, $page - 2);
     $windowEnd   = min($totalPages, $page + 2);
@@ -221,8 +225,12 @@ function render_pagination(int $page, int $totalPages, int $totalRows, int $perP
         $items .= '<li class="page-item"><a class="page-link" href="' . e($buildUrl($totalPages)) . '">' . $totalPages . '</a></li>';
     }
 
-    $nextDisabled = $page >= $totalPages ? ' disabled' : '';
-    $items .= '<li class="page-item' . $nextDisabled . '"><a class="page-link" href="' . ($page < $totalPages ? e($buildUrl($page + 1)) : '#') . '" aria-label="Next page">Next</a></li>';
+    $nextDisabled = $page >= $totalPages;
+    $items .= '<li class="page-item' . ($nextDisabled ? ' disabled' : '') . '">'
+        . ($nextDisabled
+            ? '<span class="page-link" aria-disabled="true">Next</span>'
+            : '<a class="page-link" href="' . e($buildUrl($page + 1)) . '" aria-label="Next page">Next</a>')
+        . '</li>';
 
     return '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 px-1">'
          . $summary

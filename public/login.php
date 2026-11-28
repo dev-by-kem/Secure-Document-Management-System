@@ -25,6 +25,8 @@ $timedOut = query_param('timeout') === '1';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1118" media="(prefers-color-scheme: dark)">
 <script>
 /* FOUC prevention only — same as the shared shell (docs/08 concept 2). */
 try {
@@ -38,7 +40,7 @@ try {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=2.5-identity')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/custom.css?v=3.0-final-polish')) ?>">
 </head>
 <body>
 <main class="auth-page">
@@ -46,7 +48,7 @@ try {
   <div class="auth-card">
     <div class="auth-header-card">
       <div class="auth-crest">
-        <img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo">
+        <img src="<?= e(url('assets/images/cvsu-logo.webp')) ?>" alt="CvSU Logo" width="64" height="64">
       </div>
       <div class="auth-univ-title">Cavite State University · CEIT</div>
       <h1 class="auth-title">Secure Document Management Portal</h1>
@@ -57,13 +59,13 @@ try {
       <div class="card-body p-4">
         <?php if ($timedOut): ?>
           <div class="alert alert-warning py-2 d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi bi-clock-history"></i>
+            <i class="bi bi-clock-history" aria-hidden="true"></i>
             <div>Your session expired. Please sign in again.</div>
           </div>
         <?php endif; ?>
         <?php foreach ($flashes as $f): ?>
           <div class="alert alert-<?= e($f['type']) ?> py-2 d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi <?= $f['type'] === 'danger' ? 'bi-exclamation-octagon' : 'bi-info-circle' ?>"></i>
+            <i class="bi <?= $f['type'] === 'danger' ? 'bi-exclamation-octagon' : 'bi-info-circle' ?>" aria-hidden="true"></i>
             <div><?= e($f['msg']) ?></div>
           </div>
         <?php endforeach; ?>
@@ -73,7 +75,7 @@ try {
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <div class="input-group">
-              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-person"></i></span>
+              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-person" aria-hidden="true"></i></span>
               <input type="text" class="form-control" id="username" name="username"
                      autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"
                      required enterkeyhint="next" placeholder="Enter your institutional username">
@@ -82,7 +84,7 @@ try {
           <div class="mb-4">
             <label for="password" class="form-label">Password</label>
             <div class="input-group">
-              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-lock"></i></span>
+              <span class="input-group-text bg-transparent text-muted"><i class="bi bi-lock" aria-hidden="true"></i></span>
               <input type="password" class="form-control" id="password" name="password"
                      autocomplete="current-password" required enterkeyhint="done" placeholder="••••••••">
               <button type="button" class="btn btn-outline-secondary password-toggle-btn" data-password-toggle="#password" aria-pressed="false" aria-label="Show password" title="Show password">
@@ -92,18 +94,18 @@ try {
             </div>
           </div>
           <button type="submit" class="btn btn-primary w-100 py-2">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Sign in
+            <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> Sign in
           </button>
         </form>
       </div>
     </div>
 
     <div class="security-trust-badge">
-      <i class="bi bi-shield-check"></i>
+      <i class="bi bi-shield-check" aria-hidden="true"></i>
       <span>Protected by Cavite State University information-security controls</span>
     </div>
   </div>
 </main>
-<script src="<?= e(url('assets/js/app.js?v=2.4-login-copy')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=3.0-final-polish')) ?>"></script>
 </body>
 </html>

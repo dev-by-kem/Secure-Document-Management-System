@@ -183,7 +183,7 @@ require BASE_PATH . '/app/includes/header.php';
                 <div class="small text-muted mb-2">Allowed: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, JPG, PNG (Max <?= (int) $GLOBALS['CONFIG']['upload_max_mb'] ?> MB)</div>
                 <div id="selectedFileName" class="small text-success fw-bold"></div>
               </div>
-              <input type="file" class="form-control<?= isset($fieldErrors['document_file']) ? ' is-invalid' : '' ?>" id="document_file" name="document_file" accept="<?= e($acceptList) ?>" required
+              <input type="file" class="form-control<?= isset($fieldErrors['document_file']) ? ' is-invalid' : '' ?>" id="document_file" name="document_file" accept="<?= e($acceptList) ?>" aria-label="Select document file" required
                      aria-describedby="<?= isset($fieldErrors['document_file']) ? 'file-error file-help' : 'file-help' ?>"
                      <?= isset($fieldErrors['document_file']) ? 'aria-invalid="true"' : '' ?>>
               <?php if (isset($fieldErrors['document_file'])): ?>
