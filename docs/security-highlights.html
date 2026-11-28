@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDMS — Security Highlights for Presentation</title>
+<style>
+  :root {
+    --paper:   #f6f2e9;
+    --paper-2: #efe9dc;
+    --ink:     #1e2a26;
+    --green:   #064e3b;
+    --green-2: #0b6b50;
+    --amber:   #8a5a00;
+    --amber-bg:#efe2c4;
+    --line:    #c9c0ad;
+    --muted:   #5e655f;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  @page { size: A4; margin: 15mm 16mm 16mm; }
+
+  html { font-size: 10pt; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Candara, "Segoe UI", Calibri, sans-serif;
+    font-size: 9.6pt;
+    line-height: 1.42;
+  }
+
+  h1, h2, h3, .display {
+    font-family: Constantia, Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    color: var(--green);
+    margin: 0;
+  }
+  h1 { font-size: 27pt; line-height: 1.05; letter-spacing: -0.02em; }
+  h2 { font-size: 13.5pt; line-height: 1.15; }
+  h3 { font-size: 10.8pt; line-height: 1.2; }
+  p  { margin: 0 0 6pt; }
+  strong { color: var(--green); }
+
+  code, .mono {
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    font-size: 8.4pt;
+  }
+  code {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    padding: 0 2pt;
+    border-radius: 2pt;
+    color: #3a3f39;
+  }
+
+  /* Masthead ---------------------------------------------------------------- */
+  .masthead {
+    border-top: 5pt solid var(--green);
+    padding-top: 9pt;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14pt;
+  }
+  .kicker {
+    font-size: 7.6pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 5pt;
+  }
+  .title-block { max-width: 78%; }
+  .deck {
+    font-family: Constantia, Georgia, serif;
+    font-size: 11pt;
+    color: var(--muted);
+    margin-top: 7pt;
+    line-height: 1.35;
+  }
+  .stamp {
+    border: 1pt solid var(--green);
+    color: var(--green);
+    padding: 5pt 7pt;
+    text-align: right;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    flex: 0 0 auto;
+  }
+  .stamp b { display: block; font-size: 10pt; letter-spacing: 0.04em; }
+
+  .thesis {
+    margin-top: 12pt;
+    border-left: 4pt solid var(--amber);
+    background: var(--paper-2);
+    padding: 8pt 11pt;
+    font-family: Constantia, Georgia, serif;
+    font-size: 10.6pt;
+    line-height: 1.4;
+  }
+
+  /* Sections ---------------------------------------------------------------- */
+  section { margin-top: 16pt; }
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 8pt;
+    border-bottom: 1pt solid var(--line);
+    padding-bottom: 4pt;
+    margin-bottom: 9pt;
+    break-after: avoid;
+  }
+  h2 .num {
+    font-family: Consolas, monospace;
+    font-size: 8pt;
+    color: var(--paper);
+    background: var(--green);
+    padding: 1pt 4pt;
+    letter-spacing: 0.05em;
+  }
+  h3 { break-after: avoid; margin-bottom: 3pt; }
+
+  /* Tables ------------------------------------------------------------------ */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.6pt;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-size: 7.4pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding-bottom: 4pt;
+  }
+  thead th {
+    background: var(--green);
+    color: var(--paper);
+    text-align: left;
+    padding: 5pt 6pt;
+    font-size: 7.6pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  tbody tr { break-inside: avoid; }
+  tbody tr:nth-child(even) { background: var(--paper-2); }
+  th, td {
+    padding: 4pt 6pt;
+    border-bottom: 0.5pt solid var(--line);
+    vertical-align: top;
+    text-align: left;
+  }
+  tbody th {
+    font-family: Consolas, monospace;
+    color: var(--green);
+    font-size: 8pt;
+    white-space: nowrap;
+  }
+  td.proof { color: var(--muted); }
+  .col-sr { width: 8%; }
+  .col-name { width: 19%; }
+  .col-desc { width: 46%; }
+  .col-proof { width: 27%; }
+
+  /* Deep-dive cards --------------------------------------------------------- */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9pt;
+  }
+  .card {
+    border-top: 3pt solid var(--green-2);
+    background: #fffdf7;
+    border: 0.5pt solid var(--line);
+    border-top: 3pt solid var(--green-2);
+    padding: 7pt 9pt;
+    break-inside: avoid;
+  }
+  .card h3 { font-family: Constantia, Georgia, serif; color: var(--green); }
+  .card .where {
+    font-family: Consolas, monospace;
+    font-size: 7.3pt;
+    color: var(--amber);
+    margin: 3pt 0 5pt;
+    word-break: break-all;
+  }
+  .card ul { margin: 0 0 5pt; padding-left: 13pt; }
+  .card li { margin-bottom: 2.5pt; }
+  .say {
+    border-left: 2pt solid var(--amber-bg);
+    background: var(--paper-2);
+    padding: 4pt 6pt;
+    font-family: Constantia, Georgia, serif;
+    font-style: italic;
+    font-size: 8.8pt;
+    color: #414940;
+  }
+
+  /* Lists and callouts ------------------------------------------------------ */
+  .tight { margin: 0; padding-left: 14pt; }
+  .tight li { margin-bottom: 3pt; }
+  .limits {
+    border: 1pt solid var(--amber);
+    background: var(--amber-bg);
+    padding: 8pt 11pt;
+    break-inside: avoid;
+  }
+  .limits h3 { color: var(--amber); margin-bottom: 4pt; }
+  .limits ul { margin: 0; padding-left: 14pt; }
+  .limits li { margin-bottom: 2.5pt; }
+
+  /* Q&A --------------------------------------------------------------------- */
+  .qa-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8pt 11pt;
+    margin: 0;
+  }
+  .qa { break-inside: avoid; }
+  .qa dt {
+    font-family: Constantia, Georgia, serif;
+    font-weight: 700;
+    color: var(--green);
+    font-size: 9.2pt;
+    margin-bottom: 2pt;
+  }
+  .qa dd {
+    margin: 0;
+    font-size: 8.6pt;
+    color: var(--ink);
+    padding-left: 7pt;
+    border-left: 2pt solid var(--line);
+  }
+
+  /* Footer ------------------------------------------------------------------ */
+  footer {
+    margin-top: 16pt;
+    border-top: 3pt solid var(--green);
+    padding-top: 6pt;
+    font-size: 7.6pt;
+    color: var(--muted);
+    break-inside: avoid;
+  }
+  footer .label {
+    color: var(--amber);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 3pt;
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="title-block">
+    <div class="kicker">ITEC 85 · Information Security · Final Presentation</div>
+    <h1>Security Highlights</h1>
+    <p class="deck">Secure Document Management System — what we built, why it is safe, and how we prove it live.</p>
+  </div>
+  <div class="stamp">
+    <b>SDMS</b>
+    Handout / File 04<br>
+    CvSU · CEIT
+  </div>
+</header>
+
+<div class="thesis">
+  <strong>The one idea to remember:</strong> every feature exists to satisfy one of the ten security
+  requirements in the project manual — and every one of them is backed by code we can demonstrate on screen.
+</div>
+
+<main>
+
+<section aria-labelledby="s1">
+  <h2 id="s1"><span class="num">01</span> The ten requirements at a glance</h2>
+  <table>
+    <caption>Requirement → implementation → the evidence to point at</caption>
+    <colgroup>
+      <col class="col-sr"><col class="col-name"><col class="col-desc"><col class="col-proof">
+    </colgroup>
+    <thead>
+      <tr>
+        <th scope="col">SR</th>
+        <th scope="col">Control</th>
+        <th scope="col">What it actually does</th>
+        <th scope="col">Live proof</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">SR-1</th>
+        <td>Password hashing</td>
+        <td><code>password_hash()</code> / <code>password_verify()</code> with bcrypt. No plaintext, no MD5/SHA1.</td>
+        <td class="proof">phpMyAdmin shows <code>$2y$…</code> hashes (ST-13)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-2</th>
+        <td>Authentication</td>
+        <td>Session guard on every protected page; guests go to login. Failure message never says which field was wrong.</td>
+        <td class="proof">Guest opens a document page → redirected (T1)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-3</th>
+        <td>Role-based access control</td>
+        <td>Deny-by-default <code>require_role()</code>; owner and Pending/Approved/Rejected policy; deleted files are admin-only.</td>
+        <td class="proof">Viewer opens <code>admin/users.php</code> → 403 (T5)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-4</th>
+        <td>Confidentiality</td>
+        <td>Files sit outside the web root; the only path to bytes is the gated <code>download.php</code> endpoint.</td>
+        <td class="proof">Guessed URL serves nothing; Pending blocked (T8)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-5</th>
+        <td>SQL injection prevention</td>
+        <td>PDO prepared statements everywhere, emulated prepares off; filters built from whitelists and digit/date checks.</td>
+        <td class="proof"><code>' OR 1=1 --</code> fails safely (ST-01)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-6</th>
+        <td>Validation, XSS, CSRF</td>
+        <td>Extension whitelist plus real MIME check; 10 MB cap; CSRF token checked with <code>hash_equals()</code>; all output escaped.</td>
+        <td class="proof">Renamed <code>.php</code> rejected; no-token POST → 403 (T2)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-7</th>
+        <td>Session management</td>
+        <td>New session ID on login, HttpOnly + SameSite cookies, 30-minute idle timeout, complete destruction on logout.</td>
+        <td class="proof">Old session invalid after logout (T13)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-8</th>
+        <td>Activity logs</td>
+        <td>Append-only activity and access tables with user, action, IP, user-agent, timestamp — including denied attempts.</td>
+        <td class="proof">Denied download appears in access log (T11)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-9</th>
+        <td>Account management</td>
+        <td>Admin creates, edits and deactivates accounts; deactivation ends access at once.</td>
+        <td class="proof">Deactivated user cannot log in (ST-09)</td>
+      </tr>
+      <tr>
+        <th scope="row">SR-10</th>
+        <td>Data integrity</td>
+        <td>Foreign keys, transactions, SHA-256 at upload and again before download, soft delete, confirmation dialogs.</td>
+        <td class="proof">Corrupted file → 500 + <code>CHECKSUM_MISMATCH</code> (ST-15)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section aria-labelledby="s2">
+  <h2 id="s2"><span class="num">02</span> Four deep dives (if the professor asks “how?”)</h2>
+  <div class="cards">
+
+    <article class="card">
+      <h3>A · Identity and queries</h3>
+      <div class="where">app/lib/auth.php · app/lib/db.php</div>
+      <ul>
+        <li>Passwords are hashed with a per-password salt; verification happens with <code>password_verify()</code>.</li>
+        <li>Every query with user input is a prepared statement with a bound parameter. Nothing is concatenated.</li>
+        <li>Login throttling: five failed attempts per username in fifteen minutes.</li>
+      </ul>
+      <div class="say">“Even the developer cannot read your password back — only reset it.”</div>
+    </article>
+
+    <article class="card">
+      <h3>B · Authorization policy</h3>
+      <div class="where">app/lib/rbac.php · guard on every page</div>
+      <ul>
+        <li>Page guard: <code>require_role(['admin'])</code> on all admin pages; upload is admin + staff.</li>
+        <li>Object guard: <code>can_access_document()</code> and <code>can_download_document()</code>.</li>
+        <li>Pending: owner and admin. Approved: everyone authorized. Rejected: owner may view, only admin may download. Deleted: admin only.</li>
+      </ul>
+      <div class="say">“A viewer cannot reach an admin URL, and a staff member cannot approve their own upload.”</div>
+    </article>
+
+    <article class="card">
+      <h3>C · Sessions and form defenses</h3>
+      <div class="where">app/bootstrap.php · csrf.php · validate.php · helpers.php</div>
+      <ul>
+        <li><code>session_regenerate_id(true)</code> after login defeats session fixation.</li>
+        <li>Cookies are HttpOnly and SameSite=Lax; Secure is config-driven for HTTPS staging.</li>
+        <li>Every form posts a CSRF token; uploads check extension and real MIME type, never the browser's claim.</li>
+        <li><code>e()</code> escapes every dynamic value with <code>ENT_QUOTES, UTF-8</code>.</li>
+      </ul>
+      <div class="say">“The browser is never trusted — the server checks everything again.”</div>
+    </article>
+
+    <article class="card">
+      <h3>D · The file vault</h3>
+      <div class="where">public/documents/upload.php · download.php</div>
+      <ul>
+        <li>Files are saved with a random server-generated name in <code>storage/uploads/</code>, outside the web root.</li>
+        <li>Download order: session → role → document status → SHA-256 re-check → stream → audit log.</li>
+        <li>Metadata insert and file move share a transaction; failures roll back and delete orphan files.</li>
+      </ul>
+      <div class="say">“A file can only leave this server through one checked door.”</div>
+    </article>
+
+  </div>
+</section>
+
+<section aria-labelledby="s3">
+  <h2 id="s3"><span class="num">03</span> Defense in depth (small things that still count)</h2>
+  <ul class="tight">
+    <li><strong>Login throttling</strong> — five failed attempts per username within 15 minutes; a <code>LOGIN_THROTTLED</code> event is recorded.</li>
+    <li><strong>Web-access guard</strong> — the root <code>.htaccess</code> returns 404 for <code>app/</code>, <code>database/</code>, <code>docs/</code>, <code>logs/</code>, <code>storage/</code>, <code>tests/</code>, and denies direct download of <code>.sql</code>, <code>.md</code>, <code>.log</code>, <code>.json</code>, <code>.ps1</code>.</li>
+    <li><strong>Upload vault guard</strong> — <code>storage/uploads/.htaccess</code> says <code>Require all denied</code> as a second layer.</li>
+    <li><strong>Quiet errors</strong> — <code>display_errors=Off</code>; details go to <code>logs/app-*.log</code>, users see one generic message.</li>
+    <li><strong>Safe delivery headers</strong> — <code>X-Content-Type-Options: nosniff</code> and a sanitized download filename.</li>
+    <li><strong>Secrets hygiene</strong> — <code>config.php</code> is gitignored, FTP credentials live in GitHub Secrets, HTTPS and <code>session_secure_cookie=true</code> are used on staging, and seeded passwords must be changed there.</li>
+    <li><strong>Admin self-protection</strong> — an admin cannot change their own role, deactivate their own account, or deactivate the last active administrator.</li>
+    <li><strong>No self-registration</strong> — all accounts are provisioned by an administrator.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="s4">
+  <h2 id="s4"><span class="num">04</span> Live proof map — say it, then show it</h2>
+  <table>
+    <caption>Demo moment → requirement → automated smoke test</caption>
+    <thead>
+      <tr>
+        <th scope="col">On-screen moment</th>
+        <th scope="col">Proves</th>
+        <th scope="col">Test to cite</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Guest lands on sign-in</th><td>SR-2</td><td class="proof">T1 · guest redirected</td></tr>
+      <tr><th scope="row">POST without token → 403</th><td>SR-6</td><td class="proof">T2 · CSRF rejection</td></tr>
+      <tr><th scope="row">Wrong password → generic error</th><td>SR-1, SR-2</td><td class="proof">T3 · generic failure text</td></tr>
+      <tr><th scope="row">Viewer opens admin page → 403</th><td>SR-3</td><td class="proof">T5 · RBAC bypass fails</td></tr>
+      <tr><th scope="row">Viewer sees Approved, not Pending</th><td>SR-4</td><td class="proof">T7 · role visibility</td></tr>
+      <tr><th scope="row">Viewer downloads Pending → 403</th><td>SR-4</td><td class="proof">T8 · status policy</td></tr>
+      <tr><th scope="row">Admin approves, then download works</th><td>SR-3, SR-4</td><td class="proof">T9–T10 · workflow + content</td></tr>
+      <tr><th scope="row">Denied attempt shows in access log</th><td>SR-8</td><td class="proof">T11 · audit trail</td></tr>
+      <tr><th scope="row">Staff POST to approvals → 403</th><td>SR-3</td><td class="proof">T12 · action-level guard</td></tr>
+      <tr><th scope="row">Logout returns to sign-in</th><td>SR-7</td><td class="proof">T13 · session destroyed</td></tr>
+      <tr><th scope="row">Hacker payloads all fail</th><td>SR-5, SR-4, SR-6</td><td class="proof">ST-01 SQLi · ST-03 direct URL · ST-12 upload · ST-07 XSS</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section aria-labelledby="s5">
+  <h2 id="s5"><span class="num">05</span> Q&amp;A cards — short answers, backed by code</h2>
+  <dl class="qa-grid">
+    <div class="qa">
+      <dt>Why bcrypt and not MD5 or SHA1?</dt>
+      <dd>MD5 and SHA1 are fast, so they are brute-forceable. <code>PASSWORD_DEFAULT</code> uses bcrypt/Argon2 with a per-password salt and a tunable cost.</dd>
+    </div>
+    <div class="qa">
+      <dt>How exactly is SQL injection stopped?</dt>
+      <dd>One hundred percent PDO prepared statements. User input is always a bound parameter, never concatenated. Show ST-01.</dd>
+    </div>
+    <div class="qa">
+      <dt>What if someone steals a session cookie?</dt>
+      <dd>HttpOnly blocks JavaScript access; regeneration defeats fixation; 30 minutes of idle time limits the window; SameSite=Lax limits cross-site replay; HTTPS protects the cookie on staging.</dd>
+    </div>
+    <div class="qa">
+      <dt>How is file confidentiality enforced?</dt>
+      <dd>Files live outside the web root. The only route is <code>download.php</code>, which checks session → role → status, then streams and logs.</dd>
+    </div>
+    <div class="qa">
+      <dt>How do you guarantee data integrity?</dt>
+      <dd>Foreign keys, transactions, SHA-256 checked again at download, soft delete, confirmation dialogs, and append-only audit logs.</dd>
+    </div>
+    <div class="qa">
+      <dt>How do you know who did what?</dt>
+      <dd><code>activity_logs</code> plus <code>document_access_logs</code> — including denied attempts — with user, action, IP and timestamp.</dd>
+    </div>
+    <div class="qa">
+      <dt>What happens when an account is deactivated?</dt>
+      <dd>Login filters <code>status='active'</code>, and identity is re-checked from the database on every request, so access ends immediately. An admin can reactivate it.</dd>
+    </div>
+    <div class="qa">
+      <dt>Can staff approve their own document?</dt>
+      <dd>No. Approval pages use <code>require_role(['admin'])</code>, and the access policy is centralized in <code>lib/rbac.php</code>.</dd>
+    </div>
+    <div class="qa">
+      <dt>Why throttle per username, not per IP?</dt>
+      <dd>Our lab shares one public IP, so per-IP throttling would let one person's mistakes lock out everyone. A production system should track both and add a CAPTCHA or delay.</dd>
+    </div>
+    <div class="qa">
+      <dt>Is the throttling a permanent lockout?</dt>
+      <dd>No — it is five failures in a 15-minute window. For the demo we backdate the test rows in phpMyAdmin so the block clears instantly.</dd>
+    </div>
+  </dl>
+</section>
+
+<section aria-labelledby="s6">
+  <div class="limits">
+    <h3 id="s6">Be honest about the limits</h3>
+    <ul>
+      <li>No encryption at rest and no antivirus integration — listed as future work.</li>
+      <li>The local XAMPP demo runs over HTTP; the Secure cookie flag is enabled only in the HTTPS staging config.</li>
+      <li>Seeded demo passwords are public in the repository — change them on the public staging site.</li>
+      <li>Throttling is per username and temporary, not a permanent account lockout.</li>
+      <li>The <code>.htaccess</code> protections rely on Apache, which both XAMPP and the staging host provide.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="label">Evidence lives here</div>
+  <div><code>app/lib/auth.php · rbac.php · csrf.php · validate.php · logger.php · db.php · helpers.php</code> ·
+       <code>app/bootstrap.php</code> · <code>public/documents/upload.php · download.php · delete.php</code> ·
+       <code>database/schema.sql</code> · <code>tests/backend-smoke.ps1</code> ·
+       <code>docs/04-SECURITY-PLAN.md</code> · <code>docs/07-PRESENTATION-PLAN.md</code></div>
+</footer>
+
+</body>
+</html>
