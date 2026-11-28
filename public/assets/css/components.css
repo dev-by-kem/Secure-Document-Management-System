@@ -1104,17 +1104,69 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
     linear-gradient(90deg, rgba(2, 30, 23, 0.78) 0%, rgba(2, 30, 23, 0.52) 48%, rgba(2, 30, 23, 0.68) 100%),
     radial-gradient(ellipse at center, rgba(6, 78, 59, 0.06), rgba(2, 30, 23, 0.34) 100%);
 }
+/* Parallax layer: JS only moves this wrapper (kept separate so the slow
+   ambient drift below never fights the cursor transform). */
 .auth-background {
   position: absolute;
   inset: -2.5%;
   z-index: 0;
   pointer-events: none;
-  background: #064e3b url("../images/login-campus.webp") center / cover no-repeat;
-  filter: brightness(0.72) saturate(0.86) contrast(1.03);
   transform: translate3d(var(--auth-parallax-x, 0px), var(--auth-parallax-y, 0px), 0) scale(1.045);
   transform-origin: center;
   will-change: transform;
   transition: transform 180ms ease-out;
+}
+/* Self-running "Ken Burns" drift so the scene feels alive before the mouse moves. */
+.auth-background-image {
+  position: absolute;
+  inset: 0;
+  background: #064e3b url("../images/login-campus.webp") center / cover no-repeat;
+  filter: brightness(0.72) saturate(0.86) contrast(1.03);
+  transform-origin: center;
+  will-change: transform;
+  animation: auth-ken-burns 26s ease-in-out infinite alternate;
+}
+@keyframes auth-ken-burns {
+  from { transform: scale(1.03) translate3d(0, 0, 0); }
+  to   { transform: scale(1.14) translate3d(-1.5%, 1%, 0); }
+}
+/* Breathing pools of emerald and gold light behind the card. */
+.auth-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 52% at 20% 16%, rgba(245, 197, 66, 0.13), transparent 70%),
+    radial-gradient(46% 58% at 84% 80%, rgba(6, 95, 70, 0.32), transparent 72%);
+  animation: auth-ambient-breathe 14s ease-in-out infinite alternate;
+}
+@keyframes auth-ambient-breathe {
+  from { opacity: 0.55; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1.05); }
+}
+/* Drifting golden dust motes — subtle, on-brand, and purely decorative. */
+.auth-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(245, 197, 66, 0.95) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(245, 197, 66, 0.65) 0 1px, transparent 2px);
+  background-size: 240px 240px, 320px 320px, 180px 180px;
+  animation:
+    auth-motes-drift 42s linear infinite,
+    auth-motes-twinkle 5s ease-in-out infinite;
+}
+@keyframes auth-motes-drift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 240px -240px, -320px -320px, 180px -180px; }
+}
+@keyframes auth-motes-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.75; }
 }
 .auth-card {
   width: min(480px, 100%);
@@ -1137,7 +1189,8 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
   margin: 0 auto 0.65rem;
 }
 .auth-crest img {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.72)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  /* Soft dark lift only — no white halo behind the crest. */
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.42));
 }
 .auth-univ-title {
   font-size: 0.75rem;
@@ -1234,6 +1287,13 @@ input[type="password"]::-ms-clear {
     transform: scale(1.045);
     transition: none;
   }
+  .auth-background-image,
+  .auth-ambient,
+  .auth-particles {
+    animation: none;
+  }
+  .auth-ambient { opacity: 0.75; }
+  .auth-particles { opacity: 0.45; }
 }
 
 @media (max-width: 575.98px) {
