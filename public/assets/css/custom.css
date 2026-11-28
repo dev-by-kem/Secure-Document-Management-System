@@ -2,6 +2,8 @@
    SDMS stylesheet hub — loads the layers in order.
    See docs/08-FRONTEND-GUIDE.md for what each layer does.
    ============================================================ */
-@import url('tokens.css?v=3.0-final-polish');     /* 1. design tokens — CvSU brand       */
-@import url('base.css?v=3.0-final-polish');       /* 2. resets, focus, skip link, motion */
-@import url('components.css?v=3.0-final-polish'); /* 3. SDMS components                  */
+/* Legacy import hub — the page shells now link the layers directly.
+   Kept for compatibility with any external page that still loads this file. */
+@import url('tokens.css?v=3.1-perf');     /* 1. design tokens — CvSU brand       */
+@import url('base.css?v=3.1-perf');       /* 2. resets, focus, skip link, motion */
+@import url('components.css?v=3.1-perf'); /* 3. SDMS components                  */

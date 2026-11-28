@@ -430,6 +430,12 @@
         var targetY = 0;
         var currentX = 0;
         var currentY = 0;
+        var bounds = page.getBoundingClientRect();
+
+        // Measure once, not on every pointer move: getBoundingClientRect() forces layout.
+        function measureBounds() { bounds = page.getBoundingClientRect(); }
+        window.addEventListener('resize', measureBounds, { passive: true });
+        window.addEventListener('scroll', measureBounds, { passive: true });
 
         function render() {
             currentX += (targetX - currentX) * 0.12;
@@ -445,18 +451,17 @@
 
         page.addEventListener('pointermove', function (event) {
             if (event.pointerType && event.pointerType !== 'mouse') { return; }
-            var bounds = page.getBoundingClientRect();
             var x = (event.clientX - bounds.left) / bounds.width - 0.5;
             var y = (event.clientY - bounds.top) / bounds.height - 0.5;
             targetX = x * 12;
             targetY = y * 8;
             if (!frame) { frame = window.requestAnimationFrame(render); }
-        });
+        }, { passive: true });
 
         page.addEventListener('pointerleave', function () {
             targetX = 0;
             targetY = 0;
             if (!frame) { frame = window.requestAnimationFrame(render); }
-        });
+        }, { passive: true });
     });
 })();

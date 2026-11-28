@@ -89,18 +89,18 @@ html.theme-switching *::after {
 
 /* ---------- Subtle Entrance Animations ---------- */
 @keyframes sdms-fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .sdms-animate {
-  animation: sdms-fade-in var(--sdms-duration-base) var(--sdms-ease-out) both;
+  animation: sdms-fade-in var(--sdms-duration-fast) var(--sdms-ease-out) both;
 }
 
-/* Page content subtle reveal */
+/* Page content subtle reveal — short and low-travel so it stays smooth. */
 main > .page-head,
 main > .card,
 main > .search,
 main > .alert {
-  animation: sdms-fade-in var(--sdms-duration-slow) var(--sdms-ease-out) both;
+  animation: sdms-fade-in var(--sdms-duration-base) var(--sdms-ease-out) both;
 }
