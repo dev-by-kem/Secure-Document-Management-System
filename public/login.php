@@ -48,8 +48,7 @@ try {
 </head>
 <body>
 <main class="auth-page">
-  <div class="auth-background" aria-hidden="true"><div class="auth-background-image"></div></div>
-  <div class="auth-ambient" aria-hidden="true"></div>
+  <div class="auth-background" aria-hidden="true"></div>
   <div class="auth-card">
     <div class="auth-header-card">
       <div class="auth-crest">
