@@ -34,17 +34,17 @@ require BASE_PATH . '/app/includes/header.php';
     <p class="page-sub">Central administration and oversight for the Cavite State University Document Management System.</p>
   </div>
   <div class="page-actions">
-    <a class="btn btn-outline-secondary" href="<?= e(url('admin/users.php')) ?>"><i class="bi bi-people me-1"></i> User Directory</a>
-    <a class="btn btn-outline-secondary" href="<?= e(url('admin/reports.php')) ?>"><i class="bi bi-bar-chart me-1"></i> Generate Report</a>
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/users.php')) ?>"><i class="bi bi-people me-1" aria-hidden="true"></i> User Directory</a>
+    <a class="btn btn-outline-secondary" href="<?= e(url('admin/reports.php')) ?>"><i class="bi bi-bar-chart me-1" aria-hidden="true"></i> Generate Report</a>
     <?php if ($stats['docs_pending'] > 0): ?>
-      <a class="btn btn-warning" href="<?= e(url('admin/approvals.php')) ?>"><i class="bi bi-check2-square me-1"></i> Review Queue (<?= $stats['docs_pending'] ?>)</a>
+      <a class="btn btn-warning" href="<?= e(url('admin/approvals.php')) ?>"><i class="bi bi-check2-square me-1" aria-hidden="true"></i> Review Queue (<?= $stats['docs_pending'] ?>)</a>
     <?php endif; ?>
   </div>
 </div>
 
 <?php if ($stats['docs_pending'] > 0): ?>
   <div class="alert alert-warning d-flex align-items-center gap-3 mb-4 shadow-sm" role="alert">
-    <i class="bi bi-hourglass-split fs-4 text-warning"></i>
+    <i class="bi bi-hourglass-split fs-4 text-warning" aria-hidden="true"></i>
     <div class="flex-grow-1">
       <strong>Action Required:</strong> <?= $stats['docs_pending'] ?> document<?= $stats['docs_pending'] === 1 ? '' : 's' ?> awaiting institutional verification<?php if ($oldestPending): ?> (oldest submitted <?= e(format_datetime($oldestPending)) ?>)<?php endif; ?>. Unapproved files remain confidential and inaccessible to viewers.
     </div>
@@ -56,49 +56,49 @@ require BASE_PATH . '/app/includes/header.php';
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('admin/users.php')) ?>" class="stat-card stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-people"></i></span>
+        <span class="stat-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
         <div>
           <div class="stat-value"><?= $stats['users_total'] ?></div>
           <div class="stat-label">Total Users · <?= $stats['users_active'] ?> active</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow"></i>
+      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('documents/index.php?status=approved')) ?>" class="stat-card stat-card--teal stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-folder2"></i></span>
+        <span class="stat-icon"><i class="bi bi-folder2" aria-hidden="true"></i></span>
         <div>
           <div class="stat-value"><?= $stats['docs_total'] ?></div>
           <div class="stat-label">Documents · <?= $stats['docs_approved'] ?> approved</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow"></i>
+      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('admin/approvals.php?decision=pending')) ?>" class="stat-card stat-card--pending stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-hourglass-split"></i></span>
+        <span class="stat-icon"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
         <div>
           <div class="stat-value"><?= $stats['docs_pending'] ?></div>
           <div class="stat-label">Pending Review</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow"></i>
+      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
     </a>
   </div>
   <div class="col-6 col-lg-3">
     <a href="<?= e(url('admin/approvals.php?decision=rejected')) ?>" class="stat-card stat-card--rejected stat-card--clickable">
       <div class="stat-card-left">
-        <span class="stat-icon"><i class="bi bi-x-circle"></i></span>
+        <span class="stat-icon"><i class="bi bi-x-circle" aria-hidden="true"></i></span>
         <div>
           <div class="stat-value"><?= $stats['docs_rejected'] ?></div>
           <div class="stat-label">Rejected Files</div>
         </div>
       </div>
-      <i class="bi bi-arrow-right stat-card-arrow"></i>
+      <i class="bi bi-arrow-right stat-card-arrow" aria-hidden="true"></i>
     </a>
   </div>
 </div>
@@ -106,9 +106,9 @@ require BASE_PATH . '/app/includes/header.php';
 <div class="card shadow-sm card--accent-brand">
   <div class="card-header d-flex justify-content-between align-items-center py-3">
     <div>
-      <i class="bi bi-activity me-1"></i> Recent System Activity &amp; Audit Trail
+      <i class="bi bi-activity me-1" aria-hidden="true"></i> Recent System Activity &amp; Audit Trail
     </div>
-    <a class="small text-decoration-none fw-semibold" href="<?= e(url('admin/logs.php')) ?>">View all audit logs <i class="bi bi-arrow-right"></i></a>
+    <a class="small text-decoration-none fw-semibold" href="<?= e(url('admin/logs.php')) ?>">View all audit logs <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
   </div>
   <div class="table-responsive sdms-table-wrap" role="region" aria-label="Recent activity table" tabindex="0">
     <table class="table table-hover sdms-card-table">
