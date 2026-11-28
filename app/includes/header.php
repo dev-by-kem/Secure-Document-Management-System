@@ -38,9 +38,9 @@ try {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <!-- Direct links load the three layers in parallel; @import serialized them. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/tokens.css?v=3.1-perf')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/base.css?v=3.1-perf')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/components.css?v=3.1-perf')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/tokens.css?v=3.2-bgfix')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/base.css?v=3.2-bgfix')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/components.css?v=3.2-bgfix')) ?>">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>

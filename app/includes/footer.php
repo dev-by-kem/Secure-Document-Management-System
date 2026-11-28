@@ -27,6 +27,6 @@
 </dialog>
 
 <script src="<?= e(url('assets/js/bootstrap.bundle.min.js')) ?>"></script>
-<script src="<?= e(url('assets/js/app.js?v=3.1-perf')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=3.2-bgfix')) ?>"></script>
 </body>
 </html>

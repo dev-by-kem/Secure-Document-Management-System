@@ -42,9 +42,9 @@ try {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="<?= e(url('assets/images/login-campus.webp')) ?>">
 <!-- Direct links load the three layers in parallel; @import serialized them. -->
-<link rel="stylesheet" href="<?= e(url('assets/css/tokens.css?v=3.1-perf')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/base.css?v=3.1-perf')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/components.css?v=3.1-perf')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/tokens.css?v=3.2-bgfix')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/base.css?v=3.2-bgfix')) ?>">
+<link rel="stylesheet" href="<?= e(url('assets/css/components.css?v=3.2-bgfix')) ?>">
 </head>
 <body>
 <main class="auth-page">
@@ -110,6 +110,6 @@ try {
     </div>
   </div>
 </main>
-<script src="<?= e(url('assets/js/app.js?v=3.1-perf')) ?>"></script>
+<script src="<?= e(url('assets/js/app.js?v=3.2-bgfix')) ?>"></script>
 </body>
 </html>
