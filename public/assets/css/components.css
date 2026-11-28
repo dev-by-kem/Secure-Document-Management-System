@@ -1145,29 +1145,6 @@ dialog::backdrop { overflow: hidden; overscroll-behavior: contain; }
   from { opacity: 0.55; transform: scale(1); }
   to   { opacity: 1; transform: scale(1.05); }
 }
-/* Drifting golden dust motes — subtle, on-brand, and purely decorative. */
-.auth-particles {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle, rgba(245, 197, 66, 0.95) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1px, transparent 2px),
-    radial-gradient(circle, rgba(245, 197, 66, 0.65) 0 1px, transparent 2px);
-  background-size: 240px 240px, 320px 320px, 180px 180px;
-  animation:
-    auth-motes-drift 42s linear infinite,
-    auth-motes-twinkle 5s ease-in-out infinite;
-}
-@keyframes auth-motes-drift {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to   { background-position: 240px -240px, -320px -320px, 180px -180px; }
-}
-@keyframes auth-motes-twinkle {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 0.75; }
-}
 .auth-card {
   width: min(480px, 100%);
   position: relative;
@@ -1288,12 +1265,10 @@ input[type="password"]::-ms-clear {
     transition: none;
   }
   .auth-background-image,
-  .auth-ambient,
-  .auth-particles {
+  .auth-ambient {
     animation: none;
   }
   .auth-ambient { opacity: 0.75; }
-  .auth-particles { opacity: 0.45; }
 }
 
 @media (max-width: 575.98px) {
